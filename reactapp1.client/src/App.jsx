@@ -5,11 +5,12 @@ import Card from "./Card";
 function App() {
 
     return (
-        <>
-            <Header></Header>
-            <Card></Card>
-            <Footer></Footer>
-        </>
+           <>   
+                <Header></Header>
+                <Card></Card>
+                <Footer></Footer>
+            </>
+        
 
     );
 }

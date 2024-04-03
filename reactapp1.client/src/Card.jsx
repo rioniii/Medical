@@ -1,8 +1,8 @@
-import React from 'react'; // Corrected import for React
+import React from 'react'; 
 import examplePicture from './assets/Dr.-Shpetim-Thaci.jpg';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Button from 'react-bootstrap/Button'; // Import Button from react-bootstrap
-import Alert from 'react-bootstrap/Alert'; // Import Alert from react-bootstrap
+import Button from 'react-bootstrap/Button'; 
+import Alert from 'react-bootstrap/Alert'; 
 
 
 function Card() {
