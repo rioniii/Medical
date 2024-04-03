@@ -19,7 +19,7 @@ function Header() {
                             <Nav.Link href="#klinika">Klinika</Nav.Link>
                             <Nav.Link href="#doktoret">Doktoret</Nav.Link>
                             <Nav.Link href="#services">Services</Nav.Link>
-                            <Nav.Link>Blog</Nav.Link>
+                            <Nav.Link >Blog</Nav.Link>
                             <Nav.Link>Contact</Nav.Link>
            
                             <Button style={{ marginLeft: '400px' }} variant="outline-info">Make an appointment</Button>{' '}
