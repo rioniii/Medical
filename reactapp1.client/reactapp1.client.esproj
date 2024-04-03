@@ -9,6 +9,9 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="src\Slider.jsx" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="src\node_modules\%40popperjs\core\dist\cjs\enums.js" />
     <None Include="src\node_modules\%40popperjs\core\dist\cjs\enums.js.flow" />
     <None Include="src\node_modules\%40popperjs\core\dist\cjs\enums.js.map" />
