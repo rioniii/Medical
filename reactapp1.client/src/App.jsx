@@ -8,8 +8,9 @@ import image2 from './assets/image2.jpg';
 import image3 from './assets/image3.jpg';
 import image4 from './assets/image4.jpg';
 import docPic from './assets/docPic.jpg';
+import image6 from  './assets/image6.jpg';
 function App() {
-    const images = [image1, image2, image3, image4, docPic];
+    const images = [image1, image2, image3, image4, docPic,image6];
     return (
         <div>
             <Header />
@@ -19,5 +20,6 @@ function App() {
         </div>
     );
 }
+
 
 export default App;
