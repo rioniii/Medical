@@ -8,24 +8,21 @@ function Header() {
 
     return (
         <header>
-            <Navbar bg="dark" data-bs-theme="dark">
+            <Navbar sticky="top" >
       <Container className="nav">
         <Navbar.Brand href="#home">Medical</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto ms-auto">
                             <Nav.Link href="#home">Home</Nav.Link>
-                            <Nav.Link href="#link">About</Nav.Link>
+                            <Nav.Link href="#about">About</Nav.Link>
+                            <Nav.Link href="#klinika">Klinika</Nav.Link>
+                            <Nav.Link href="#doktoret">Doktoret</Nav.Link>
                             <Nav.Link href="#services">Services</Nav.Link>
                             <Nav.Link>Blog</Nav.Link>
                             <Nav.Link>Contact</Nav.Link>
            
-            <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">Services</NavDropdown.Item>
-                                <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-              
-            </NavDropdown>
-                            <Button style={{ marginLeft: '290px' }} variant="outline-success">Make an appointment</Button>{' '}
+                            <Button style={{ marginLeft: '400px' }} variant="outline-info">Make an appointment</Button>{' '}
           </Nav>
         </Navbar.Collapse>
       </Container>

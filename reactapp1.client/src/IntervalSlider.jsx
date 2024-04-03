@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+
 const IntervalSlider = ({ images, interval = 3000 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -15,8 +16,7 @@ const IntervalSlider = ({ images, interval = 3000 }) => {
 
     return (
         <div>
-            <img src={images[currentIndex]} alt={`Image ${currentIndex + 1}`} />
-        </div>
+            <img src={images[currentIndex]} alt={`image ${currentIndex + 1}`} style={{ width: '100%' }} />        </div>
     );
 };
 
