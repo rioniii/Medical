@@ -5,7 +5,6 @@ import Card from "./Card";
 import IntervalSlider from './IntervalSlider';
 import image1 from './assets/Ballina.png';
 
-
 function App() {
   
     const images = [image1];
