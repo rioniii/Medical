@@ -8,6 +8,16 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
+.links {
+    margin-left:40px;
+}
+.service{
+    border-radius:5px;
+    border-color: green;
+
+}
+
+
 .card {
     border: 1px solid #c4c4c4;
     border-radius: 10px;

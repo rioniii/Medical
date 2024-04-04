@@ -9,19 +9,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function Header() {
     return (
         <header>
-            <Navbar sticky="top" bg="dark" variant="dark" expand="lg">
+            <Navbar sticky="top" bg="dark" variant="dark" expand="lg" className="navbar">
                 <Container>
                     <Navbar.Brand href="#home">Medical</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mx-auto">
-                            <Nav.Link href="#home">Home</Nav.Link>
-                            <Nav.Link href="#about" className="mr-2">About</Nav.Link>
-                            <Nav.Link href="#klinika" className="mr-2">Klinika</Nav.Link>
-                            <Nav.Link href="#doktoret" className="mr-2">Doktoret</Nav.Link>
-                            <Nav.Link href="#services" className="mr-2">Services</Nav.Link>
-                            <Nav.Link href="#" className="mr-2">Blog</Nav.Link>
-                            <Nav.Link href="#" className="mr-2">Contact</Nav.Link> 
+                            <Nav.Link className="links" href="#home">Home</Nav.Link>
+                            <Nav.Link className="links" href="#about">About</Nav.Link>
+                            <Nav.Link className="links" href="#klinika">Klinika</Nav.Link>
+                            <Nav.Link className="links" href="#doktoret">Doktoret</Nav.Link>
+                            <Nav.Link className="links" href="#services">Services</Nav.Link>
+                            <Nav.Link className="links" href="#">Blog</Nav.Link>
+                            <Nav.Link className="links" href="#" >Contact</Nav.Link> 
                         </Nav>
                         <Button variant="success">Make an Appointment</Button>
                     </Navbar.Collapse>
