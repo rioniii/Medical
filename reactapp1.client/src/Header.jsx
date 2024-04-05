@@ -4,6 +4,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import RegisterForm from './RegisterForm.jsx';
 function Header() {
 
     return (
@@ -17,7 +18,7 @@ function Header() {
                             <Nav.Link href="#home">Home</Nav.Link>
                             <Nav.Link href="#link">About</Nav.Link>
                             <Nav.Link href="#services">Services</Nav.Link>
-                            <Nav.Link >Blog</Nav.Link>
+                            <Nav.Link to '/RegisterForm.jsx'>Register</Nav.Link>
                             <Nav.Link>Contact</Nav.Link>
            
             <NavDropdown title="Dropdown" id="basic-nav-dropdown">
