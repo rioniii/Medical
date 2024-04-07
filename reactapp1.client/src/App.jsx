@@ -12,6 +12,7 @@ import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Route, NavLink, Routes, HashRouter } from 'react-router-dom';
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
+const LoginForm = React.lazy(() => import("./LoginForm"));
   const Header = () => {
       const images = [i3, i2, i4];
       return (
@@ -53,7 +54,8 @@ class App extends Component {
                 <HashRouter>
                 <Routes>
                     <Route path="/" element={<Header />}></Route>
-                        <Route path="/RegisterForm" element={<RegisterForm />}></Route>
+                    <Route path="/RegisterForm" element={<RegisterForm />}></Route>
+                    <Route path="/LoginForm" element={<LoginForm />}></Route>
                     </Routes>
                 </HashRouter >
                </div>
