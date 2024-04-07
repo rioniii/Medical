@@ -1,8 +1,8 @@
 import React from 'react';
-import { MDBBtn,MDBContainer,MDBCard,MDBCardBody,MDBInput,MDBCheckbox} from 'mdb-react-ui-kit';
-import {NavLink } from 'react-router-dom';
+import { MDBBtn, MDBContainer, MDBCard, MDBCardBody, MDBInput, MDBCheckbox } from 'mdb-react-ui-kit';
+import { NavLink } from 'react-router-dom';
 
-function RegisterForm() {
+function LoginForm() {
     return (
         <MDBContainer fluid className='d-flex align-items-center justify-content-center bg-image' style={{ backgroundImage: 'url(https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp)' }}>
             <div className='mask gradient-custom-3'></div>
@@ -16,12 +16,12 @@ function RegisterForm() {
                     <div className='d-flex flex-row justify-content-center mb-4'>
                         <MDBCheckbox name='flexCheck' id='flexCheckDefault' label='I agree all statements in Terms of service' />
                     </div>
-                    <MDBBtn className='mb-4 w-100 gradient-custom-4' size='lg' style={{ background: 'green' }}>Register</MDBBtn>
-                    <NavLink to="/LoginForm"><button className="btn btn-dark btn-sm btn-block" style={{ background: 'green' }} >Log in here</button></NavLink>
+                    <MDBBtn className='mb-4 w-100 gradient-custom-4' size='lg' style={{ background: 'green' }}>LogIn</MDBBtn>
+                    <NavLink to="/RegisterForm"><button className="btn btn-dark btn-sm btn-block" style={{ background: 'green' }} >Register in here</button></NavLink>
                 </MDBCardBody>
             </MDBCard>
         </MDBContainer>
     );
 }
 
-export default RegisterForm;
+export default LoginForm;
