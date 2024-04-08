@@ -15,7 +15,7 @@ function LoginForm() {
                         <MDBCheckbox name='flexCheck' id='flexCheckDefault' label='Remember me' />
                     </div>
                     <MDBBtn className='mb-4 w-100 gradient-custom-4' size='lg' style={{ background: 'green' }}>LogIn</MDBBtn>
-                    <NavLink to="/RegisterForm"><button className="btn btn-dark btn-sm btn-block" style={{ background: 'green' }} >Register in here</button></NavLink>
+                    <NavLink to="/RegisterForm"><button className="btn btn-dark btn-sm btn-block" style={{ background: 'green' }} >Register here</button></NavLink>
                 </MDBCardBody>
             </MDBCard>
         </MDBContainer>
