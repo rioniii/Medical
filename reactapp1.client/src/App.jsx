@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component,MouseEvent } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Footer from "./Footer";
@@ -7,9 +7,7 @@ import IntervalSlider from './IntervalSlider';
 import Ballina from './Ballina';
 
 import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 
@@ -17,12 +15,16 @@ import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
 
-import { Route, NavLink, Routes, HashRouter } from 'react-router-dom';
+
+import { Route, Routes, HashRouter } from 'react-router-dom';
 
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
 const LoginForm = React.lazy(() => import("./LoginForm"));
-  const Header = () => {
-      const images = [i3, i2, i4];
+const Header = () => {
+const images = [i3, i2, i4];
+
+
+
       return (
           <div>
               <header>
@@ -43,7 +45,7 @@ const LoginForm = React.lazy(() => import("./LoginForm"));
                                   </ListGroup>
 
 
-                              <Button style={{ marginLeft: '290px' }} variant="outline-success">Make an appointment</Button>{' '}
+                              <Button variant="success"   style={{ marginLeft: '290px'}} >Make an appointment</Button>{' '}
                             
                           </Navbar.Collapse>
                       </Container>
