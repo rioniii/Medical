@@ -1,5 +1,5 @@
-import React from 'react';
-import { MDBBtn, MDBContainer, MDBCard, MDBCardBody, MDBInput, MDBCheckbox } from 'mdb-react-ui-kit';
+/*import React from 'react';
+*/import { MDBBtn, MDBContainer, MDBCard, MDBCardBody, MDBInput, MDBCheckbox } from 'mdb-react-ui-kit';
 import { NavLink } from 'react-router-dom';
 
 function LoginForm() {

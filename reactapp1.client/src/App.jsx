@@ -51,7 +51,7 @@ const images = [i3, i2, i4];
               <Ballina/>
               <IntervalSlider images={images} interval={3000}/>
               <Card />
-              <Footer />
+              <Footer/>
           </div>
       );
              

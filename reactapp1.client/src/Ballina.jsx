@@ -1,8 +1,7 @@
-import React from 'react';
+/*import React from 'react';*/
 import Button from 'react-bootstrap/Button';
 import image1 from './assets/Ballina.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ListGroup from 'react-bootstrap/ListGroup';
 import Image from 'react-bootstrap/Image';
 function Ballina() {
     return (  
