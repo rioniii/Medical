@@ -1,22 +1,19 @@
-import React, { Component,MouseEvent } from 'react';
-
+import React, { Component, Suspense } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Footer from "./Footer";
 import Card from "./Card";
 import IntervalSlider from './IntervalSlider';
 import Ballina from './Ballina';
-
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
-
+import { Route, Routes, HashRouter } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
 
 
-import { Route, Routes, HashRouter } from 'react-router-dom';
 
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
 const LoginForm = React.lazy(() => import("./LoginForm"));
@@ -41,7 +38,7 @@ const images = [i3, i2, i4];
                                       <ListGroup.Item action variant="success"  href="#Clinic" >Clinic</ListGroup.Item>
                                       <ListGroup.Item variant="success" action href="#Doctors" >Doctors</ListGroup.Item>
                                       <ListGroup.Item variant="success" action href="#Contact" >Contact</ListGroup.Item>
-                                      <ListGroup.Item variant="success" action href="#Register" >Register</ListGroup.Item>
+                                      <ListGroup.Item variant="success" action href="#RegisterForm" >Register</ListGroup.Item>
                                   </ListGroup>
 
 
@@ -62,7 +59,7 @@ const images = [i3, i2, i4];
 class App extends Component {
     render() {
     return( 
-            <div>
+        <Suspense fallback={<div>Loading...</div>}>
                 <HashRouter>
                 <Routes>
                     <Route path="/" element={<Header />}></Route>
@@ -70,7 +67,7 @@ class App extends Component {
                     <Route path="/LoginForm" element={<LoginForm />}></Route>
                     </Routes>
                 </HashRouter >
-               </div>
+        </Suspense>
     );
         }
 }
