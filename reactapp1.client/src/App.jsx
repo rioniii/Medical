@@ -12,7 +12,7 @@ import { Route, Routes, HashRouter } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
-
+import logo from 'C:\Users\W11\source\repos\Medical\reactapp1.client\src\assets\medical care logo template social media .png';
 
 
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
@@ -27,6 +27,14 @@ const images = [i3, i2, i4];
               <header>
                   <Navbar bg="dark" data-bs-theme="dark">
                       <Container className="nav">
+                          <Navbar.Brand href="App.jsx">
+                              <img
+                                  src={logo}
+                                  alt="Your Logo"
+                                  height="30"
+                                  className="d-inline-block align-top"
+                              />
+                          </Navbar.Brand>
                           <Navbar.Brand href="App.jsx">Medical</Navbar.Brand>
                           <Navbar.Toggle aria-controls="basic-navbar-nav" />
                           <Navbar.Collapse id="basic-navbar-nav">
