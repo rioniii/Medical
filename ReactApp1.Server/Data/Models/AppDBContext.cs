@@ -9,6 +9,7 @@ namespace ReactApp1.Server.Data.Models
         
         }
         public DbSet<Patient> Patients { get; set; }
+        public DbSet<Staf> Stafi { get; set; }
 
 
     }

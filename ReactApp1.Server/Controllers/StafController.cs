@@ -18,13 +18,13 @@ namespace ReactApp1.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Staf>>> GetAllStaf()
         {
-            var Staf = await _context.Staf.ToListAsync();
+            var Staf = await _context.Stafi.ToListAsync();
             return Ok(Staf);
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Staf>> GetStaf(int id)
         {
-            var Staf = await _context.Staf.FindAsync(id);
+            var Staf = await _context.Stafi.FindAsync(id);
             if (Staf is null)
             {
                 return NotFound("A Staf with ID: " + id + " doesn't exist!");
@@ -37,16 +37,16 @@ namespace ReactApp1.Server.Controllers
         public async Task<ActionResult<List<Staf>>> AddStaf(Staf p)
         {
 
-            _context.Staf.Add(p);
+            _context.Stafi.Add(p);
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.Staf.ToListAsync());
+            return Ok(await _context.Stafi.ToListAsync());
         }
 
         [HttpPut]
         public async Task<ActionResult<Staf>> UpdateStaf(Staf updatedStaf)
         {
-            var dbStaf = await _context.Staf.FindAsync(updatedStaf.Id);
+            var dbStaf = await _context.Stafi.FindAsync(updatedStaf.Id);
             if (dbStaf is null)
             {
                 return NotFound("Staf not found!");
@@ -67,22 +67,22 @@ namespace ReactApp1.Server.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.Staf.FindAsync(updatedStaf.Id));
+            return Ok(await _context.Stafi.FindAsync(updatedStaf.Id));
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Staf>> DeleteStaf(int id)
         {
-            var dbStaf = await _context.Staf.FindAsync(id);
+            var dbStaf = await _context.Stafi.FindAsync(id);
             if (dbStaf is null)
             {
                 return NotFound("Staf not found!");
             }
 
-            _context.Staf.Remove(dbStaf);
+            _context.Stafi.Remove(dbStaf);
 
             await _context.SaveChangesAsync();
-            return Ok(await _context.Staf.FindAsync(id));
+            return Ok(await _context.Stafi.FindAsync(id));
 
         }
     }
