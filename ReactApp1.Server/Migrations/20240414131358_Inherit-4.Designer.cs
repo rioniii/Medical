@@ -12,7 +12,7 @@ using ReactApp1.Server.Data.Models;
 namespace ReactApp1.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240413193700_Inherit-4")]
+    [Migration("20240414131358_Inherit-4")]
     partial class Inherit4
     {
         /// <inheritdoc />
