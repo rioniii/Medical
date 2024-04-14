@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿global using Microsoft.EntityFrameworkCore;
 
 namespace ReactApp1.Server.Data.Models
 {
@@ -9,7 +9,9 @@ namespace ReactApp1.Server.Data.Models
         
         }
         public DbSet<Patient> Patients { get; set; }
-        public DbSet<Staf> Staf { get; set; }
+        public DbSet<Staf> Stafi { get; set; }
+
+
     }
    
 }

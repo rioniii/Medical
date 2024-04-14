@@ -4,6 +4,7 @@ import Footer from "./Footer";
 import Card from "./Card";
 import IntervalSlider from './IntervalSlider';
 import Ballina from './Ballina';
+import PatientCRUD from './PatientCRUD'
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
@@ -13,6 +14,8 @@ import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
 
+
+ 
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
 const LoginForm = React.lazy(() => import("./LoginForm"));
 const Header = () => {
@@ -33,7 +36,7 @@ const images = [i3, i2, i4];
                           <Navbar.Collapse id="basic-navbar-nav">
                               <ListGroup className="NavList mb-2 mb-lg-0" horizontal="lg">
                                   <ListGroup.Item className="item" action variant="success" href="/">Home</ListGroup.Item>
-                                  <ListGroup.Item variant="success" action href="#About">About</ListGroup.Item>
+                                  <ListGroup.Item variant="success" action href="./app/Appi.jsx">About</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Clinic">Clinic</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Contact">Contact</ListGroup.Item>
@@ -44,7 +47,8 @@ const images = [i3, i2, i4];
                       </Container>
                   </Navbar>
                   </header>
-                  <Ballina />
+              <Ballina />
+              <PatientCRUD />
                   <IntervalSlider images={images} interval={3000} />
                   <Card />
                   <Footer />
