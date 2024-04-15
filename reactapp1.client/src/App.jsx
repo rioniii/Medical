@@ -15,6 +15,7 @@ import i3 from './assets/i3.jpg';
 
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
 const LoginForm = React.lazy(() => import("./LoginForm"));
+const AboutUs = React.lazy(() => import("./AboutUs"));
 const Header = () => {
 const images = [i3, i2, i4];
 
@@ -33,7 +34,7 @@ const images = [i3, i2, i4];
                           <Navbar.Collapse id="basic-navbar-nav">
                               <ListGroup className="NavList mb-2 mb-lg-0" horizontal="lg">
                                   <ListGroup.Item className="item" action variant="success" href="/">Home</ListGroup.Item>
-                                  <ListGroup.Item variant="success" action href="#About">About</ListGroup.Item>
+                                  <ListGroup.Item variant="success" action href="#AboutUs">About Us</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Clinic">Clinic</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Contact">Contact</ListGroup.Item>
@@ -61,6 +62,8 @@ class App extends Component {
                     <Route path="/" element={<Header />}></Route>
                     <Route path="/RegisterForm" element={<RegisterForm />}></Route>
                     <Route path="/LoginForm" element={<LoginForm />}></Route>
+                    <Route path="/AboutUs" element={<AboutUs />}></Route>
+
                     </Routes>
                 </HashRouter >
         </Suspense>
