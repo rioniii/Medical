@@ -1,5 +1,5 @@
+global using ReactApp1.Server.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using ReactApp1.Server.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
