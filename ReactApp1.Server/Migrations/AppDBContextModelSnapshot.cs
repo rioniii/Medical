@@ -97,7 +97,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Staf");
+                    b.ToTable("Stafi");
                 });
 #pragma warning restore 612, 618
         }
