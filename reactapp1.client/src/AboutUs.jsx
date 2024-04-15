@@ -38,7 +38,7 @@ function AboutUs  () {
                             Ongoing Support
                             Our commitment to your success doesn't end after implementation. Our dedicated support team is here to assist you every step of the way, providing ongoing training, troubleshooting, and updates to ensure optimal performance and satisfaction.
 
-                            Let's Transform Healthcare Together
+                            Let's Transform Healthcare Togetheraaaa
                             Join us in reshaping the future of healthcare management. Contact us today to learn more about our innovative solutions and how we can tailor them to meet the unique needs of your hospital.
                         </h5>
                     </Col>
