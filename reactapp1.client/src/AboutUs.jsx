@@ -11,16 +11,14 @@ function AboutUs  () {
           
                 
             <div className={ChangeVideo.vid}>
-                <video src={VideoIntro} type="video/mp4" className={ChangeVideo.bg} autoPlay muted loop preload="auto">
-                    <div className={ChangeVideo.content}>
+                {/* Video element */}
+                <video src={VideoIntro} type="video/mp4" className={ChangeVideo.bg} autoPlay muted loop preload="auto"></video>
+                {/* Text content */}
+                <div className={ChangeVideo.content}>
                     <h1>About Us</h1>
-                    
-                        <h2>  Welcome to Medical </h2>
-                        <h3>
-                            Where we revolutionize hospital management with cutting-edge technology and a commitment to excellence. 
-                        </h3>
-                    </div>
-                        </video>
+                    <h2>Welcome to Medical</h2>
+                    <h3>Where we revolutionize hospital management with cutting-edge technology and a commitment to excellence.</h3>
+                </div>
             </div>
             <div className={ChangeVideo.Kontekst}>
                         <h5>
