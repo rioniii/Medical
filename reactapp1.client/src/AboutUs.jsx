@@ -2,20 +2,27 @@
 import React from 'react';
 //import { Container, Col } from 'react-bootstrap'; // Import Container and Col from react-bootstrap
 import ChangeVideo from './video.module.css'; // Import the CSS file with the styles
+import VideoIntro from '../src/assets/backroom.mp4';
 
 function AboutUs  () {
     return (
         <>
            
-            <div className={ChangeVideo.Kontekst}>
+          
                 
+            <div className={ChangeVideo.vid}>
+                <video src={VideoIntro} type="video/mp4" className={ChangeVideo.bg} autoPlay muted loop preload="auto">
+                    <div className={ChangeVideo.content}>
+                    <h1>About Us</h1>
                     
-                        <h1>About Us</h1>
                         <h2>  Welcome to Medical </h2>
                         <h3>
                             Where we revolutionize hospital management with cutting-edge technology and a commitment to excellence. 
                         </h3>
-                       
+                    </div>
+                        </video>
+            </div>
+            <div className={ChangeVideo.Kontekst}>
                         <h5>
                         
                            <div>
@@ -59,9 +66,10 @@ function AboutUs  () {
                    </div>
                 
            
-            <div className={ChangeVideo.videoloop}>
-                <video autoplay muted loop>
-                    <source src="./backroom.mp4" alt="nuk eshte video" type="video/mp4"/>
+            <div className={ChangeVideo.parent }>
+                <video src='../src/assets/backroom.mp4' type="video/mp4"  className={ChangeVideo.bg} autoPlay  loop preload="auto">
+                   
+              
                         
                 </video>
                 
