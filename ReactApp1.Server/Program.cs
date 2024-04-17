@@ -11,9 +11,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDBContext>(options=>
+/*builder.Services.AddDbContext<AppDBContext>(options=>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});*/
+
+builder.Services.AddDbContext<AppDBContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlServerOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,  // Maximum number of retries
+                maxRetryDelay: TimeSpan.FromSeconds(30), // Delay between retries
+                errorNumbersToAdd: null); // Error numbers to add to the retry list
+        });
 });
 
 var app = builder.Build();
