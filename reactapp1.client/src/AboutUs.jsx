@@ -64,14 +64,8 @@ function AboutUs  () {
                    </div>
                 
            
-            <div className={ChangeVideo.parent }>
-                <video src='../src/assets/backroom.mp4' type="video/mp4"  className={ChangeVideo.bg} autoPlay  loop preload="auto">
-                   
-              
-                        
-                </video>
                 
-                </div>
+                
         </>
         );
    
