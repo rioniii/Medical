@@ -46,7 +46,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patients", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Staf", b =>
@@ -97,7 +97,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Stafi");
+                    b.ToTable("Staf", (string)null);
                 });
 #pragma warning restore 612, 618
         }
