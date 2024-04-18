@@ -1,7 +1,8 @@
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Contact() {
     return (
+
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">Navbar</a>
@@ -23,7 +24,7 @@ function Contact() {
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#">Action</a></li>
                                 <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                               
                                 <li><a class="dropdown-item" href="#">Something else here</a></li>
                             </ul>
                         </li>
@@ -33,6 +34,7 @@ function Contact() {
                     </ul>
                     <form class="d-flex" role="search">
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        </input>
                             <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
                 </div>
