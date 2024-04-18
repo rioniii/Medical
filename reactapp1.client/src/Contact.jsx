@@ -1,47 +1,172 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import emailjs from '@emailjs/browser';
 
-function Contact() {
+const Contact = () => {
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors }
+    } = useForm();
+    const [disabled, setDisabled] = useState(false);
+    const [alertInfo, setAlertInfo] = useState({
+        display: false,
+        message: '',
+        type: '',
+    });
+
+
+    // Shows alert message for form submission feedback
+    const toggleAlert = (message, type) => {
+        setAlertInfo({ display: true, message, type });
+
+        // Hide alert after 5 seconds
+        setTimeout(() => {
+            setAlertInfo({ display: false, message: '', type: '' });
+        }, 5000);
+    };
+
+    // Function called on submit that uses emailjs to send email of valid contact form
+    const onSubmit = async (data) => {
+        // Destrcture data object
+        const { name, email, subject, message } = data;
+        try {
+            // Disable form while processing submission
+            setDisabled(true);
+
+            const templateParams = {
+                name,
+                email,
+                subject,
+                message
+            };
+
+            await emailjs.send(
+                process.env.REACT_APP_SERVICE_ID,
+                process.env.REACT_APP_TEMPLATE_ID,
+                templateParams,
+                process.env.REACT_APP_USER_ID
+            );
+
+            // Display success alert
+            toggleAlert('Form submission was successful!', 'success');
+        } catch (e) {
+            console.error(e);
+            // Display error alert
+            toggleAlert('Uh oh. Something went wrong.', 'danger');
+        } finally {
+            // Re-enable form submission
+            setDisabled(false);
+            // Reset contact form fields after submission
+            reset();
+        }
+    };
+
     return (
-
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                               
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                        </li>
-                    </ul>
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        </input>
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
+        <div className='ContactForm'>
+            <div className='container'>
+                <div className='row'>
+                    <div className='col-12 text-center'>
+                        <div className='contactForm'>
+                            <form id='contact-form' onSubmit={handleSubmit(onSubmit)} noValidate>
+                                {/* Row 1 of form */}
+                                <div className='row formRow'>
+                                    <div className='col-6'>
+                                        <input
+                                            type='text'
+                                            name='name'
+                                            {...register('name', {
+                                                required: { value: true, message: 'Please enter your name' },
+                                                maxLength: {
+                                                    value: 30,
+                                                    message: 'Please use 30 characters or less'
+                                                }
+                                            })}
+                                            className='form-control formInput'
+                                            placeholder='Name'
+                                        ></input>
+                                        {errors.name && <span className='errorMessage'>{errors.name.message}</span>}
+                                    </div>
+                                    <div className='col-6'>
+                                        <input
+                                            type='email'
+                                            name='email'
+                                            {...register('email', {
+                                                required: true,
+                                                pattern: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+                                            })}
+                                            className='form-control formInput'
+                                            placeholder='Email address'
+                                        ></input>
+                                        {errors.email && (
+                                            <span className='errorMessage'>Please enter a valid email address</span>
+                                        )}
+                                    </div>
+                                </div>
+                                {/* Row 2 of form */}
+                                <div className='row formRow'>
+                                    <div className='col'>
+                                        <input
+                                            type='text'
+                                            name='subject'
+                                            {...register('subject', {
+                                                required: { value: true, message: 'Please enter a subject' },
+                                                maxLength: {
+                                                    value: 75,
+                                                    message: 'Subject cannot exceed 75 characters'
+                                                }
+                                            })}
+                                            className='form-control formInput'
+                                            placeholder='Subject'
+                                        ></input>
+                                        {errors.subject && (
+                                            <span className='errorMessage'>{errors.subject.message}</span>
+                                        )}
+                                    </div>
+                                </div>
+                                {/* Row 3 of form */}
+                                <div className='row formRow'>
+                                    <div className='col'>
+                                        <textarea
+                                            rows={3}
+                                            name='message'
+                                            {...register('message', {
+                                                required: true
+                                            })}
+                                            className='form-control formInput'
+                                            placeholder='Message'
+                                        ></textarea>
+                                        {errors.message && <span className='errorMessage'>Please enter a message</span>}
+                                    </div>
+                                </div>
+                                <button className='submit-btn' type='submit'>
+                                    Submit
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </nav>
+            {alertInfo.display && (
+                <div
+                    className={`alert alert-${alertInfo.type} alert-dismissible mt-5`}
+                    role='alert'
+                >
+                    {alertInfo.message}
+                    <button
+                        type='button'
+                        className='btn-close'
+                        data-bs-dismiss='alert'
+                        aria-label='Close'
+                        onClick={() =>
+                            setAlertInfo({ display: false, message: '', type: '' })
+                        } // Clear the alert when close button is clicked
+                    ></button>
+                </div>
+            )}
+        </div>
     );
+};
 
-
-
-}
+export default Contact;
