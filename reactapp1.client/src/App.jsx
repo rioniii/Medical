@@ -22,7 +22,7 @@ const AboutUs = React.lazy(() => import("./AboutUs"));
 const Contact = React.lazy(() => import("./Contact"));
 
 const Header = () => {
-const images = [i3, i2, i4];
+    const images = [i2, i4, i3];
 
 
 
@@ -33,7 +33,7 @@ const images = [i3, i2, i4];
                       <Container fluid>
                           <Navbar.Brand href="/">
 
-                              Medical
+                                Medical
                           </Navbar.Brand>
                           <Navbar.Toggle aria-controls="basic-navbar-nav" />
                           <Navbar.Collapse id="basic-navbar-nav">
