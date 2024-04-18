@@ -19,6 +19,8 @@ import i3 from './assets/i3.jpg';
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
 const LoginForm = React.lazy(() => import("./LoginForm"));
 const AboutUs = React.lazy(() => import("./AboutUs"));
+const Contact = React.lazy(() => import("./Contact"));
+
 const Header = () => {
 const images = [i3, i2, i4];
 
@@ -41,6 +43,7 @@ const images = [i3, i2, i4];
                                   <ListGroup.Item variant="success" action href="#Clinic">Clinic</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Contact">Contact</ListGroup.Item>
+                                
                                   <ListGroup.Item variant="success" action href="#RegisterForm">Register</ListGroup.Item>
                               </ListGroup>
                               <Button variant="success" className="ms-lg-2">Make an appointment</Button>
@@ -67,7 +70,7 @@ class App extends Component {
                     <Route path="/RegisterForm" element={<RegisterForm />}></Route>
                     <Route path="/LoginForm" element={<LoginForm />}></Route>
                     <Route path="/AboutUs" element={<AboutUs />}></Route>
-
+                    <Route path="/Contact" element={<Contact />}></Route>
                     </Routes>
                 </HashRouter >
         </Suspense>
