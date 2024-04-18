@@ -43,7 +43,6 @@ const Header = () => {
                                   <ListGroup.Item variant="success" action href="#Clinic">Clinic</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Contact">Contact</ListGroup.Item>
-                                
                                   <ListGroup.Item variant="success" action href="#RegisterForm">Register</ListGroup.Item>
                               </ListGroup>
                               <Button variant="success" className="ms-lg-2">Make an appointment</Button>
