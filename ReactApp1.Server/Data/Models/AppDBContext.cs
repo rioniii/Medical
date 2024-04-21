@@ -12,6 +12,7 @@ namespace ReactApp1.Server.Data.Models
         public DbSet<Staf> Stafi { get; set; }
         public DbSet<Repart> Reparti { get; set; }
 
+        public DbSet<Contact> Contacti { get; set; }
 
     }
    

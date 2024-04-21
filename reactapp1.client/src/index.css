@@ -80,6 +80,10 @@ a.instagram {
     color:#353030;
 }
 
+/*.dashboard-btn{
+    margin-top:100px;
+}*/
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

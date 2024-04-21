@@ -4,7 +4,7 @@ import Footer from "./Footer";
 import Card from "./Card";
 import IntervalSlider from './IntervalSlider';
 import Ballina from './Ballina';
-import PatientCRUD from './PatientCRUD'
+import PatientCRUD from './Dashboard/PatientCRUD'
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
@@ -19,6 +19,8 @@ import i3 from './assets/i3.jpg';
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
 const LoginForm = React.lazy(() => import("./LoginForm"));
 const AboutUs = React.lazy(() => import("./AboutUs"));
+const Contact = React.lazy(() => import("./Contact"));
+
 const Header = () => {
     const images = [i2, i4, i3];
 
@@ -42,6 +44,7 @@ const Header = () => {
                                   <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Contact">Contact</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#RegisterForm">Register</ListGroup.Item>
+                                  <ListGroup.Item variant="success" action href="#PatientCRUD">Dashboard</ListGroup.Item>
                               </ListGroup>
                               <Button variant="success" className="ms-lg-2">Make an appointment</Button>
                           </Navbar.Collapse>
@@ -67,7 +70,8 @@ class App extends Component {
                     <Route path="/RegisterForm" element={<RegisterForm />}></Route>
                     <Route path="/LoginForm" element={<LoginForm />}></Route>
                     <Route path="/AboutUs" element={<AboutUs />}></Route>
-
+                    <Route path="/Contact" element={<Contact />}></Route>
+                    <Route path="/PatientCRUD" element={<PatientCRUD />}></Route>
                     </Routes>
                 </HashRouter >
         </Suspense>
