@@ -80,12 +80,20 @@ a.instagram {
     color:#353030;
 }
 
-/*.dashboard-btn{
-    margin-top:100px;
-}*/
+.dashboard-title{
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-content:end;
+}
+.AddPatient{
+    display:flex;
+    justify-content:end;
+    align-content:end;
+}
 
 @media (prefers-color-scheme: light) {
-  :root {
+    : root {
     color: #213547;
     background-color: #ffffff;
   }

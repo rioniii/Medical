@@ -2,7 +2,7 @@
 import Button from 'react-bootstrap/Button';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Card from './Card.jsx';
+import CardDashboard from './CardDashboard.jsx';
 
 
 function OffCanvas() {
@@ -21,8 +21,7 @@ function OffCanvas() {
                 <Offcanvas.Header closeButton style={{ backgroundColor: '#272b2f', color: 'white' }}> 
                 </Offcanvas.Header>
                 <Offcanvas.Body style={{ backgroundColor: '#272b2f', color: 'white' }} >
-                    Some text as placeholder. In real life you can have the elements you
-                    have chosen. Like, text, images, lists, etc.
+                    <CardDashboard/>
                 </Offcanvas.Body>
             </Offcanvas>
         </>
