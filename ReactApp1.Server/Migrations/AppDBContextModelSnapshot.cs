@@ -78,6 +78,39 @@ namespace ReactApp1.Server.Migrations
                     b.ToTable("Patients");
                 });
 
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Repart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("LlojRepartit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NrAssistenteve")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NrDhomave")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NrDoktoreve")
+                        .HasColumnType("int");
+
+                    b.Property<int>("kati")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reparti");
+                });
+
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Staf", b =>
                 {
                     b.Property<int>("Id")
