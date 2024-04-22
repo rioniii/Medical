@@ -57,7 +57,7 @@ const Header = () => {
                   <Card />
                   <Footer />
               </div>
-              );
+              
 }
 
 class App extends Component {
