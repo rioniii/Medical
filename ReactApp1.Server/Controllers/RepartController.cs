@@ -7,11 +7,6 @@ using System.Threading.Tasks;
 
 namespace ReactApp1.Server.Controllers
 {
-    public class RepartController
-    {
-
-
-
         [Route("api/[controller]")]
         [ApiController]
         public class RepartController : ControllerBase
