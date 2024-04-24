@@ -26,12 +26,12 @@ const Header = () => {
 
 
 
-      return (
-          <div>
-              <header>
-                  <Navbar bg="dark" variant="dark" expand="lg">
-                      <Container fluid>
-                          <Navbar.Brand href="/">
+    return (
+        <div>
+            <header>
+                <Navbar bg="dark" variant="dark" expand="lg">
+                    <Container fluid>
+                        <Navbar.Brand href="/">
 
                                 Medical
                           </Navbar.Brand>
@@ -52,7 +52,8 @@ const Header = () => {
                   </Navbar>
                   </header>
               <Ballina />
-              <IntervalSlider images={images} interval={3000} />
+              <PatientCRUD />
+                  <IntervalSlider images={images} interval={3000} />
                   <Card />
                   <Footer />
               </div>
