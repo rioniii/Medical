@@ -13,10 +13,10 @@
 }
 .NavList{
     margin-left:20%;
-    font-size:17px;
+    font-size:14px;
 }
 .item  {
-    margin-left:16%;       
+    margin-left:-10px;       
 }
 .subscribe{
     margin-top: -67px;
@@ -91,6 +91,8 @@ a.instagram {
     justify-content:end;
     align-content:end;
 }
+
+
 
 @media (prefers-color-scheme: light) {
     : root {

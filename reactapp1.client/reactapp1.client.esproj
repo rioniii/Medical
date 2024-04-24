@@ -1015,7 +1015,4 @@
     <None Include="src\node_modules\node_modules\bootstrap\scss\_variables-dark.scss" />
     <None Include="src\node_modules\node_modules\bootstrap\scss\_variables.scss" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\Dashboard\Components\" />
-  </ItemGroup>
 </Project>

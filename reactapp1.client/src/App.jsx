@@ -4,7 +4,7 @@ import Footer from "./Footer";
 import Card from "./Card";
 import IntervalSlider from './IntervalSlider';
 import Ballina from './Ballina';
-import PatientCRUD from './Dashboard/PatientCRUD'
+import PatientCRUD from './Dashboard/Components/PatientCRUD'
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
@@ -52,8 +52,7 @@ const Header = () => {
                   </Navbar>
                   </header>
               <Ballina />
-              <PatientCRUD />
-                  <IntervalSlider images={images} interval={3000} />
+              <IntervalSlider images={images} interval={3000} />
                   <Card />
                   <Footer />
               </div>

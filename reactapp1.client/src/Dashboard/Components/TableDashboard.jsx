@@ -1,5 +1,6 @@
 import Table from 'react-bootstrap/Table';
 import Actions from './Actions.jsx'
+import PatientCRUD from './PatientCRUD.jsx';
 
 function TableDashboard() {
     return (
@@ -17,7 +18,26 @@ function TableDashboard() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+
+                    {
+                        data && data.length > 0 ?
+                            data.map((item, index) => {
+                                return (
+                                    <tr key={ index}>
+                                        <td>{item.Id}</td>
+                                        <td>{item.Name}</td>
+                                        <td>{item.Surname}</td>
+                                        <td>{item.isRegistered}</td>
+                                        <td>{item.age}</td>
+                                        <td> <Actions/></td>
+                                    </tr>
+                                )
+                            })
+                            :
+                            'Loading...'
+                    }
+
+                    {/*<tr>
                         <td>1</td>
                         <td>Filan</td>
                         <td>Fisteku</td>
@@ -46,7 +66,7 @@ function TableDashboard() {
                         <td>
                             <Actions />
                         </td>
-                    </tr>
+                    </tr>*/}
                 </tbody>
             </Table>
         </div>
