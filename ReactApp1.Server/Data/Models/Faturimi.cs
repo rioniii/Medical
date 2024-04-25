@@ -8,6 +8,9 @@
         public string Statusi{ get; set; }
 
         public int Pacienti_Id { get; set; }
+        public int Pershkrimi_ID { get; set; }
+
+        public Pershkrimi Pershkrimi { get; set; }
 
         public List<Pacienti> Pacientat { get; set; }
 

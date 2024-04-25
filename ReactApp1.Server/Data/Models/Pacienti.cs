@@ -19,6 +19,9 @@
         public  Recepcionisti Recepcionisti { get; set;}
         public  Faturimi Faturimi { get; set;}
 
+        public <List>Pershkrimi Pershkrimi{ get; set; }
+
+
 
     }
 }

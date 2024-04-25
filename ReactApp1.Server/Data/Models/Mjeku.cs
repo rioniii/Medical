@@ -18,6 +18,8 @@
 
         public List<Recepcionisti> Recepcionistat { get; set; }
 
+        public List<Pershkrimi> Pershkrime { get; set; }
+
 
 
 
