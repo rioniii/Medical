@@ -12,6 +12,8 @@
         public int Recepcionist_id { get; }
         public List<Recepcionisti> Recepcionistat { get; set; }
         public List<Pacienti> Pacientat { get; set; }
+        public int Reparti_Id { get;}
+        public Reparti Reparti { get; set; }
 
     }
 }
