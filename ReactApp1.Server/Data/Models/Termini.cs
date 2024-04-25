@@ -10,7 +10,7 @@ namespace ReactApp1.Server.Data.Models
          public int Data { get; set; }
 
         public Pacienti Pacienti { get; set; }
-    ?
+    
 
             
      
