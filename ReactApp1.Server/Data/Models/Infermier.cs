@@ -9,7 +9,8 @@
         public string Reparti { get; set; }
         public string Nderrimi { get; set; }
         public int Pershkrimi_Id {  get; set; }
-        public Pershkrimi Pershkrimi {  get; set; }
+        public List<Pershkrimi> Pershkrimet {  get; set; }
+
 
     }
 }
