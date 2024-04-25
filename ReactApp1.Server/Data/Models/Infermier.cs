@@ -2,7 +2,7 @@
 {
     public class Infermier
     {
-        public int Infermier_id {  get;  }
+        public int Infermier_Id {  get;  }
         public string Emri {  get; set; }
         public string Mbiemri { get; set; }
 
