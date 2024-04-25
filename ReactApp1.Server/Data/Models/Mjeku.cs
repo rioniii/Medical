@@ -12,7 +12,7 @@
         public string Angazhimi { get; set; }
 
         public int Termini_Id { get; }
-        public int Mjeku_Id { get; }
+        public int Recepcionisti_Id { get; }
 
         public List<Termini> Terminet  { get; set; }
 
