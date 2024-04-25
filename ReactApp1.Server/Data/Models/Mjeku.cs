@@ -18,7 +18,9 @@
 
         public List<Recepcionisti> Recepcionistat { get; set; }
 
-        public List<Pershkrimi> Pershkrimet { get; set; }
+        public List<Pershkrimi> Pershkrime { get; set; }
+        public int Reparti_Id { get; }
+        public List<Reparti> Repartet { get; set; }
 
 
 
