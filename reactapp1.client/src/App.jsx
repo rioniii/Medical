@@ -22,7 +22,7 @@ const AboutUs = React.lazy(() => import("./AboutUs"));
 const Contact = React.lazy(() => import("./Contact"));
 
 const Header = () => {
-    const images = [i2, i3, i4];
+    const images = [i4, i3, i2];
 
 
 
