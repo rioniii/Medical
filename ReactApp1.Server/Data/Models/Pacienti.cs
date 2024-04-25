@@ -13,10 +13,11 @@
         public string Pranimi { get; set;}
             
         public int Termini_Id { get;}
-        public List<Termini> Terminet { get; set;}
-
         public int Recepcionisti_Id { get; set;}
+        public int Faturimi_Id { get;}
+        public List<Termini> Terminet { get; set;}
         public  Recepcionisti Recepcionisti { get; set;}
+        public  Faturimi Faturimi { get; set;}
 
 
     }

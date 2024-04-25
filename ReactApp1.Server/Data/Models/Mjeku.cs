@@ -16,8 +16,6 @@
 
         public List<Termini> Terminet  { get; set; }
 
-      
-
         public List<Recepcionisti> Recepcionistat { get; set; }
 
 
