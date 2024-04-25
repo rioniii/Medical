@@ -11,5 +11,7 @@
         public List<Mjeku> Mjeket {  get; set; }
         public int Dhoma_Id { get; }
         public List<Dhoma> Dhomat {  get; set; }
+
+        public List<Reparti> Repartet { get; set; }
     }
 }

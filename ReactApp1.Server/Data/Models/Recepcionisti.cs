@@ -12,12 +12,11 @@
         public int Reparti_Id { get;}
         public int Dhoma_Id { get;}
 
-        public Dhoma Dhoma { get; set}
+        public Dhoma Dhoma { get; set; }
     
         public Mjeku Mjeku { get; set; }
         public List<Pacienti>  Pacientet { get; set; }
-/*        public Reparti Reparti { get; set; }
-        public Dhoma Dhoma { get; set; }*/
+        public List<Reparti> Reparti { get; set; }
 
 
 
