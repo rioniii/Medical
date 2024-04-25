@@ -22,7 +22,7 @@ const AboutUs = React.lazy(() => import("./AboutUs"));
 const Contact = React.lazy(() => import("./Contact"));
 
 const Header = () => {
-    const images = [i2, i4, i3];
+    const images = [i2, i3, i4];
 
 
 
@@ -52,7 +52,6 @@ const Header = () => {
                   </Navbar>
                   </header>
               <Ballina />
-              <PatientCRUD />
                   <IntervalSlider images={images} interval={3000} />
                   <Card />
                   <Footer />
