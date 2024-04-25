@@ -9,8 +9,10 @@
         
         public int Mjeku_Id { get;}
         public int Pacienti_Id { get;}
-/*        public int Reparti_Id { get;}
-        public string Dhoma_Id { get;}*/
+        public int Reparti_Id { get;}
+        public int Dhoma_Id { get;}
+
+        public Dhoma Dhoma { get; set}
     
         public Mjeku Mjeku { get; set; }
         public List<Pacienti>  Pacientet { get; set; }
