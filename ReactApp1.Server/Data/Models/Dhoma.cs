@@ -3,7 +3,7 @@
     public class Dhoma
     {
         public int Dhoma_Id { get; }
-        public string NrDhoma { get;}
+        public string NrDhoma { get; set; }
         public int Kapaciteti{get;set;}
         public int NrPacienteve { get;set;}
 

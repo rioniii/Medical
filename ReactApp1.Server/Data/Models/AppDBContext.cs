@@ -37,7 +37,7 @@ namespace ReactApp1.Server.Data.Models
         {
 
         }
-        public DbSet<Pacienti> Pacienti { get; set; }
+       /* public DbSet<Pacienti> Pacienti { get; set; }
         public DbSet<Mjeku> Mjeku { get; set; }
         public DbSet<Infermier> Infermier { get; set; }
         public DbSet<Recepcionisti> Recepcionisti { get; set; }
@@ -47,7 +47,8 @@ namespace ReactApp1.Server.Data.Models
         public DbSet<Register> Register { get; set; }
         public DbSet<Reparti> Reparti { get; set; }
         public DbSet<Sherbimet> Sherbimet { get; set; }
-        public DbSet<Termini> Termini { get; set; }
+        public DbSet<Termini> Termini { get; set; }*/
+        public DbSet<User> Users { get; set; }
     }
 
 }
