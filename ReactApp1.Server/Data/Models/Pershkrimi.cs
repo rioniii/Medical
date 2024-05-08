@@ -10,12 +10,12 @@
         public string Perfundimi { get; set; }
 
         public int Pacient_Id { get; set; }
-        public int Faturimi {  get; set; }
+        public int Faturimi_Id {  get; set; }
         public int Mjeku_Id { get; set; }
         public int Infermier_Id { get; }
 
 
-        public Faturimi Faturimet { get; set; }
+        public  Faturimi Faturimet { get; set; }
         public Pacienti Pacienti { get; set; }
         public Mjeku Mjeku { get; set; }
         public Infermier Infermier { get; set; }

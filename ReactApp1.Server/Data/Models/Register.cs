@@ -2,5 +2,6 @@
 {
     public class Register
     {
+        public int Register_Id {  get; set; }
     }
 }
