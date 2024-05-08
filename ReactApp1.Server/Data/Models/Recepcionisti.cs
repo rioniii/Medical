@@ -3,10 +3,7 @@
     public class Recepcionisti
     {
         public string Recepcionisti_Id { get;}
-        public string Emri { get; set; }
-
-
-        
+        public required string Emri { get; set; }
         public int Mjeku_Id { get;}
         public int Pacienti_Id { get;}
         public int Reparti_Id { get;}

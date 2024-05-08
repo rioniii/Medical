@@ -29,7 +29,7 @@ namespace ReactApp1.Server.Data.Models
             modelBuilder.Entity<Reparti>().HasKey(d => d.Reparti_Id);
             modelBuilder.Entity<Termini>().HasKey(d => d.Termini_Id);
             modelBuilder.Entity<User>().HasKey(d => d.Id);
-            modelBuilder.Entity<Register>().HasKey(d => d.Register_Id);
+     
             
 
 
@@ -42,7 +42,6 @@ namespace ReactApp1.Server.Data.Models
         public DbSet<Dhoma> Dhoma { get; set; }
         public DbSet<Faturimi> Faturimi { get; set; }
         public DbSet<Pershkrimi> Pershkrimi { get; set; }
-        public DbSet<Register> Register { get; set; }
         public DbSet<Reparti> Reparti { get; set; }
         public DbSet<Sherbimet> Sherbimet { get; set; }
         public DbSet<Termini> Termini { get; set; }

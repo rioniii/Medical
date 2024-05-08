@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -156,7 +157,7 @@ namespace ReactApp1.Server.Migrations
                     Recepcionisti_Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Emri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Dhoma_Id1 = table.Column<int>(type: "int", nullable: false),
-                    Mjeku_Id1 = table.Column<int>(type: "int", nullable: false)
+                    Infermier_Id1 = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -169,11 +170,18 @@ namespace ReactApp1.Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Recepcionisti_Mjeku_Mjeku_Id1",
-                        column: x => x.Mjeku_Id1,
+                        column: x => x.Infermier_Id1,
                         principalTable: "Mjeku",
                         principalColumn: "Mjeku_Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                
+            table.ForeignKey(
+       name: "FK_Recepcionisti_Infermier_Infermier_Id1", // This is where the error occurs
+       column: x => x.Infermier_Id1, // This is where the error occurs
+       principalTable: "Infermier",
+       principalColumn: "Infermier_Id",
+       onDelete: ReferentialAction.Cascade);
+        });
 
             migrationBuilder.CreateTable(
                 name: "Pacienti",
@@ -251,51 +259,49 @@ namespace ReactApp1.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Pershkrimi",
-                columns: table => new
-                {
-                    Pershkrimi_Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Anamneza_Statusi = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Ekzaminimi = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Diagnoza = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Terapia = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Perfundimi = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Pacient_Id = table.Column<int>(type: "int", nullable: false),
-                    Faturimi_Id = table.Column<int>(type: "int", nullable: false),
-                    Mjeku_Id = table.Column<int>(type: "int", nullable: false),
-                    PacientiPatient_Id = table.Column<int>(type: "int", nullable: false),
-                    Mjeku_Id1 = table.Column<int>(type: "int", nullable: false),
-                    Infermier_Id1 = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Pershkrimi", x => x.Pershkrimi_Id);
-                    table.ForeignKey(
-                        name: "FK_Pershkrimi_Faturimi_Faturimi_Id",
-                        column: x => x.Faturimi_Id,
-                        principalTable: "Faturimi",
-                        principalColumn: "Fatura_Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Pershkrimi_Infermier_Infermier_Id1",
-                        column: x => x.Infermier_Id1,
-                        principalTable: "Infermier",
-                        principalColumn: "Infermier_Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Pershkrimi_Mjeku_Mjeku_Id1",
-                        column: x => x.Mjeku_Id1,
-                        principalTable: "Mjeku",
-                        principalColumn: "Mjeku_Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Pershkrimi_Pacienti_PacientiPatient_Id",
-                        column: x => x.PacientiPatient_Id,
-                        principalTable: "Pacienti",
-                        principalColumn: "Patient_Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            name: "Pershkrimi",
+             columns: table => new
+        {
+            Pershkrimi_Id = table.Column<int>(nullable: false)
+                .Annotation("SqlServer:Identity", "1, 1"),
+            Anamneza_Statusi = table.Column<string>(nullable: false),
+            Ekzaminimi = table.Column<string>(nullable: false),
+            Diagnoza = table.Column<string>(nullable: false),
+            Terapia = table.Column<string>(nullable: false),
+            Perfundimi = table.Column<string>(nullable: false),
+            Pacient_Id = table.Column<int>(nullable: false),
+            Faturimi_Id = table.Column<int>(nullable: false),
+            Mjeku_Id = table.Column<int>(nullable: false),
+            Infermier_Id = table.Column<int>(nullable: false)
+        },
+        constraints: table =>
+        {
+            table.PrimaryKey("PK_Pershkrimi", x => x.Pershkrimi_Id);
+            table.ForeignKey(
+                name: "FK_Pershkrimi_Faturimi_Faturimi_Id",
+                column: x => x.Faturimi_Id,
+                principalTable: "Faturimi",
+                principalColumn: "Fatura_Id",
+                onDelete: ReferentialAction.Cascade);
+            table.ForeignKey(
+                name: "FK_Pershkrimi_Infermier_Infermier_Id",
+                column: x => x.Infermier_Id,
+                principalTable: "Infermier",
+                principalColumn: "Infermier_Id",
+                onDelete: ReferentialAction.Cascade);
+            table.ForeignKey(
+                name: "FK_Pershkrimi_Mjeku_Mjeku_Id",
+                column: x => x.Mjeku_Id,
+                principalTable: "Mjeku",
+                principalColumn: "Mjeku_Id",
+                onDelete: ReferentialAction.Cascade);
+            table.ForeignKey(
+                name: "FK_Pershkrimi_Pacienti_Pacient_Id",
+                column: x => x.Pacient_Id,
+                principalTable: "Pacienti",
+                principalColumn: "Patient_Id",
+                onDelete: ReferentialAction.NoAction); // Changed to NO ACTION
+        });
 
             migrationBuilder.CreateTable(
                 name: "Termini",
@@ -404,6 +410,25 @@ namespace ReactApp1.Server.Migrations
                 name: "IX_Pershkrimi_PacientiPatient_Id",
                 table: "Pershkrimi",
                 column: "PacientiPatient_Id");
+             migrationBuilder.CreateIndex(
+        name: "IX_Pershkrimi_Faturimi_Id",
+        table: "Pershkrimi",
+        column: "Faturimi_Id");
+
+    migrationBuilder.CreateIndex(
+        name: "IX_Pershkrimi_Infermier_Id",
+        table: "Pershkrimi",
+        column: "Infermier_Id");
+
+    migrationBuilder.CreateIndex(
+        name: "IX_Pershkrimi_Mjeku_Id",
+        table: "Pershkrimi",
+        column: "Mjeku_Id");
+
+    migrationBuilder.CreateIndex(
+        name: "IX_Pershkrimi_Pacient_Id",
+        table: "Pershkrimi",
+        column: "Pacient_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Recepcionisti_Dhoma_Id1",

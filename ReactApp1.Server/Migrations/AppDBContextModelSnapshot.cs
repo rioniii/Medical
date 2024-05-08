@@ -34,7 +34,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("RepartetReparti_Id");
 
-                    b.ToTable("MjekuReparti");
+                    b.ToTable("MjekuReparti", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Contact", b =>
@@ -63,7 +63,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Contact_Id");
 
-                    b.ToTable("Contact");
+                    b.ToTable("Contact", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Dhoma", b =>
@@ -91,7 +91,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("Reparti_Id1");
 
-                    b.ToTable("Dhoma");
+                    b.ToTable("Dhoma", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Faturimi", b =>
@@ -126,7 +126,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("Sherbimet_Id");
 
-                    b.ToTable("Faturimi");
+                    b.ToTable("Faturimi", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Infermier", b =>
@@ -158,7 +158,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Infermier_Id");
 
-                    b.ToTable("Infermier");
+                    b.ToTable("Infermier", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Mjeku", b =>
@@ -195,7 +195,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Mjeku_Id");
 
-                    b.ToTable("Mjeku");
+                    b.ToTable("Mjeku", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Pacienti", b =>
@@ -263,7 +263,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("Recepcionisti_Id1");
 
-                    b.ToTable("Pacienti");
+                    b.ToTable("Pacienti", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Pershkrimi", b =>
@@ -323,7 +323,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("PacientiPatient_Id");
 
-                    b.ToTable("Pershkrimi");
+                    b.ToTable("Pershkrimi", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Recepcionisti", b =>
@@ -347,7 +347,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("Mjeku_Id1");
 
-                    b.ToTable("Recepcionisti");
+                    b.ToTable("Recepcionisti", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Register", b =>
@@ -360,7 +360,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Register_Id");
 
-                    b.ToTable("Register");
+                    b.ToTable("Register", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Reparti", b =>
@@ -396,7 +396,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("Reparti_Id1");
 
-                    b.ToTable("Reparti");
+                    b.ToTable("Reparti", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Sherbimet", b =>
@@ -421,7 +421,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("Infermier_Id");
 
-                    b.ToTable("Sherbimet");
+                    b.ToTable("Sherbimet", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Termini", b =>
@@ -454,7 +454,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("PacientiPatient_Id");
 
-                    b.ToTable("Termini");
+                    b.ToTable("Termini", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.User", b =>
@@ -483,7 +483,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("MjekuReparti", b =>
