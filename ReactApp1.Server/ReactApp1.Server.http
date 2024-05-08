@@ -3,4 +3,14 @@
 GET {{ReactApp1.Server_HostAddress}}/weatherforecast/
 Accept: application/json
 
+GET {{ReactApp1.Server_HostAddress}}/weatherforecast
+GET {{ReactApp1.Server_HostAddress}}/api/superhero
+POST {{eactApp1.Server_HostAddress}}/api/superhero
+Content-Type: application/json
+
+{
+  //medical-db
+}
+
 ###
+
