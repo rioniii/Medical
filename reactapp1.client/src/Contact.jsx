@@ -68,7 +68,7 @@ const Contact = () => {
         <div>
             <Header /> 
             <div className="contact-container" style={{ backgroundImage: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%" }}>
-                <h1 className="contact-header">Contact Us</h1>
+                <div className="contact-header"><h1>Contact Us</h1></div>
                 <div className='ContactForm' style={{ backgroundIm: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%" }} >
                     <div className='container'>
                         <div className='row'>

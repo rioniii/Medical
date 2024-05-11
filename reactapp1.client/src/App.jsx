@@ -13,7 +13,7 @@ import { Route, Routes, HashRouter } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
-import './Header.css';
+
 
  
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
@@ -32,24 +32,23 @@ const Header = () => {
                 <Navbar bg="dark" variant="dark" expand="lg">
                     <Container fluid>
                         <Navbar.Brand href="/">
-
-                                Medical
-                          </Navbar.Brand>
-                          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                          <Navbar.Collapse id="basic-navbar-nav">
-                              <ListGroup className="NavList mb-2 mb-lg-0" horizontal="lg">
-                                <ListGroup.Item variant="success"  action href="/">Home</ListGroup.Item>
-                                  <ListGroup.Item variant="success" action href="#AboutUs">About Us</ListGroup.Item>
-                                  <ListGroup.Item variant="success" action href="#Clinic">Clinic</ListGroup.Item>
-                                  <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>
-                                  <ListGroup.Item variant="success" action href="#Contact">Contact</ListGroup.Item>
-                                  <ListGroup.Item variant="success" action href="#RegisterForm">Register</ListGroup.Item>
-                                  <ListGroup.Item variant="success" action href="#PatientCRUD">Dashboard</ListGroup.Item>
-                              </ListGroup>
-                              <Button variant="success" className="ms-lg-2">Make an appointment</Button>
-                          </Navbar.Collapse>
-                      </Container>
-                  </Navbar>
+                            Medical
+                        </Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
+                            <ListGroup className="NavList mb-2 mb-lg-0" horizontal="lg">
+                                <ListGroup.Item variant="success" action href="/">Home</ListGroup.Item>
+                                <ListGroup.Item variant="success" action href="#AboutUs">About Us</ListGroup.Item>
+                                <ListGroup.Item variant="success" action href="#Clinic">Clinic</ListGroup.Item>
+                                <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>
+                                <ListGroup.Item variant="success" action href="#Contact">Contact</ListGroup.Item>
+                                <ListGroup.Item variant="success" action href="#RegisterForm">Register</ListGroup.Item>
+                                <ListGroup.Item variant="success" action href="#PatientCRUD">Dashboard</ListGroup.Item>
+                            </ListGroup>
+                            <Button variant="success" className="ms-auto">Make an appointment</Button>
+                        </Navbar.Collapse>
+                    </Container>
+                </Navbar>
                   </header>
               <Ballina />
                   <IntervalSlider images={images} interval={3000} />

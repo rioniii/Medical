@@ -51,27 +51,22 @@ function Footer() {
                                 <Button className="subscribe" type="submit" variant="success">Subscribe</Button>
                             </Form.Group>
                         </Form>
-                        <div className="media">
-                            <img src="https://static.vecteezy.com/system/resources/previews/006/541/488/original/clock-icon-isolated-on-a-white-background-symbol-of-time-for-your-website-design-illustration-free-vector.jpg" className="media-object" width="64px" alt="Clock" />
-                            <div className="media-body">
-                                <h4 className="media-heading">Opening Hours</h4>
-                                <p>Everyday: 24/7</p>
+                        <div className="d-flex align-items-center justify-content-center flex-column">
+                            <div className="media">
+                                <img src="https://static.vecteezy.com/system/resources/previews/006/541/488/original/clock-icon-isolated-on-a-white-background-symbol-of-time-for-your-website-design-illustration-free-vector.jpg" className="media-object" width="64px" alt="Clock" />
+                                <div className="media-body">
+                                    <h4 className="media-heading">Opening Hours</h4>
+                                    <p>Everyday: 24/7</p>
+                                </div>
+                            </div>
+                            <div className="media">
+                                <img src="https://cdn3.vectorstock.com/i/1000x1000/25/07/telephone-icon-phone-simple-or-logo-for-web-vector-11362507.jpg" width="64px" className="media-object" alt="Telephone" />
+                                <div className="media-body">
+                                    <h4 className="media-heading">Contact</h4>
+                                    <p>Tel: 038 - 265- 928<br />E-mail: info@medical-ks.com</p>
+                                </div>
                             </div>
                         </div>
-                        <div className="media">
-                            <img src="https://cdn3.vectorstock.com/i/1000x1000/25/07/telephone-icon-phone-simple-or-logo-for-web-vector-11362507.jpg" width="64px" className="media-object" alt="Telephone" />
-                            <div className="media-body">
-                                <h4 className="media-heading">Contact</h4>
-                                <p>Tel: 038 - 265- 928<br />E-mail: info@medical-ks.com</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="col-lg-4">
-                        <h3>Our Work</h3>
-                        <img className="img-thumbnail" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAJiv8OLeod4V0Uu3iQnaBhq8nXFY6JoFfAq4fG7tzzQ&s" alt="Work 1" />
-                        <img className="img-thumbnail" src={img2} alt="Work 2" />
-                        <img className="img-thumbnail" src={img3} alt="Work 3" />
                     </div>
 
                 </div>
