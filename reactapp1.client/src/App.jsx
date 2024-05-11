@@ -13,7 +13,7 @@ import { Route, Routes, HashRouter } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
-
+import './Header.css';
 
  
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
@@ -38,7 +38,7 @@ const Header = () => {
                           <Navbar.Toggle aria-controls="basic-navbar-nav" />
                           <Navbar.Collapse id="basic-navbar-nav">
                               <ListGroup className="NavList mb-2 mb-lg-0" horizontal="lg">
-                                  <ListGroup.Item className="item" action variant="success" href="/">Home</ListGroup.Item>
+                                <ListGroup.Item variant="success"  action href="/">Home</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#AboutUs">About Us</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Clinic">Clinic</ListGroup.Item>
                                   <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>

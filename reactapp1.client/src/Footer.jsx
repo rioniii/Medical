@@ -1,21 +1,14 @@
-import React from 'react'
-import './Footer.css'
-import img1 from './assets/FooterPic1.jpg'
-import img2 from './assets/Footer2.jpg'
-import img3 from './assets/Footer3.jpg'
+import React from 'react';
+import './Footer.css';
+import img1 from './assets/FooterPic1.jpg';
+import img2 from './assets/Footer2.jpg';
+import img3 from './assets/Footer3.jpg';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import './index.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faYoutube,
-    faFacebook,
-    faTwitter,
-    faInstagram,
-} from "@fortawesome/free-brands-svg-icons";
+import { faYoutube, faFacebook, faTwitter, faInstagram } from "@fortawesome/free-brands-svg-icons";
 
-
-function Footer(){
+function Footer() {
     return (
         <footer>
             <div className="container">
@@ -24,92 +17,61 @@ function Footer(){
                     <div className="col-lg-4 col-md-6">
                         <h3>Social Media</h3>
                         <ul className="list-unstyled three-column">
-                            <a href="#" > <li>Home</li></a>
-                            <a href="#" > <li>Services</li></a>
-                            <a href="#" ><li>About</li>   </a>
-                            <a href="#" ><li>Code</li>    </a>
-                            <a href="#" ><li>Design</li>  </a>
-                            <a href="#" ><li>Host</li>    </a>
-                            <a href="#" ><li>Contact</li> </a>
-                            <a href="#" ><li>Company</li> </a>
+                            <li><a href="#">Home</a></li>
+                            <li><a href="#">Services</a></li>
+                            <li><a href="#">About</a></li>
+                            <li><a href="#">Code</a></li>
+                            <li><a href="#">Design</a></li>
+                            <li><a href="#">Host</a></li>
+                            <li><a href="#">Contact</a></li>
+                            <li><a href="#">Company</a></li>
                         </ul>
-
-
-                            
-                                <a
-                                    href="https://www.youtube.com/c/jamesqquick"
-                                    className="youtube social"
-                                >
-                                    <FontAwesomeIcon icon={faYoutube} size="2x" />
-                                </a>
-                                <a
-                                    href="https://www.facebook.com/learnbuildteach/"
-                                    className="facebook social"
-                                >
-                                    <FontAwesomeIcon icon={faFacebook} size="2x" />
-                                </a>
-                                <a
-                                    href="http://www.instagram.com/larnbuildteach"
-                                    className="instagram social"
-                                >
-                                    <FontAwesomeIcon icon={faInstagram} size="2x" />
-                                </a>
-                                <a href="https://wwww.twitter.com" className="twitter social">
-                                    <FontAwesomeIcon icon={faTwitter} size="2x" />
-                                </a><br></br><br></br><br></br>
-
-                                <div className='col-lg-5'>
-                                    <iframe
-                                        src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12094.57348593182!2d-74.00599512526003!3d40.72586666928451!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2598f988156a9%3A0xd54629bdf9d61d68!2sBroadway-Lafayette%20St!5e0!3m2!1spl!2spl!4v1624523797308!5m2!1spl!2spl'
-                                        className='h-100 w-100'
-                                        style={{ border: '0' }}
-                                        loading='lazy'
-                                    ></iframe>
-                                </div>
-
+                        <div className="social-icons">
+                            <a href="https://www.youtube.com/c/jamesqquick" className="youtube social">
+                                <FontAwesomeIcon icon={faYoutube} size="2x" />
+                            </a>
+                            <a href="https://www.facebook.com/learnbuildteach/" className="facebook social">
+                                <FontAwesomeIcon icon={faFacebook} size="2x" />
+                            </a>
+                            <a href="http://www.instagram.com/larnbuildteach" className="instagram social">
+                                <FontAwesomeIcon icon={faInstagram} size="2x" />
+                            </a>
+                            <a href="https://wwww.twitter.com" className="twitter social">
+                                <FontAwesomeIcon icon={faTwitter} size="2x" />
+                            </a>
+                        </div>
                     </div>
 
                     <div className="col-lg-4 col-md-6">
                         <h3>Contact</h3>
+                        <Form>
+                            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                                <Form.Label>Subscribe here to get 10% discount</Form.Label>
+                                <Form.Control type="email" placeholder="Enter your email here..." />
+                                <Button className="subscribe" type="submit" variant="success">Subscribe</Button>
+                            </Form.Group>
+                        </Form>
                         <div className="media">
-                            <a href="#" className="pull-left">
-                                <img src="  " width="64px" className="media-object" />
-                            </a>
-                            <div className="media-body">
-                                <Form>
-                                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                        <Form.Label>Subscribe here to get 10% discount</Form.Label>
-                                        <Form.Control type="email" placeholder="Enter your email here..." />
-                                        <Button className="subscribe" type="submit" variant="success">Subscribe</Button>
-                                    </Form.Group>
-                                </Form>
-                            </div><br></br>
-                        </div>
-
-                        <div className="media">                     
-                            <img src="https://static.vecteezy.com/system/resources/previews/006/541/488/original/clock-icon-isolated-on-a-white-background-symbol-of-time-for-your-website-design-illustration-free-vector.jpg"  className="media-object"  width="64px"/>
-                           
+                            <img src="https://static.vecteezy.com/system/resources/previews/006/541/488/original/clock-icon-isolated-on-a-white-background-symbol-of-time-for-your-website-design-illustration-free-vector.jpg" className="media-object" width="64px" alt="Clock" />
                             <div className="media-body">
                                 <h4 className="media-heading">Opening Hours</h4>
                                 <p>Everyday: 24/7</p>
                             </div>
                         </div>
-
                         <div className="media">
-                            <img src="https://cdn3.vectorstock.com/i/1000x1000/25/07/telephone-icon-phone-simple-or-logo-for-web-vector-11362507.jpg" width="64px"  className="media-object" />
+                            <img src="https://cdn3.vectorstock.com/i/1000x1000/25/07/telephone-icon-phone-simple-or-logo-for-web-vector-11362507.jpg" width="64px" className="media-object" alt="Telephone" />
                             <div className="media-body">
-                                <h4 className="media-heading">Contact   </h4>
-                                <p>Tel: 038 - 265- 928<br></br>   E-mail: info@medical-ks.com                         </p>
+                                <h4 className="media-heading">Contact</h4>
+                                <p>Tel: 038 - 265- 928<br />E-mail: info@medical-ks.com</p>
                             </div>
                         </div>
-
                     </div>
 
                     <div className="col-lg-4">
                         <h3>Our Work</h3>
-                        <img className="img-thumbnail" src=" https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAJiv8OLeod4V0Uu3iQnaBhq8nXFY6JoFfAq4fG7tzzQ&s" />
-                        <img className="img-thumbnail" src={img2 } />
-                        <img className="img-thumbnail" src={img3 } />
+                        <img className="img-thumbnail" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAJiv8OLeod4V0Uu3iQnaBhq8nXFY6JoFfAq4fG7tzzQ&s" alt="Work 1" />
+                        <img className="img-thumbnail" src={img2} alt="Work 2" />
+                        <img className="img-thumbnail" src={img3} alt="Work 3" />
                     </div>
 
                 </div>
@@ -119,6 +81,6 @@ function Footer(){
             </div>
         </footer>
     );
-
 }
+
 export default Footer;

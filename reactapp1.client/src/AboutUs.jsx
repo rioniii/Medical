@@ -3,12 +3,13 @@ import React from 'react';
 //import { Container, Col } from 'react-bootstrap'; // Import Container and Col from react-bootstrap
 import ChangeVideo from './video.module.css'; // Import the CSS file with the styles
 import VideoIntro from '../src/assets/backroom.mp4';
+import Header from './Header';
 
 function AboutUs  () {
     return (
         <>
            
-          
+            <Header /> 
                 
             <div className={ChangeVideo.vid}>
                 {/* Video element */}
