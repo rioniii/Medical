@@ -37,7 +37,7 @@ function RegisterForm() {
             <Header />
             <MDBContainer fluid className='d-flex align-items-center justify-content-center bg-image' style={{ height: '100vh', backgroundImage: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <div className='mask gradient-custom-3'></div>
-                <MDBCard className='m-5' style={{ maxWidth: '600px' }}>
+                <MDBCard className='m-5' style={{ maxWidth: '600px', backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
                     <MDBCardBody className='px-5'>
                         <h2 className="text-uppercase text-center mb-5">Create an account</h2>
                         <MDBInput wrapperClass='mb-4' label='Your Email' size='lg' id='form2' type='email' onChange={handleEmailChange} />
