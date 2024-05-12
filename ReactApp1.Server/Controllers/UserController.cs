@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data.Models;
+using ReactApp1.Server.Migrations;
 
 namespace ReactApp1.Server.Controllers
 {
@@ -42,24 +43,16 @@ namespace ReactApp1.Server.Controllers
 
                 return Ok(await _context.Users.ToListAsync());
             }
-        [HttpPut]
-        public async Task<ActionResult<User>> UpdateUser(User updatedUser)
+
+
+            [HttpPatch]
+            [Route("UpdateUser/{id}")]
+        public async Task<User> UpdateUser(User obj)
         {
-            var dbUser = await _context.Users.FindAsync(updatedUser.Id);
-            if (dbUser is null)
-            {
-                return NotFound("User not found!");
-            }
-
-            dbUser.Name = updatedUser.Name;
-            dbUser.Email = updatedUser.Email;
-            dbUser.ConfirmPassword = updatedUser.ConfirmPassword;
-
-            await _context.SaveChangesAsync(); 
-
-            return Ok(dbUser); 
+            _context.Entry(obj).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return obj;
         }
-
 
         [HttpDelete]
             public async Task<ActionResult<List<User>>> DeleteUser(int id)
