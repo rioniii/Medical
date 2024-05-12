@@ -12,29 +12,12 @@
     color: #000; /* Text color is black */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Box shadow for container */
 }
-.contact-container {
-    /* Your existing styles */
-    display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */ 
-    flex-direction: column; /* Stack elements vertically */
-}
-h1 {
-    justify-content: center;
-    text-align: center;
-}
-.contact-header {
-    justify-content: center;
-    display: flex;
-    text-align: center; /* Center text horizontally */
-    margin-top: auto;
-    margin-bottom: auto;
-}
+
 
 
 
 .contactForm {
-    padding: 30px;
+    padding: 20px;
 }
 .cc{
     display:flex;

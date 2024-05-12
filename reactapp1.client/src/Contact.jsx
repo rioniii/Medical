@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form';
 import emailjs from '@emailjs/browser';
 import './contact.css';
 import Footer from './Footer';
-import Header from './Header'; 
+import Header from './Header';
 import contactImage from './assets/R.jpeg';
+import rightImage from './assets/OIP.jpeg'; // Import the image for the right side
 
 const Contact = () => {
     const {
@@ -28,12 +29,9 @@ const Contact = () => {
         }, 5000);
     };
 
- 
     const onSubmit = async (data) => {
-
         const { name, email, subject, message } = data;
         try {
-         
             setDisabled(true);
 
             const templateParams = {
@@ -50,32 +48,29 @@ const Contact = () => {
                 process.env.REACT_APP_USER_ID
             );
 
-   
             toggleAlert('Form submission was successful!', 'success');
         } catch (e) {
             console.error(e);
-
             toggleAlert('Uh oh. Something went wrong.', 'danger');
         } finally {
-        
             setDisabled(false);
-         
             reset();
         }
     };
 
     return (
         <div>
-            <Header /> 
-            <div className="contact-container" style={{ backgroundImage: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%" }}>
-                <div className="contact-header"><h1>Contact Us</h1></div>
-                <div className='ContactForm' style={{ backgroundIm: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%" }} >
-                    <div className='container'>
+            <Header />
+            <div className="contact-container" style={{ backgroundImage: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <div className='ContactForm' style={{ backgroundIm: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%" , }} >
+                    <div className='container' style={{  backgroundColor: "rgba(255, 255, 255, 0.7)" }} >
                         <div className='row'>
-                            <div className='col-12 text-center'>
+                            <div className='col-12 col-md-6 text-center'>
                                 <div className='contactForm'>
                                     <form id='contact-form' onSubmit={handleSubmit(onSubmit)} noValidate>
-                                        {}
+                                        <div className="text-center mb-4" >
+                                            <h1>Contact Us</h1>
+                                        </div>
                                         <div className='row formRow'>
                                             <div className='col'>
                                                 <input
@@ -93,6 +88,8 @@ const Contact = () => {
                                                 />
                                                 {errors.name && <span className='errorMessage'>{errors.name.message}</span>}
                                             </div>
+                                        </div>
+                                        <div className='row formRow'>
                                             <div className='col'>
                                                 <input
                                                     type='email'
@@ -109,7 +106,6 @@ const Contact = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        {}
                                         <div className='row formRow'>
                                             <div className='col'>
                                                 <input
@@ -130,7 +126,6 @@ const Contact = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        {}
                                         <div className='row formRow'>
                                             <div className='col'>
                                                 <textarea
@@ -145,11 +140,16 @@ const Contact = () => {
                                                 {errors.message && <span className='errorMessage'>Please enter a message</span>}
                                             </div>
                                         </div>
-                                        <button className='submit-btn' type='submit'>
-                                            Submit
-                                        </button>
+                                        <div className="text-center mt-4">
+                                            <button className='submit-btn' type='submit'>
+                                                Submit
+                                            </button>
+                                        </div>
                                     </form>
                                 </div>
+                            </div>
+                            <div className='col-12 col-md-6'>
+                                <img src={rightImage} alt="Right Image" style={{ width: "100%", opacity: 0.8 }} />
                             </div>
                         </div>
                     </div>
@@ -166,7 +166,6 @@ const Contact = () => {
                         </div>
                     )}
                 </div>
-                <Footer />
             </div>
         </div>
     );
