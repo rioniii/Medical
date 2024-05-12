@@ -23,7 +23,11 @@ namespace ReactApp1.Server.Data.Models
             [Required(ErrorMessage = "Confirm Password is required")]
             [MinLength(8, ErrorMessage = "Confirm Password must be at least 8 characters")]
             public string ConfirmPassword { get; set; } = string.Empty;
-        }
+
+            [Required(ErrorMessage = "NumriKontaktues is required")]
+            [Phone(ErrorMessage = "Invalid phone number")]
+            public string NumriKontaktues { get; set; }
+    }
     }
 
 
