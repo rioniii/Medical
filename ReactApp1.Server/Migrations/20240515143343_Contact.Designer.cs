@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReactApp1.Server.Data.Models;
 
@@ -11,9 +12,11 @@ using ReactApp1.Server.Data.Models;
 namespace ReactApp1.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240515143343_Contact")]
+    partial class Contact
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,7 +53,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Contact_Id");
 
-                    b.ToTable("Contacti", (string)null);
+                    b.ToTable("Contacti");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Dhomat", b =>
@@ -73,7 +76,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Dhoma_Id");
 
-                    b.ToTable("Dhomat", (string)null);
+                    b.ToTable("Dhomat");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Faturimi", b =>
@@ -96,7 +99,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Fatura_Id");
 
-                    b.ToTable("Faturat", (string)null);
+                    b.ToTable("Faturat");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Pershkrimi", b =>
@@ -129,7 +132,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Pershkrimi_Id");
 
-                    b.ToTable("Pershkrimi", (string)null);
+                    b.ToTable("Pershkrimi");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Roles", b =>
@@ -171,7 +174,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.User", b =>
@@ -204,7 +207,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.UserRole", b =>
@@ -230,7 +233,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsersRoless", (string)null);
+                    b.ToTable("UsersRoless");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.UserRole", b =>
