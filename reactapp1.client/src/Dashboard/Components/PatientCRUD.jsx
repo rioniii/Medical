@@ -60,7 +60,7 @@ const PatientCRUD = () => {
     }, [])
 
     const getData = () => {
-        axios.get('https://localhost:7107/api/Patient')
+        axios.get('https://localhost:7107/api/Roli')
             .then((result) => {
                 setData(result.data)
             })
