@@ -22,6 +22,29 @@ namespace ReactApp1.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Dhoma", b =>
+                {
+                    b.Property<int>("Dhoma_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Dhoma_Id"));
+
+                    b.Property<int>("Kapaciteti")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NrDhoma")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NrPacienteve")
+                        .HasColumnType("int");
+
+                    b.HasKey("Dhoma_Id");
+
+                    b.ToTable("Dhomat");
+                });
+
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Faturimi", b =>
                 {
                     b.Property<int>("Fatura_Id")

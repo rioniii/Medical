@@ -15,8 +15,9 @@ namespace ReactApp1.Server.Data.Models
         public DbSet<UserRole> UsersRoless { get; set; }
         public DbSet<Dhoma> Dhomat { get; set; }
         public DbSet<Pershkrimi> Pershkrimi { get; set; }  
-
-
         public DbSet<Faturimi> Faturat { get; set; }
+
+
+
     }
 }
