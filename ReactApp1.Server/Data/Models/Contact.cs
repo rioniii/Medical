@@ -21,4 +21,3 @@ namespace ReactApp1.Server.Data.Models
         public string Message { get; set; }
     }
 }
-}
