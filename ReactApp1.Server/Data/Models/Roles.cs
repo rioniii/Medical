@@ -13,7 +13,7 @@ namespace ReactApp1.Server.Data.Models
 
             [Required(ErrorMessage = "Paga is required")]
             [Range(0, double.MaxValue, ErrorMessage = "Paga must be a positive value")]
-            public decimal Paga { get; set; }
+            public double Paga { get; set; }
 
             [Required(ErrorMessage = "Reparti is required")]
             public string Reparti { get; set; }
