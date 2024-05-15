@@ -22,38 +22,7 @@ namespace ReactApp1.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ReactApp1.Server.Data.Models.Contact", b =>
-                {
-                    b.Property<int>("Contact_Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Contact_Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("nvarchar(75)");
-
-                    b.HasKey("Contact_Id");
-
-                    b.ToTable("Contacti");
-                });
-
-            modelBuilder.Entity("ReactApp1.Server.Data.Models.Dhomat", b =>
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Dhoma", b =>
                 {
                     b.Property<int>("Dhoma_Id")
                         .ValueGeneratedOnAdd()
@@ -73,30 +42,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Dhoma_Id");
 
-                    b.ToTable("Dhomat");
-                });
-
-            modelBuilder.Entity("ReactApp1.Server.Data.Models.Faturimi", b =>
-                {
-                    b.Property<int>("Fatura_Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Fatura_Id"));
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Shuma")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Statusi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Fatura_Id");
-
-                    b.ToTable("Faturat");
+                    b.ToTable("Dhomat", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Pershkrimi", b =>
@@ -129,7 +75,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Pershkrimi_Id");
 
-                    b.ToTable("Pershkrimi");
+                    b.ToTable("Pershkrimi", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Roles", b =>
@@ -171,7 +117,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.User", b =>
@@ -204,7 +150,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.UserRole", b =>
@@ -230,7 +176,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsersRoless");
+                    b.ToTable("UsersRoless", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.UserRole", b =>
