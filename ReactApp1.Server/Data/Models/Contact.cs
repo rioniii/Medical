@@ -1,10 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ReactApp1.Server.Data.Models
 {
     public class Contact
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Contact_Id { get; set; }
+
         [Required(ErrorMessage = "Name is required")]
         [StringLength(30, ErrorMessage = "Name cannot exceed 30 characters")]
         public string Name { get; set; }
