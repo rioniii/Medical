@@ -17,5 +17,6 @@ namespace ReactApp1.Server.Data.Models
         public DbSet<Pershkrimi> Pershkrimi { get; set; }  
 
 
+        public DbSet<Faturimi> Faturat { get; set; }
     }
 }
