@@ -12,8 +12,8 @@ using ReactApp1.Server.Data.Models;
 namespace ReactApp1.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240515113223_Dhoma.cs")]
-    partial class Dhomacs
+    [Migration("20240515120529_Dhoma")]
+    partial class Dhoma
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,6 +46,62 @@ namespace ReactApp1.Server.Migrations
                     b.HasKey("Dhoma_Id");
 
                     b.ToTable("Dhomat");
+                });
+
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Faturimi", b =>
+                {
+                    b.Property<int>("Fatura_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Fatura_Id"));
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Shuma")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Statusi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Fatura_Id");
+
+                    b.ToTable("Faturat");
+                });
+
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Pershkrimi", b =>
+                {
+                    b.Property<int>("Pershkrimi_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Pershkrimi_Id"));
+
+                    b.Property<string>("Anamneza_Statusi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Diagnoza")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Ekzaminimi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Perfundimi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Terapia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Pershkrimi_Id");
+
+                    b.ToTable("Pershkrimi");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Roles", b =>
