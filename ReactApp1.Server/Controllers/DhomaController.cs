@@ -8,66 +8,67 @@ namespace ReactApp1.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DhomaController : ControllerBase
+    public class DhomatController : ControllerBase
     {
 
-            public readonly AppDBContext _context;
+        public readonly AppDBContext _context;
 
-            public DhomaController(AppDBContext context)
-            {
-                _context = context;
-            }
+        public DhomatController(AppDBContext context)
+        {
+            _context = context;
+        }
 
-            [HttpGet]
-            public async Task<ActionResult<List<Dhoma>>> GetAllDhomat()
-            {
-                var Dhomat = await _context.Dhomat.ToListAsync();
+        [HttpGet]
+        public async Task<ActionResult<List<Dhomat>>> GetAllDhomatt()
+        {
+            var Dhomat = await _context.Dhomat.ToListAsync();
 
-                return Ok(Dhomat);
-            }
-
-
-            [HttpGet("{id}")]
-            public async Task<ActionResult<List<Dhoma>>> GetDhoma(int id)
-            {
-                var Dhoma = await _context.Dhomat.FindAsync(id);
-                if (Dhoma == null)
-                    return NotFound("Dhoma not found");
-                return Ok(Dhoma);
-            }
-
-            [HttpPost]
-            public async Task<ActionResult<List<Dhoma>>> AddDhoma(Dhoma Dhoma)
-            {
-                _context.Dhomat.Add(Dhoma);
-                await _context.SaveChangesAsync();
-
-                return Ok(await _context.Dhomat.ToListAsync());
-            }
+            return Ok(Dhomat);
+        }
 
 
-            [HttpPatch]
-            [Route("UpdateDhoma/{id}")]
-            public async Task<Dhoma> UpdateDhoma(Dhoma obj)
-            {
-                _context.Entry(obj).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                return obj;
-            }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<List<Dhomat>>> GetDhomat(int id)
+        {
+            var Dhomat = await _context.Dhomat.FindAsync(id);
+            if (Dhomat == null)
+                return NotFound("Dhomat not found");
+            return Ok(Dhomat);
+        }
 
-            [HttpDelete]
-            public async Task<ActionResult<List<Dhoma>>> DeleteDhoma(int id)
-            {
-                var dbDhoma = await _context.Dhomat.FindAsync(id);
-                if (dbDhoma == null)
-                    return NotFound("Dhoma not found");
+        [HttpPost]
+        public async Task<ActionResult<List<Dhomat>>> AddDhomat(Dhomat Dhomat)
+        {
+            _context.Dhomat.Add(Dhomat);
+            await _context.SaveChangesAsync();
 
-                _context.Dhomat.Remove(dbDhoma);
+            return Ok(await _context.Dhomat.ToListAsync());
+        }
 
-                await _context.SaveChangesAsync();
 
-                return Ok(await _context.Dhomat.ToListAsync()); ;
-            }
+        [HttpPatch]
+        [Route("UpdateDhomat/{id}")]
+        public async Task<Dhomat> UpdateDhomat(Dhomat obj)
+        {
+            _context.Entry(obj).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return obj;
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult<List<Dhomat>>> DeleteDhomat(int id)
+        {
+            var dbDhomat = await _context.Dhomat.FindAsync(id);
+            if (dbDhomat == null)
+                return NotFound("Dhomat not found");
+
+            _context.Dhomat.Remove(dbDhomat);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(await _context.Dhomat.ToListAsync()); ;
         }
     }
+}
+
 

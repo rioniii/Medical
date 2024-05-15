@@ -12,8 +12,8 @@ using ReactApp1.Server.Data.Models;
 namespace ReactApp1.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240515120529_Dhoma")]
-    partial class Dhoma
+    [Migration("20240515140057_Dhoma.cs")]
+    partial class Dhomacs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace ReactApp1.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ReactApp1.Server.Data.Models.Dhoma", b =>
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Dhomat", b =>
                 {
                     b.Property<int>("Dhoma_Id")
                         .ValueGeneratedOnAdd()

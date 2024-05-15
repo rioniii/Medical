@@ -22,7 +22,7 @@ namespace ReactApp1.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ReactApp1.Server.Data.Models.Dhoma", b =>
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Dhomat", b =>
                 {
                     b.Property<int>("Dhoma_Id")
                         .ValueGeneratedOnAdd()
