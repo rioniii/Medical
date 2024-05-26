@@ -13,7 +13,7 @@ namespace ReactApp1.Server.Data.Models
         public string Emri { get; set; }
         public string Mbiemri { get; set; }
         public char   Gjinia { get; set; } 
-        public string VitiLindjes { get; set; } 
+        public DateTime VitiLindjes { get; set; } 
         public string Vendbanimi { get; set; }
         public string Alergjite { get; set; }
         public string NumriTel { get; set; }

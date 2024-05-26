@@ -2,6 +2,10 @@ global using ReactApp1.Server.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -18,6 +22,38 @@ builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+/*var builder = WebApplication.CreateBuilder(args);*/
+
+// Configure services
+builder.Services.AddControllers();
+
+// Configure middleware
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
+app.UseRouting();
+app.UseCors("AllowReactApp");
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapFallbackToFile("/index.html");
+});
+
+app.Run();
+
+
 
 builder.Services.AddCors(options =>
 {
@@ -30,8 +66,8 @@ builder.Services.AddCors(options =>
         });
 });
 
-var app = builder.Build();
-
+/*var app = builder.Build();
+*/
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -49,3 +85,6 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 app.Run();
+
+
+
