@@ -3,6 +3,8 @@ import { MDBBtn, MDBContainer, MDBCard, MDBCardBody, MDBInput, MDBCheckbox } fro
 import { NavLink } from 'react-router-dom';
 import contactImage from './assets/R.jpeg';
 import Header from './Header';
+//import axiosInstance from './axiosConfig'; // axios cookie
+
 
 function LoginForm() {
     const [email, setEmail] = useState('');
@@ -30,6 +32,20 @@ function LoginForm() {
         } else {
             setIsValidPassword(true);
         }
+         // Dërgimi i të dhënave të përdoruesit në server përmes axio
+        //axios.post('localhost:5173/api/login', { email, password })
+        //    .then(response => {
+        //        console.log('Login successful:', response.data);
+        //        // Ruajtja e JWT në cookies
+        //        const expiration = new Date(new Date().getTime() + 5 * 60 * 60 * 1000);
+        //        // Shton 5 orë në kohën aktuale
+        //        Cookies.set('jwt', response.data.token, { expires: expiration });
+        //        window.location.href = './src/Ballina.jsx';
+        //    })
+        //    .catch(error => {
+        //        console.error('Login failed:', error);
+        //        alert
+        //    });
 
     };
 
