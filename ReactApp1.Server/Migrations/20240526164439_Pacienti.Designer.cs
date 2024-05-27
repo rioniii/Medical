@@ -12,15 +12,15 @@ using ReactApp1.Server.Data.Models;
 namespace ReactApp1.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240515181221_Termini")]
-    partial class Termini
+    [Migration("20240526164439_Pacienti")]
+    partial class Pacienti
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -102,6 +102,62 @@ namespace ReactApp1.Server.Migrations
                     b.ToTable("Faturat");
                 });
 
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Pacienti", b =>
+                {
+                    b.Property<int>("Patient_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Patient_Id"));
+
+                    b.Property<string>("Alergjite")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Dhoma_Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Emri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Faturimi_Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Gjinia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1)");
+
+                    b.Property<string>("Mbiemri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NumriTel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Pranimi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Recepcionisti_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Termini_Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Vendbanimi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("VitiLindjes")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Patient_Id");
+
+                    b.ToTable("Pacienti");
+                });
+
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Pershkrimi", b =>
                 {
                     b.Property<int>("Pershkrimi_Id")
@@ -135,6 +191,29 @@ namespace ReactApp1.Server.Migrations
                     b.ToTable("Pershkrimi");
                 });
 
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Repart", b =>
+                {
+                    b.Property<int>("Reparti_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Reparti_Id"));
+
+                    b.Property<string>("Emri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Kati")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NrDhomave")
+                        .HasColumnType("int");
+
+                    b.HasKey("Reparti_Id");
+
+                    b.ToTable("Reparti");
+                });
+
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Roles", b =>
                 {
                     b.Property<int>("Id")
@@ -155,8 +234,8 @@ namespace ReactApp1.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Paga")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Paga")
+                        .HasColumnType("float");
 
                     b.Property<string>("Reparti")
                         .IsRequired()
@@ -175,6 +254,46 @@ namespace ReactApp1.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Sherbimet", b =>
+                {
+                    b.Property<int>("Sherbimet_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Sherbimet_Id"));
+
+                    b.Property<double>("Cmimi")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Sherbimi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Sherbimet_Id");
+
+                    b.ToTable("Sherbimi");
+                });
+
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Terminet", b =>
+                {
+                    b.Property<int>("Termini_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Termini_Id"));
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Statusi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Termini_Id");
+
+                    b.ToTable("Termini");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.User", b =>

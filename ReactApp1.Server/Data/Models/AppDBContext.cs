@@ -17,6 +17,10 @@ namespace ReactApp1.Server.Data.Models
         public DbSet<Dhomat> Dhomat { get; set; }
         public DbSet<Faturimi> Faturat { get; set; }
         public DbSet<Contact> Contacti { get; set; }
-       
+        public DbSet<Repart> Reparti { get; set; }
+        public DbSet<Sherbimet> Sherbimi { get; set; }
+        public DbSet<Terminet> Termini { get; set; }
+        public DbSet<Pacienti> Pacienti{ get; set; }
+
     }
 }
