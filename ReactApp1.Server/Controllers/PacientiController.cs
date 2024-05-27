@@ -19,7 +19,7 @@ namespace ReactApp1.Server.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<List<Pacienti>>> GetAllFaturat()
+        public async Task<ActionResult<List<Pacienti>>> GetAllPacienti()
         {
             var pacienti = await _context.Pacienti.ToListAsync();
 
@@ -28,7 +28,7 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<List<Pacienti>>> GetFaturat(int id)
+        public async Task<ActionResult<List<Pacienti>>> GetPacienti(int id)
         {
             var pacienti = await _context.Pacienti.FindAsync(id);
             if (pacienti == null)
@@ -36,7 +36,7 @@ namespace ReactApp1.Server.Controllers
             return Ok(pacienti);
         }
         [HttpPost]
-        public async Task<ActionResult<List<Pacienti>>> AddFaturat(Pacienti pacientet)
+        public async Task<ActionResult<List<Pacienti>>> AddPacienti(Pacienti pacientet)
         {
             _context.Pacienti.Add(pacientet);
             await _context.SaveChangesAsync();
@@ -48,7 +48,7 @@ namespace ReactApp1.Server.Controllers
 
         [HttpPatch]
         [Route("UpdateFatura/{id}")]
-        public async Task<Pacienti> UpdateFatura(Pacienti objPacienti)
+        public async Task<Pacienti> UpdatePacienti(Pacienti objPacienti)
         {
             _context.Entry(objPacienti).State = EntityState.Modified;
             await _context.SaveChangesAsync();
