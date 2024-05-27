@@ -179,7 +179,7 @@ const PatientCRUD = () => {
             </div>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Modify/Update Patient</Modal.Title>
+                    <Modal.Title>Update Patient</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Container className="edit-form">
