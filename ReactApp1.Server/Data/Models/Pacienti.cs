@@ -14,10 +14,10 @@ namespace ReactApp1.Server.Data.Models
         public string Mbiemri { get; set; }
         public char   Gjinia { get; set; } 
         public DateTime VitiLindjes { get; set; } 
-        public string Vendbanimi { get; set; }
-        public string Alergjite { get; set; }
-        public string NumriTel { get; set; }
-        public string Pranimi { get; set; }
+        public string? Vendbanimi { get; set; }
+        public string? Alergjite { get; set; }
+        public string? NumriTel { get; set; }
+        public string? Pranimi { get; set; }
 
         public int Termini_Id { get; set; }
         public int Recepcionisti_Id { get; set; }

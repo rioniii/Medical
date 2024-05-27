@@ -15,13 +15,13 @@ const PatientCRUD = () => {
 
     const [Emri, setEmri] = useState('');
     const [Mbiemri, setMbiemri] = useState('');
-    const [Gjinia, setGjinia] = useState(false);
+    const [Gjinia, setGjinia] = useState('');
     const [VitiLindjes, setVitiLindjes] = useState('');
 
     const [editId, setEditId] = useState('');
     const [editEmri, setEditEmri] = useState('');
     const [editMbiemri, setEditMbiemri] = useState('');
-    const [editGjinia, setEditGjinia] = useState(false);
+    const [editGjinia, setEditGjinia] = useState('');
     const [editVitiLindjes, setEditVitiLindjes] = useState('');
 
     const [data, setData] = useState([]);
@@ -52,7 +52,7 @@ const PatientCRUD = () => {
 
 
     const handleUpdate = () => {
-        axios.put(`https://localhost:7107/api/Pacienti/${editId}`, {
+        axios.put('https://localhost:7107/api/Pacienti/UpdatePatient/3', {
             Emri: editEmri, Mbiemri: editMbiemri, Gjinia: editGjinia, VitiLindjes: editVitiLindjes
         })
             .then(() => {
@@ -104,10 +104,20 @@ const PatientCRUD = () => {
                             value={Mbiemri} onChange={(e) => setMbiemri(e.target.value)} />
                     </Col>
                     <Col>
-                        <input type="checkbox"
-                            checked={Gjinia}
-                            onChange={(e) => setGjinia(e.target.checked)} />
-                        <label>Gjinia</label>
+                        <input
+                            type="radio"
+                            value="F"
+                            name="gjinia"
+                            checked={Gjinia === 'F'}
+                            onChange={(e) => setGjinia(e.target.value)}
+                        /> F   
+                        <input
+                            type="radio"
+                            value="M"
+                            name="gjinia"
+                            checked={Gjinia === 'M'}
+                            onChange={(e) => setGjinia(e.target.value)}
+                        /> M
                     </Col>
                     <Col>
                         <input type="text" className="form-control" placeholder="Enter VitiLindjes"
@@ -173,7 +183,7 @@ const PatientCRUD = () => {
                                     value={editMbiemri} onChange={(e) => setEditMbiemri(e.target.value)} />
                             </Col>
                             <Col>
-                                <input type="checkbox"
+                                <input type="radio-button"
                                     checked={editGjinia}
                                     onChange={(e) => setEditGjinia(e.target.checked)} />
                                 <label>Gjinia</label>

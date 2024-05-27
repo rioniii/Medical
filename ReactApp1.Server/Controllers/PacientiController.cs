@@ -62,15 +62,48 @@ namespace ReactApp1.Server.Controllers
         }
 
 
-        [HttpPatch]
+        [HttpPut("{id}")]
         [AllowAnonymous]
-        [Route("UpdateFatura/{id}")]
-        public async Task<Pacienti> UpdatePatient(Pacienti objPacienti)
+        public async Task<IActionResult> UpdatePatient(int id, [FromBody] Pacienti patient)
         {
-            _context.Entry(objPacienti).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return objPacienti;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != patient.Patient_Id)
+            {
+                return BadRequest("Patient ID mismatch.");
+            }
+
+            _context.Entry(patient).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PatientExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
+
+        private bool PatientExists(int id)
+        {
+            return _context.Pacienti.Any(e => e.Patient_Id == id);
+        }
+
+  
+
 
         [HttpDelete("{id}")]
         [AllowAnonymous]
