@@ -8,7 +8,7 @@ namespace ReactApp1.Server.Data.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-  /*      public int Patient_Id { get; set; } */
+        public int Patient_Id { get; set; }
 
         public string Emri { get; set; }
         public string Mbiemri { get; set; }

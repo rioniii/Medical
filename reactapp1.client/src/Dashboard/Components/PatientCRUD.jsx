@@ -10,7 +10,6 @@ import axios from 'axios';
 
 const PatientCRUD = () => {
     const [show, setShow] = useState(false);
-
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
@@ -33,29 +32,56 @@ const PatientCRUD = () => {
 
     const getData = () => {
         axios.get('https://localhost:7107/api/Pacienti')
-            .then((result) => {
-                setData(result.data);
+            .then(response => {
+                setData(response.data); // Set the fetched data to state
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(error => {
+                console.error('Error fetching data:', error);
             });
-    }
+    };
 
-    const handleEdit = (id) => {
-        // Handle edit logic
+    const handleEdit = (patient) => {
+        setEditId(patient.patient_Id);
+        setEditEmri(patient.emri);
+        setEditMbiemri(patient.mbiemri);
+        setEditGjinia(patient.gjinia);
+        setEditVitiLindjes(patient.vitiLindjes);
         handleShow();
-    }
+    };
 
-    const handleDelete = (id) => {
-        if (window.confirm("Are you sure you want to delete this patient")) {
-            // Handle delete logic
-            alert(id);
-        }
-    }
+
 
     const handleUpdate = () => {
-        // Handle update logic
-    }
+        axios.put(`https://localhost:7107/api/Pacienti/${editId}`, {
+            Emri: editEmri, Mbiemri: editMbiemri, Gjinia: editGjinia, VitiLindjes: editVitiLindjes
+        })
+            .then(() => {
+                handleClose();
+                getData(); // Refresh data after updating
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update patient'); // Provide user feedback
+            });
+    };
+
+    const handleAddPatient = () => {
+        const payload = { Emri, Mbiemri, Gjinia, VitiLindjes };
+        console.log("Sending payload:", payload);  // Log the payload to see what is being sent
+
+        axios.post('https://localhost:7107/api/Pacienti', payload)
+            .then(() => {
+                getData(); // Refresh data after adding
+                setEmri('');
+                setMbiemri('');
+                setGjinia(false);
+                setVitiLindjes('');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to add patient'); // Provide feedback
+            });
+    };
 
     return (
         <>
@@ -88,7 +114,7 @@ const PatientCRUD = () => {
                             value={VitiLindjes} onChange={(e) => setVitiLindjes(e.target.value)} />
                     </Col>
                     <Col>
-                        <button className="btn btn-primary">Add Patient</button>
+                        <button className="btn btn-primary" onClick={handleAddPatient}>Add Patient</button>
                     </Col>
                 </Row>
             </Container>
@@ -107,28 +133,27 @@ const PatientCRUD = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            data && data.length > 0 ?
-                                data.map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{item.Id}</td>
-                                        <td>{item.Emri}</td>
-                                        <td>{item.Mbiemri}</td>
-                                        <td>{item.Gjinia}</td>
-                                        <td>{item.VitiLindjes}</td>
-                                        <td>
-                                            <span className="me-2">
-                                                <Button onClick={() => handleEdit(item.Id)} variant="warning">Edit</Button>
-                                            </span>
-                                            <span>
-                                                <Button onClick={() => handleDelete(item.Id)} variant="danger">Delete</Button>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))
-                                :
-                                'Loading...'
-                        }
+                        {data.length > 0 ? data.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.patient_Id}</td>
+                                <td>{item.emri}</td>
+                                <td>{item.mbiemri}</td>
+                                <td>{item.gjinia}</td>
+                                <td>{item.vitiLindjes}</td>
+                                <td>
+                                    <span className="me-2">
+                                        <Button onClick={() => handleEdit(item)} variant="warning">Edit</Button>
+                                    </span>
+                                    <span>
+                                        <Button onClick={() => handleDelete(item.patient_Id)} variant="danger">Delete</Button>
+                                    </span>
+                                </td>
+                            </tr>
+                        )) : (
+                            <tr>
+                                <td colSpan="6" style={{ textAlign: "center" }}>No data available or failed to load data.</td>
+                            </tr>
+                        )}
                     </tbody>
                 </Table>
             </div>
@@ -170,7 +195,7 @@ const PatientCRUD = () => {
                 </Modal.Footer>
             </Modal>
         </>
-    )
+    );
 }
 
 export default PatientCRUD;

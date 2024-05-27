@@ -1,87 +1,54 @@
 global using ReactApp1.Server.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
-
 builder.Services.AddDbContext<AppDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
-/*var builder = WebApplication.CreateBuilder(args);*/
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
-        builder =>
+        policyBuilder =>
         {
-            builder.WithOrigins("https://localhost:5173")
+            policyBuilder.WithOrigins("https://localhost:5173")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
 });
-// Configure services
-builder.Services.AddControllers();
 
-//// Configure middleware
 var app = builder.Build();
 
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseDeveloperExceptionPage();
-//}
-//else
-//{
-//    app.UseExceptionHandler("/Error");
-//    app.UseHsts();
-//}
-
-//app.UseRouting();
-//app.UseCors("AllowReactApp");
-//app.UseAuthentication();
-//app.UseAuthorization();
-
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapControllers();
-//    endpoints.MapFallbackToFile("/index.html");
-//});
-
-////app.Run();
-
-
-
-
-
-/*var app = builder.Build();
-*/
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.RoutePrefix = "swagger";
+    });
 }
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
 app.UseCors("AllowReactApp");
-
+app.UseAuthorization();
 app.MapControllers();
-
 app.MapFallbackToFile("/index.html");
 
 app.Run();
