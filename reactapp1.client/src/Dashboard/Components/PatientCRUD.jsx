@@ -15,13 +15,13 @@ const PatientCRUD = () => {
 
     const [Emri, setEmri] = useState('');
     const [Mbiemri, setMbiemri] = useState('');
-    const [Gjinia, setGjinia] = useState('');
+    const [Gjinia, setGjinia] = useState('M');
     const [VitiLindjes, setVitiLindjes] = useState('');
 
     const [editId, setEditId] = useState('');
     const [editEmri, setEditEmri] = useState('');
     const [editMbiemri, setEditMbiemri] = useState('');
-    const [editGjinia, setEditGjinia] = useState('');
+    const [editGjinia, setEditGjinia] = useState('M');
     const [editVitiLindjes, setEditVitiLindjes] = useState('');
 
     const [data, setData] = useState([]);
@@ -52,35 +52,45 @@ const PatientCRUD = () => {
 
 
     const handleUpdate = () => {
-        axios.put('https://localhost:7107/api/Pacienti/UpdatePatient/3', {
-            Emri: editEmri, Mbiemri: editMbiemri, Gjinia: editGjinia, VitiLindjes: editVitiLindjes
+        axios.put(`https://localhost:7107/api/Pacienti/${editId}`, {
+            Patient_Id: editId,
+            Emri: editEmri,
+            Mbiemri: editMbiemri,
+            Gjinia: editGjinia
         })
             .then(() => {
                 handleClose();
                 getData(); // Refresh data after updating
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to update patient'); // Provide user feedback
-            });
+            .catch(error => console.error('Error:', error));
     };
 
     const handleAddPatient = () => {
-        const payload = { Emri, Mbiemri, Gjinia, VitiLindjes };
-        console.log("Sending payload:", payload);  // Log the payload to see what is being sent
-
-        axios.post('https://localhost:7107/api/Pacienti', payload)
+        axios.post('https://localhost:7107/api/Pacienti', {
+            Emri, Mbiemri, Gjinia, VitiLindjes
+        })
             .then(() => {
                 getData(); // Refresh data after adding
                 setEmri('');
                 setMbiemri('');
-                setGjinia(false);
+                setGjinia('M'); // Reset to default
                 setVitiLindjes('');
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to add patient'); // Provide feedback
-            });
+            .catch(error => console.error('Error:', error));
+    };
+
+    const handleDelete = (id) => {
+        if (window.confirm("Are you sure you want to delete this patient?")) {
+            axios.delete(`https://localhost:7107/api/Pacienti/${id}`)
+                .then(response => {
+                    alert("Patient deleted successfully!");
+                    getData(); // Refresh the data to reflect the deletion
+                })
+                .catch(error => {
+                    console.error("Error deleting patient:", error);
+                    alert("Failed to delete patient.");
+                });
+        }
     };
 
     return (
@@ -183,10 +193,26 @@ const PatientCRUD = () => {
                                     value={editMbiemri} onChange={(e) => setEditMbiemri(e.target.value)} />
                             </Col>
                             <Col>
-                                <input type="radio-button"
-                                    checked={editGjinia}
-                                    onChange={(e) => setEditGjinia(e.target.checked)} />
-                                <label>Gjinia</label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="gjinia"
+                                        value="M"
+                                        checked={editGjinia === 'M'}
+                                        onChange={(e) => setEditGjinia(e.target.value)}
+                                    />
+                                    Male
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="gjinia"
+                                        value="F"
+                                        checked={editGjinia === 'F'}
+                                        onChange={(e) => setEditGjinia(e.target.value)}
+                                    />
+                                    Female
+                                </label>
                             </Col>
                             <Col>
                                 <input type="text" className="form-control" placeholder="Enter VitiLindjes"
