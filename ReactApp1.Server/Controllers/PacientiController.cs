@@ -15,7 +15,7 @@ namespace ReactApp1.Server.Controllers
     public class PacientiController : ControllerBase
     {
         private readonly AppDBContext _context;
-        private readonly ILogger<PacientiController> _logger; // Use ILogger<T>
+        private readonly ILogger<PacientiController> _logger;
 
         public PacientiController(AppDBContext context, ILogger<PacientiController> logger)
         {
