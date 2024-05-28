@@ -14,9 +14,8 @@ namespace ReactApp1.Server.Data.Models
         [Range(0, double.MaxValue, ErrorMessage = "Cmimi must be a positive value!!")]
         public double Cmimi { get; set; }
 
-        //public int Infermieri_Id { get; }
-        //public Infermier Infermier { get; set; }
-        //public int Fatura_Id { get; }
-        //public List<Faturimi> Faturat { get; set; }
+        public int Fatura_Id { get; }
+        
+        public List<Faturimi> Faturat { get; set; }
     }
 }
