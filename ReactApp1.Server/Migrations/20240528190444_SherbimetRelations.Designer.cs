@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReactApp1.Server.Data.Models;
 
@@ -11,9 +12,11 @@ using ReactApp1.Server.Data.Models;
 namespace ReactApp1.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240528190444_SherbimetRelations")]
+    partial class SherbimetRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -305,19 +308,11 @@ namespace ReactApp1.Server.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PacientiPatient_Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Pacienti_Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("Statusi")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Termini_Id");
-
-                    b.HasIndex("PacientiPatient_Id");
 
                     b.ToTable("Termini");
                 });
@@ -410,17 +405,6 @@ namespace ReactApp1.Server.Migrations
                     b.HasOne("ReactApp1.Server.Data.Models.Dhomat", null)
                         .WithMany("Pacientat")
                         .HasForeignKey("DhomatDhoma_Id");
-                });
-
-            modelBuilder.Entity("ReactApp1.Server.Data.Models.Terminet", b =>
-                {
-                    b.HasOne("ReactApp1.Server.Data.Models.Pacienti", "Pacienti")
-                        .WithMany()
-                        .HasForeignKey("PacientiPatient_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Pacienti");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.UserRole", b =>
