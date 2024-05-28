@@ -19,11 +19,10 @@ namespace ReactApp1.Server.Data.Models
         [Required(ErrorMessage = "NrDhomave is required")]
         [Range(0, int.MaxValue, ErrorMessage = "NrDhomave must be a positive value!")]
         public int NrDhomave { get; set; }
-        // public int Mjeku_Id { get; set; }
-        // public List<Mjeku> Mjeket { get; set; }
-        // public int Dhoma_Id { get; }
-        // public List<Dhoma> Dhomat { get; set; }
+        
+         public int? Dhoma_Id { get; }
+         public List<Dhomat> Dhomat { get; set; }
 
-        // public List<Reparti> Repartet { get; set; }
+         public List<Repart> Repartet { get; set; }
     }
 }
