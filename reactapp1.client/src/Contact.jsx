@@ -1,11 +1,11 @@
-import { useState } from 'react';
+ï»¿import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import emailjs from '@emailjs/browser';
 import './contact.css';
 import Footer from './Footer';
 import Header from './Header';
 import contactImage from './assets/R.jpeg';
-import rightImage from './assets/OIP.jpeg'; // Import the image for the right side
+import rightImage from './assets/OIP.jpeg';
 
 const Contact = () => {
     const {
@@ -28,27 +28,36 @@ const Contact = () => {
             setAlertInfo({ display: false, message: '', type: '' });
         }, 5000);
     };
-
     const onSubmit = async (data) => {
         const { name, email, subject, message } = data;
         try {
             setDisabled(true);
 
-            const templateParams = {
-                name,
-                email,
-                subject,
-                message
+            // Your code for sending email using emailjs...
+
+            // Construct the request body with the form data
+            const requestBody = {
+                contact_Id: 0, // Assuming this should be 0 for a new contact
+                name: name,
+                email: email,
+                subject: subject,
+                message: message
             };
 
-            await emailjs.send(
-                process.env.REACT_APP_SERVICE_ID,
-                process.env.REACT_APP_TEMPLATE_ID,
-                templateParams,
-                process.env.REACT_APP_USER_ID
-            );
 
-            toggleAlert('Form submission was successful!', 'success');
+            const response = await fetch('https://localhost:7107/api/Contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (response.ok) {
+                toggleAlert('Form submission was successful!', 'success');
+            } else {
+                toggleAlert('Failed to submit form. Please try again later.', 'danger');
+            }
         } catch (e) {
             console.error(e);
             toggleAlert('Uh oh. Something went wrong.', 'danger');
@@ -62,8 +71,8 @@ const Contact = () => {
         <div>
             <Header />
             <div className="contact-container" style={{ backgroundImage: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <div className='ContactForm' style={{ backgroundIm: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%" , }} >
-                    <div className='container' style={{  backgroundColor: "rgba(255, 255, 255, 0.7)" }} >
+                <div className='ContactForm' style={{ backgroundIm: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%", }} >
+                    <div className='container' style={{ backgroundColor: "rgba(255, 255, 255, 0.7)" }} >
                         <div className='row'>
                             <div className='col-12 col-md-6 text-center'>
                                 <div className='contactForm'>
@@ -96,7 +105,7 @@ const Contact = () => {
                                                     name='email'
                                                     {...register('email', {
                                                         required: true,
-                                                        pattern: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+                                                        pattern: /^[a-zA-Z0-9.!#$%&ï¿½*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
                                                     })}
                                                     className='form-control formInput'
                                                     placeholder='Email address'
