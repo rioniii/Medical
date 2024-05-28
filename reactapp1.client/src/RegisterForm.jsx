@@ -58,27 +58,23 @@ function RegisterForm() {
     };
 
     return (
-        <div className="register-form-container" style={{ backgroundImage: `url(${contactImage})`, backgroundColor: 'rgba(255, 255, 255, 0.5)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-
-            <MDBContainer fluid className='d-flex align-items-center justify-content-center' style={{ height: '100vh' }}>
-                <MDBCard className='m-2 p-4' style={{ maxWidth: '700px', maxHeight: '600px', backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
-
-                    <MDBCardBody className='px-5 py-4'>
-                        <h2 className="text-uppercase text-center mb-3">Create an account</h2>
-                        <form onSubmit={handleSubmit}>
-                            <MDBInput wrapperClass='mb-2' label='Your Name' size='lg' id='form1' type='text' value={name} onChange={(e) => setName(e.target.value)} />
-                            <MDBInput wrapperClass='mb-2' label='Your Email' size='lg' id='form2' type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
-                            <MDBInput wrapperClass='mb-2' label='Password' size='lg' id='form3' type='password' value={password} onChange={(e) => setPassword(e.target.value)} pattern="^(?=.*[A-Za-z]).{8,}$" title="Password must contain at least one letter and be at least 8 characters long" />
-                        
-                            <MDBInput wrapperClass='mb-2' label='Contact Number' size='lg' id='form5' type='text' value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} pattern="\d{3}-\d{3}-\d{3}" title="Please enter the contact number in the format: 044-xxx-xxx" />
-                            {passwordMatchError && <div className="text-danger">{passwordMatchError}</div>}
-                            {emailTakenError && <div className="text-danger">{emailTakenError}</div>}
-                            <MDBBtn className='mb-2 w-100' size='lg' type='submit'>Register</MDBBtn>
-                        </form>
-                        <NavLink to="/LoginForm" className="text-center d-block mb-5" style={{ color: 'green' }}>Log in here</NavLink>
-                    </MDBCardBody>
-                </MDBCard>
-            </MDBContainer>
+        <div className="register-form-container" style={{ backgroundImage: `url(${contactImage})`, backgroundColor: 'rgba(255, 255, 255, 0.5)', backgroundSize: 'cover', backgroundPosition: 'center', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <MDBCard className='p-4' style={{ maxWidth: '500px', width: '100%', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '15px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)' }}>
+                <MDBCardBody className='px-5 py-4'>
+                    <h2 className="text-uppercase text-center mb-3">Create an account</h2>
+                    <form onSubmit={handleSubmit}>
+                        <MDBInput label='Your Name' size='lg' id='form1' type='text' value={name} onChange={(e) => setName(e.target.value)} />
+                        <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={(e) => setPassword(e.target.value)} pattern="^(?=.*[A-Za-z]).{8,}$" title="Password must contain at least one letter and be at least 8 characters long" />
+                        <MDBInput label='Repeat your password' size='lg' id='form4' type='password' value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} />
+                        <MDBInput label='Contact Number' size='lg' id='form5' type='text' value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} pattern="\d{3}-\d{3}-\d{3}" title="Please enter the contact number in the format: 044-xxx-xxx" />
+                        {passwordMatchError && <div className="text-danger mb-2">{passwordMatchError}</div>}
+                        {emailTakenError && <div className="text-danger mb-2">{emailTakenError}</div>}
+                        <MDBBtn className='w-100' size='lg' type='submit'>Register</MDBBtn>
+                    </form>
+                    <NavLink to="/LoginForm" className="text-center d-block mt-3" style={{ color: 'green' }}>Already have an account? Log in here</NavLink>
+                </MDBCardBody>
+            </MDBCard>
         </div>
     );
 }
