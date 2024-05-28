@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReactApp1.Server.Data.Models;
 
@@ -11,9 +12,11 @@ using ReactApp1.Server.Data.Models;
 namespace ReactApp1.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240528190115_RepartRelations2")]
+    partial class RepartRelations2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,9 +95,6 @@ namespace ReactApp1.Server.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Pershkrimi_ID")
-                        .HasColumnType("int");
-
                     b.Property<double>("Shuma")
                         .HasColumnType("float");
 
@@ -103,10 +103,6 @@ namespace ReactApp1.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Fatura_Id");
-
-                    b.HasIndex("Pershkrimi_ID")
-                        .IsUnique()
-                        .HasFilter("[Pershkrimi_ID] IS NOT NULL");
 
                     b.ToTable("Faturat");
                 });
@@ -187,9 +183,6 @@ namespace ReactApp1.Server.Migrations
                     b.Property<string>("Ekzaminimi")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Faturimi_Id")
-                        .HasColumnType("int");
 
                     b.Property<string>("Perfundimi")
                         .IsRequired()
@@ -379,15 +372,6 @@ namespace ReactApp1.Server.Migrations
                     b.Navigation("Repart");
                 });
 
-            modelBuilder.Entity("ReactApp1.Server.Data.Models.Faturimi", b =>
-                {
-                    b.HasOne("ReactApp1.Server.Data.Models.Pershkrimi", "Pershkrimi")
-                        .WithOne("Faturimet")
-                        .HasForeignKey("ReactApp1.Server.Data.Models.Faturimi", "Pershkrimi_ID");
-
-                    b.Navigation("Pershkrimi");
-                });
-
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Pacienti", b =>
                 {
                     b.HasOne("ReactApp1.Server.Data.Models.Dhomat", null)
@@ -419,10 +403,9 @@ namespace ReactApp1.Server.Migrations
                     b.Navigation("Pacientat");
                 });
 
-            modelBuilder.Entity("ReactApp1.Server.Data.Models.Pershkrimi", b =>
+            modelBuilder.Entity("ReactApp1.Server.Data.Models.Repart", b =>
                 {
-                    b.Navigation("Faturimet")
-                        .IsRequired();
+                    b.Navigation("Dhomat");
                 });
 #pragma warning restore 612, 618
         }
