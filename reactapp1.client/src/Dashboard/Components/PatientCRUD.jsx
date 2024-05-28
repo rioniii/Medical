@@ -228,6 +228,7 @@ const PatientCRUD = () => {
                     <Button variant="primary" onClick={handleUpdate}>
                         Save Changes
                     </Button>
+                    <Button></Button>
                 </Modal.Footer>
             </Modal>
         </>
