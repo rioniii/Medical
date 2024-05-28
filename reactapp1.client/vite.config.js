@@ -1,4 +1,4 @@
-7
+
 
 
 
@@ -57,12 +57,14 @@ export default defineConfig({
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),
         },
-        // Proxy configuration
+
         proxy: {
             '^/weatherforecast': {
                 target,
                 secure: false
             }
-        }
+        },
+
+        open: true
     }
 });

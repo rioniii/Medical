@@ -23,6 +23,5 @@ namespace ReactApp1.Server.Data.Models
          public int? Dhoma_Id { get; }
          public List<Dhomat> Dhomat { get; set; }
 
-         public List<Repart> Repartet { get; set; }
     }
 }

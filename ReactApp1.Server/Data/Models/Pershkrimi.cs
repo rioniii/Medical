@@ -23,9 +23,9 @@ namespace ReactApp1.Server.Data.Models
         public string Perfundimi { get; set; }
 
 
- /*       public int Faturimi_Id {  get; set; }
+        public int? Faturimi_Id {  get; set; }
        
-        public  Faturat Faturimet { get; set; }*/
+        public  Faturimi Faturimet { get; set; }
        
     }
 }
