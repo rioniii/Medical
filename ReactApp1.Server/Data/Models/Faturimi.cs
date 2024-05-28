@@ -17,9 +17,9 @@ namespace ReactApp1.Server.Data.Models
         [Required(ErrorMessage = "Statusi is required")]
         public string Statusi { get; set; }
 
-       /* public int Pershkrimi_ID { get; set; }
+        public int? Pershkrimi_ID { get; }
 
-        public Pershkrimi Pershkrimi { get; set; }*/
+        public Pershkrimi Pershkrimi { get; set; }
 
     }
 }
