@@ -1,4 +1,4 @@
-import Table from 'react-bootstrap/Table';
+/*import Table from 'react-bootstrap/Table';
 import Actions from './Actions.jsx'
 import PatientCRUD from './PatientCRUD.jsx';
 
@@ -37,7 +37,7 @@ function TableDashboard() {
                             'Loading...'
                     }
 
-                    {/*<tr>
+                    {*//*<tr>
                         <td>1</td>
                         <td>Filan</td>
                         <td>Fisteku</td>
@@ -54,7 +54,7 @@ function TableDashboard() {
                         <td>false</td>
                         <td>23</td>
                         <td>
-                            <Actions/>
+                            <Actions/>it
                         </td>
                     </tr>
                     <tr>
@@ -66,11 +66,11 @@ function TableDashboard() {
                         <td>
                             <Actions />
                         </td>
-                    </tr>*/}
+                    </tr>*//*}
                 </tbody>
             </Table>
         </div>
     );
 }
 
-export default TableDashboard;
+export default TableDashboard;*/

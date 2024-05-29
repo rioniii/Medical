@@ -19,7 +19,7 @@ namespace ReactApp1.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserRole>>> GetUserRole()
         {
-            var userRoles = await _context.UsersRoless
+            var userRoles = await _context.UsersRoles
                                         .Include(ur => ur.User)
                                         .Include(ur => ur.Roles)
                                         .ToListAsync();
