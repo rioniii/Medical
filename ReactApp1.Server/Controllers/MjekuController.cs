@@ -60,7 +60,7 @@ namespace ReactApp1.Server.Controllers
         {
             var dbMjekat = await _context.Mjekat.FindAsync(id);
             if (dbMjekat == null)
-                return NotFound("Dhomat not found");
+                return NotFound("Mjekat not found");
 
             _context.Mjekat.Remove(dbMjekat);
 
