@@ -1,11 +1,28 @@
 /*import Table from 'react-bootstrap/Table';
-import Actions from './Actions.jsx'
-import PatientCRUD from './PatientCRUD.jsx';
+import Actions from './Actions.jsx';
+import RepartCrud from './RepartCrud.jsx';
+import axios from 'axios';
 
-function TableDashboard() {
+const TableDashboard = () => {
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        getData();
+    }, []);
+
+    const getData = () => {
+        axios.get('https://localhost:7107/api/YourEndpoint') // Update the endpoint to fetch your data
+            .then(response => {
+                setData(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    };
+
     return (
         <div>
-
+            <RepartCrud />
             <Table responsive="md">
                 <thead>
                     <tr>
@@ -71,6 +88,6 @@ function TableDashboard() {
             </Table>
         </div>
     );
-}
+};
 
 export default TableDashboard;*/

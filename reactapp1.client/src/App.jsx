@@ -7,6 +7,7 @@ import Ballina from './Ballina';
 import PatientCRUD from './Dashboard/Components/PatientCRUD'
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
+import RepartCrud from './Dashboard/Components/RepartCrud';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { Route, Routes, HashRouter } from 'react-router-dom';
@@ -44,6 +45,8 @@ const Header = () => {
                                 <ListGroup.Item variant="success" action href="#Contact">Contact</ListGroup.Item>
                                 <ListGroup.Item variant="success" action href="#RegisterForm">Register</ListGroup.Item>
                                 <ListGroup.Item variant="success" action href="#PatientCRUD">Dashboard</ListGroup.Item>
+                                <ListGroup.Item variant="success" action href="#RepartCrud">Repart</ListGroup.Item>
+
                             </ListGroup>
                             <Button variant="success" className="ms-auto">Make an appointment</Button>
                         </Navbar.Collapse>
@@ -70,6 +73,8 @@ class App extends Component {
                     <Route path="/AboutUs" element={<AboutUs />}></Route>
                     <Route path="/Contact" element={<Contact />}></Route>
                     <Route path="/PatientCRUD" element={<PatientCRUD />}></Route>
+                    <Route path="/RepartCrud" element={<RepartCrud />}></Route>
+
                     </Routes>
                 </HashRouter >
         </Suspense>
