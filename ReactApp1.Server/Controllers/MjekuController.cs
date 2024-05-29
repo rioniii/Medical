@@ -47,7 +47,7 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpPatch]
-        [Route("UpdateDhomat/{id}")]
+        [Route("UpdateMjekat/{id}")]
         public async Task<Mjeku> UpdateMjekat(Mjeku obj)
         {
             _context.Entry(obj).State = EntityState.Modified;
