@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ReactApp1.Server.Data.Models;
 
 namespace ReactApp1.Server.Controllers
 {
@@ -8,11 +10,15 @@ namespace ReactApp1.Server.Controllers
     [ApiController]
     public class RoliController : ControllerBase
     {
-        public readonly AppDBContext _context;
+        private readonly AppDBContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public RoliController(AppDBContext context)
+        public RoliController(AppDBContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -25,7 +31,7 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<List<Roles>>> GetRole(int id)
+        public async Task<ActionResult<Roles>> GetRole(int id)
         {
             var role = await _context.Roles.FindAsync(id);
             if (role == null)
@@ -34,23 +40,27 @@ namespace ReactApp1.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Roles>>> AddRole(Roles role)
+        public async Task<ActionResult<Roles>> AddRole(Roles role)
         {
             _context.Roles.Add(role);
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.Roles.ToListAsync()); ;
+            return Ok(role);
         }
 
 
 
         [HttpPatch]
         [Route("UpdateRole/{id}")]
-        public async Task<Roles> UpdateRole(Roles objRole)
+        public async Task<Roles> UpdateRole(int id, Roles objRole)
         {
-            _context.Entry(objRole).State = EntityState.Modified;
+            var roleToUpdate = await _context.Roles.FindAsync(id);
+            if (roleToUpdate == null)
+                return NotFound("Role not found");
+
+            _context.Entry(roleToUpdate).CurrentValues.SetValues(objRole);
             await _context.SaveChangesAsync();
-            return objRole;
+            return roleToUpdate;
         }
 
         [HttpDelete("{id}")]
