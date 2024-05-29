@@ -32,7 +32,7 @@ namespace ReactApp1.Server.Controllers
         {
             var Infermieret = await _context.Infermieret.FindAsync(id);
             if (Infermieret == null)
-                return NotFound("Mjekat not found");
+                return NotFound("Infermieret not found");
             return Ok(Infermieret);
         }
 
@@ -60,7 +60,7 @@ namespace ReactApp1.Server.Controllers
         {
             var dbInfermier = await _context.Infermieret.FindAsync(id);
             if (dbInfermier == null)
-                return NotFound("Dhomat not found");
+                return NotFound("Infermieret not found");
 
             _context.Infermieret.Remove(dbInfermier);
 
