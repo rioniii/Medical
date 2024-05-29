@@ -20,6 +20,9 @@ namespace ReactApp1.Server.Data.Models
         public DbSet<Sherbimet> Sherbimi { get; set; }
         public DbSet<Terminet> Termini { get; set; }
         public DbSet<Pacienti> Pacienti { get; set; }
+        public DbSet<Mjeku> Mjekat { get; set; }
+
+        public DbSet<Infermier> Infermieret { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
