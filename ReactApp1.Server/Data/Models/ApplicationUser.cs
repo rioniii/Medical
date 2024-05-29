@@ -18,7 +18,9 @@ namespace ReactApp1.Server.Data.Models
 
         // Healthcare-specific information
         public string Specializimi { get; set; } 
-        public string Departmenti { get; set; } 
+        public string Departmenti { get; set; }
+
+        public Recepcionisti Recepcionisti { get; set; }
 
 
     }
