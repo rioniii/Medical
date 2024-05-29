@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ReactApp1.Server.Contracts;
 using ReactApp1.Server.Data.Models;
+using ReactApp1.Server.Repositories;
 using System.Configuration;
 using System.Text;
 
@@ -73,6 +75,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+builder.Services.AddScoped<IUserAccount,AccountRepository>();
 
 // Add CORS policy
 builder.Services.AddCors(options =>
