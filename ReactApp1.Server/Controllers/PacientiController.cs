@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,18 +10,19 @@ namespace ReactApp1.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
-
- 
     public class PacientiController : ControllerBase
     {
         private readonly AppDBContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<PacientiController> _logger;
 
-        public PacientiController(AppDBContext context, ILogger<PacientiController> logger)
+        public PacientiController(AppDBContext context, ILogger<PacientiController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _logger = logger;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -46,19 +48,26 @@ namespace ReactApp1.Server.Controllers
         {
             var pacienti = await _context.Pacienti.FindAsync(id);
             if (pacienti == null)
-                return NotFound("Fatura not found");
+                return NotFound("Pacienti not found");
             return Ok(pacienti);
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<List<Pacienti>>> AddPatient(Pacienti pacientet)
+        public async Task<IActionResult> AddPatientAndUser(Pacienti pacientet, string userName, string password)
         {
-            _context.Pacienti.Add(pacientet);
-            await _context.SaveChangesAsync();
-
-            var pacientiList = await _context.Pacienti.ToListAsync();
-            return Ok(pacientiList);
+            var user = new ApplicationUser { UserName = userName };
+            var result = await _userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                _context.Pacienti.Add(pacientet);
+                await _context.SaveChangesAsync();
+                return Ok(await _context.Pacienti.ToListAsync());
+            }
+            else
+            {
+                return BadRequest(result.Errors);
+            }
         }
 
 
@@ -102,7 +111,7 @@ namespace ReactApp1.Server.Controllers
             return _context.Pacienti.Any(e => e.Patient_Id == id);
         }
 
-  
+
 
 
         [HttpDelete("{id}")]

@@ -4,9 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ReactApp1.Server.Data.Models;
+using System.Configuration;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// rekomandim per konfigurimin e CONTAINER!!! 
+//services.AddDbContext<AppDBContext>(options =>
+//    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
 builder.Services.AddDbContext<AppDBContext>(options =>

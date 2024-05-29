@@ -9,7 +9,7 @@ namespace ReactApp1.Server.Controllers
     [ApiController]
     public class SherbimetController : ControllerBase
     {
-        public readonly AppDBContext _context;
+        private readonly AppDBContext _context;
 
         public SherbimetController(AppDBContext context)
         {
@@ -26,46 +26,49 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<List<Sherbimet>>> GetSherbimet(int id)
+        public async Task<ActionResult<Sherbimet>> GetSherbimet(int id)
         {
             var SHERBIMI = await _context.Sherbimi.FindAsync(id);
             if (SHERBIMI == null)
-                return NotFound("Role not found");
+                return NotFound("Sherbimi not found");
             return Ok(SHERBIMI);
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Sherbimet>>> AddSherbimi(Sherbimet user)
+        public async Task<ActionResult<List<Sherbimet>>> AddSherbimi(Sherbimet sherbimi)
         {
-            _context.Sherbimi.Add(user);
+            _context.Sherbimi.Add(sherbimi);
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.Sherbimi.ToListAsync()); ;
+            return Ok(await _context.Sherbimi.ToListAsync());
         }
-
-
 
         [HttpPatch]
         [Route("UpdateSherbimi/{id}")]
-        public async Task<Sherbimet> UpdateSherbimi(Sherbimet inicia)
+        public async Task<ActionResult<Sherbimet>> UpdateSherbimi(int id, Sherbimet sherbimi)
         {
-            _context.Entry(inicia).State = EntityState.Modified;
+            var dbSherbimi = await _context.Sherbimi.FindAsync(id);
+            if (dbSherbimi == null)
+                return NotFound("Sherbimi not found");
+
+            _context.Entry(dbSherbimi).CurrentValues.SetValues(sherbimi);
             await _context.SaveChangesAsync();
-            return inicia;
+            return Ok(dbSherbimi);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<List<Sherbimet>>> DeleteSherbimi(int id)
         {
-            var dbSherbimet = await _context.Sherbimi.FindAsync(id);
-            if (dbSherbimet == null)
+            var dbSherbimi = await _context.Sherbimi.FindAsync(id);
+            if (dbSherbimi == null)
                 return NotFound("Sherbimi not found");
 
-            _context.Sherbimi.Remove(dbSherbimet);
+            _context.Sherbimi.Remove(dbSherbimi);
 
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.Sherbimi.ToListAsync()); ;
+            return Ok(await _context.Sherbimi.ToListAsync());
         }
     }
+}
 }
