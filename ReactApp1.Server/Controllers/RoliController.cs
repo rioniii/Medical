@@ -52,7 +52,7 @@ namespace ReactApp1.Server.Controllers
 
         [HttpPatch]
         [Route("UpdateRole/{id}")]
-        public async Task<Roles> UpdateRole(int id, Roles objRole)
+        public async Task<ActionResult<Roles>> UpdateRole(int id, Roles objRole)
         {
             var roleToUpdate = await _context.Roles.FindAsync(id);
             if (roleToUpdate == null)
@@ -60,7 +60,7 @@ namespace ReactApp1.Server.Controllers
 
             _context.Entry(roleToUpdate).CurrentValues.SetValues(objRole);
             await _context.SaveChangesAsync();
-            return roleToUpdate;
+            return Ok(roleToUpdate);
         }
 
         [HttpDelete("{id}")]

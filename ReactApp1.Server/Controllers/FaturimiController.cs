@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ReactApp1.Server.Data.Models;
 
 namespace ReactApp1.Server.Controllers
 {
@@ -8,11 +10,15 @@ namespace ReactApp1.Server.Controllers
     [ApiController]
     public class FaturimiController : ControllerBase
     {
-        public readonly AppDBContext _context;
+        private readonly AppDBContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public FaturimiController(AppDBContext context)
+        public FaturimiController(AppDBContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -25,7 +31,7 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<List<Faturimi>>> GetFaturat(int id)
+        public async Task<ActionResult<Faturimi>> GetFaturat(int id)
         {
             var fatura = await _context.Faturat.FindAsync(id);
             if (fatura == null)
@@ -34,37 +40,41 @@ namespace ReactApp1.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Faturimi>>> AddFaturat(Faturimi faturat)
+        public async Task<ActionResult<Faturimi>> AddFaturat(Faturimi faturat)
         {
             _context.Faturat.Add(faturat);
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.Faturat.ToListAsync()); ;
+            return Ok(faturat);
         }
 
 
 
         [HttpPatch]
         [Route("UpdateFatura/{id}")]
-        public async Task<Faturimi> UpdateFatura(Faturimi objFaturat)
+        public async Task<ActionResult<Faturimi>> UpdateFatura(int id, Faturimi faturat)
         {
-            _context.Entry(objFaturat).State = EntityState.Modified;
+            var faturaToUpdate = await _context.Faturat.FindAsync(id);
+            if (faturaToUpdate == null)
+                return NotFound("Fatura not found");
+
+            _context.Entry(faturaToUpdate).CurrentValues.SetValues(faturat);
             await _context.SaveChangesAsync();
-            return objFaturat;
+            return Ok(faturaToUpdate);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<List<Faturimi>>> DeleteFaturat(int id)
+        public async Task<ActionResult<Faturimi>> DeleteFaturat(int id)
         {
-            var dbFaturat = await _context.Faturat.FindAsync(id);
-            if (dbFaturat == null)
-                return NotFound("Faturat not found");
+            var faturaToDelete = await _context.Faturat.FindAsync(id);
+            if (faturaToDelete == null)
+                return NotFound("Fatura not found");
 
-            _context.Faturat.Remove(dbFaturat);
+            _context.Faturat.Remove(faturaToDelete);
 
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.Faturat.ToListAsync()); ;
+            return Ok(faturaToDelete);
         }
     }
 }

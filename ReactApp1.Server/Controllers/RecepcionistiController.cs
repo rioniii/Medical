@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ReactApp1.Server.Data;
-using ReactApp1.Server.Data.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using ReactApp1.Server.Data.Models; // Sigurohuni që kjo është rruga e duhur për modelet tuaja
 
 namespace ReactApp1.Server.Controllers
 {
@@ -12,11 +10,15 @@ namespace ReactApp1.Server.Controllers
     [ApiController]
     public class RecepcionistiController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDBContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public RecepcionistiController(ApplicationDbContext context)
+        public RecepcionistiController(AppDBContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         // GET: api/Recepcionisti
