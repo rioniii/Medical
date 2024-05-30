@@ -9,7 +9,7 @@ const Header = () => {
         <header>
             <Navbar bg="dark" variant="dark" expand="lg">
                 <Container fluid>
-                    <Navbar.Brand href="/">Medical</Navbar.Brand>
+                    <Navbar.Brand href="./Ballina.jsx">Medical</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav" >
                         <ListGroup className="NavList mb-2 mb-lg-0" horizontal="lg" style={{
