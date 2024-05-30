@@ -13,7 +13,7 @@ const MjekuCRUD = () => {
 
     const fetchDoctors = async () => {
         try {
-            const response = await axios.get('/api/Mjeket');
+            const response = await axios.get('https://localhost:7107/api/Mjeku');
             setDoctors(response.data);
         } catch (error) {
             console.error('Error fetching doctors:', error);
@@ -35,17 +35,26 @@ const MjekuCRUD = () => {
 
     const handleSubmit = async () => {
         if (currentDoctor.id) {
-            await axios.put(`/api/Mjeket/${currentDoctor.id}`, currentDoctor);
+            await axios.put(`https://localhost:7107/api/Mjeku/${currentDoctor.id}`, currentDoctor);
         } else {
-            await axios.post('/api/Mjeket', currentDoctor);
+            await axios.post('https://localhost:7107/api/Mjeku', currentDoctor);
         }
         fetchDoctors();
         handleClose();
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`/api/Mjeket/${id}`);
-        fetchDoctors();
+        if (window.confirm("Are you sure you want to delete this Doctor?")) {
+            await axios.delete(`https://localhost:7107/api/Mjeku/${id}`)
+                .then(response => {
+                    alert("Doctor deleted successfully!");
+                    fetchDoctors(); // Refresh the data to reflect the deletion
+                })
+                .catch(error => {
+                    console.error("Error deleting doctor:", error);
+                    alert("Failed to delete doctor.");
+                });
+        }
     };
 
     return (
