@@ -7,16 +7,15 @@ using static ReactApp1.Server.DTOs.ServiceResponses;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.IO; // Ensure this using statement is added
 
 namespace ReactApp1.Server.Repositories
 {
     public class AccountRepository(
-        UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager,
-        IConfiguration config)
-        : IUserAccount
-    {
+        UserManager<ApplicationUser> userManager, 
+        RoleManager<IdentityRole> roleManager, 
+        IConfiguration config) 
+        : IUserAccount { 
+
         public async Task<GeneralResponse> CreateAccount(UserDTO userDTO)
         {
             if (userDTO is null) return new GeneralResponse(false, "Model is empty");
@@ -88,26 +87,12 @@ namespace ReactApp1.Server.Repositories
                 claims: userClaims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: credentials
-            );
+                );
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        // Assuming 'yourStringVariable' is the string you were trying to pass
-        public void UseBinaryReaderMethod()
-        {
-            string yourStringVariable = "This is the string you were trying to pass";
-
-            using (MemoryStream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(yourStringVariable)))
-            using (BinaryReader binaryReader = new BinaryReader(memoryStream))
-            {
-                // Replace 'YourMethodThatNeedsBinaryReader' with the actual method name
-                YourMethodThatNeedsBinaryReader(binaryReader);
-            }
-        }
-
-        private void YourMethodThatNeedsBinaryReader(BinaryReader binaryReader)
-        {
-            // Your method implementation here
         }
     }
 }
+
+  
+    
+
