@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ReactApp1.Server.Data.Models
 {
-    public class AppDBContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    public class AppDBContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
         public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
         {
         }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Roles> Roles { get; set; }
-        public DbSet<UserRole> UsersRole { get; set; }
-        public DbSet<Pershkrimi> Pershkrimi { get; set; }
+        public DbSet<User> Users { get; set;}
+        public DbSet<Roles> Roles { get; set;}
+        public DbSet<UserRole> UsersRole { get; set;}
+        public DbSet<Pershkrimi> Pershkrimi { get; set;}
         public DbSet<Dhomat> Dhomat { get; set; }
         public DbSet<Faturimi> Faturat { get; set; }
         public DbSet<Contact> Contacti { get; set; }
@@ -26,12 +26,17 @@ namespace ReactApp1.Server.Data.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); 
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Faturimi>()
                 .HasOne(f => f.Pershkrimi)
                 .WithOne(p => p.Faturimet)
                 .HasForeignKey<Faturimi>(f => f.Pershkrimi_ID);
+
+            modelBuilder.Entity<Recepcionisti>()
+                .HasOne<ApplicationUser>() // Specifikon që ka një ApplicationUser
+                .WithOne() // Nuk specifikon një proprietet të kundërt të navigimit
+                .HasForeignKey<Recepcionisti>(r => r.UserId); // Specifikon se cili është çelësi i huaj në Recepcionisti
         }
     }
 }

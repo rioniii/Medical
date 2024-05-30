@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { Button, Modal, Table, Form } from 'react-bootstrap';
+import Button from "react-bootstrap/Button";
+import Table from 'react-bootstrap/Table';
+import Modal from 'react-bootstrap/Modal';
+import Form  from 'react-bootstrap/Form';
+import Navigation from "./Navigation";
 
 const MjekuCRUD = () => {
     const [doctors, setDoctors] = useState([]);
@@ -61,6 +65,7 @@ const MjekuCRUD = () => {
 
     return (
         <>
+            <Navigation />
             <Button onClick={() => handleShow()}>Add New Doctor</Button>
             <Container>
                 {doctors.map(doctor => (

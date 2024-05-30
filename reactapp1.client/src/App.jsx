@@ -14,6 +14,7 @@ import { Route, Routes, HashRouter } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
+import MjekuCRUD from './Dashboard/Components/MjekuCRUD';
 
 
  
@@ -74,6 +75,8 @@ class App extends Component {
                     <Route path="/Contact" element={<Contact />}></Route>
                     <Route path="/PatientCRUD" element={<PatientCRUD />}></Route>
                     <Route path="/RepartCrud" element={<RepartCrud />}></Route>
+                    <Route path="/MjekuCRUD" element={<MjekuCRUD />}></Route>
+
 
                     </Routes>
                 </HashRouter >
