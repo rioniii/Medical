@@ -29,7 +29,7 @@ const RepartCrud = () => {
     }, []);
 
     const getData = () => {
-        axios.get('https://localhost:7107/api/Reparti')
+        axios.get('https://localhost:7107/api/Repart')
             .then(response => {
                 setData(response.data); // Set the fetched data to state
             })
@@ -47,7 +47,7 @@ const RepartCrud = () => {
     };
 
     const handleUpdate = () => {
-        axios.put(`https://localhost:7107/api/Reparti/${editId}`, {
+        axios.put(`https://localhost:7107/api/Repart/${editId}`, {
             Reparti_Id: editId,
             Emri: editEmri,
             Kati: editKati,
@@ -61,21 +61,25 @@ const RepartCrud = () => {
     };
 
     const handleAddRepart = () => {
-        axios.post('https://localhost:7107/api/Reparti', {
+        console.log('Adding Repart:', { Emri, Kati, NrDhomave }); // Debug: log values to be sent
+        axios.post('https://localhost:7107/api/Repart', {
             Emri, Kati, NrDhomave
         })
-            .then(() => {
-                getData(); // Refresh data after adding
-                setEmri('');
-                setKati('');
-                setNrDhomave('');
-            })
-            .catch(error => console.error('Error:', error));
+        .then(() => {
+            alert('Repart added successfully!'); // Provide UI feedback
+            getData(); // Refresh data after adding
+            setEmri('');
+            setKati('');
+            setNrDhomave('');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to add repart.'); // Provide UI feedback
+        });
     };
-
     const handleDelete = (id) => {
         if (window.confirm("Are you sure you want to delete this repart?")) {
-            axios.delete(`https://localhost:7107/api/Reparti/${id}`)
+            axios.delete(`https://localhost:7107/api/Repart/${id}`)
                 .then(response => {
                     alert("Repart deleted successfully!");
                     getData(); // Refresh the data to reflect the deletion
