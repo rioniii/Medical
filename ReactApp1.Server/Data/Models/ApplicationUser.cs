@@ -20,7 +20,7 @@ namespace ReactApp1.Server.Data.Models
         public string Specializimi { get; set; } 
         public string Departmenti { get; set; }
 
-        //public Recepcionisti Recepcionisti { get; set; }
+        public Recepcionisti Recepcionisti { get; set; }
 
 
     }

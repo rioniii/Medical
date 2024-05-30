@@ -6,11 +6,6 @@
 
         public int UserId { get; set; }
         public ApplicationUser User { get; set; }
-
-
-
         public List<Dhomat> Dhomat { get; set; }
-
-
     }
 }
