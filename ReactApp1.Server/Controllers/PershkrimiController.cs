@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data.Models;
@@ -11,11 +12,15 @@ namespace ReactApp1.Server.Controllers
     public class PershkrimiController : ControllerBase
     {
 
-        public readonly AppDBContext _context;
+        private readonly AppDBContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public PershkrimiController(AppDBContext context)
+        public PershkrimiController(AppDBContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]

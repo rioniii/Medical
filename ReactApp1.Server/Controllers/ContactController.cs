@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ReactApp1.Server.Data.Models;
 
 namespace ReactApp1.Server.Controllers
 {

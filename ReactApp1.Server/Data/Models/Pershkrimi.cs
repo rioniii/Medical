@@ -26,6 +26,8 @@ namespace ReactApp1.Server.Data.Models
         public int? Faturimi_Id {  get; set; }
        
         public  Faturimi Faturimet { get; set; }
+
+        public Terminet Terminet { get; set; }
        
     }
 }
