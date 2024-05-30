@@ -17,7 +17,7 @@ const Header = () => {
                             display: "flex",
                             justifyContent: "center"
                         }}>
-                            <ListGroup.Item variant="success" action href="/">Home</ListGroup.Item>
+                            <ListGroup.Item variant="success" action href="#Ballina">Home</ListGroup.Item>
                             <ListGroup.Item variant="success" action href="#AboutUs">About Us</ListGroup.Item>
                             <ListGroup.Item variant="success" action href="#Clinic">Clinic</ListGroup.Item>
                             <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>
