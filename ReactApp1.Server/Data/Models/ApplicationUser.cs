@@ -21,6 +21,8 @@ namespace ReactApp1.Server.Data.Models
         public string Departmenti { get; set; }
 
         public Recepcionisti Recepcionisti { get; set; }
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiryTime { get; set; }
 
 
     }

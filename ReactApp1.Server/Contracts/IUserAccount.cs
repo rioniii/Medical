@@ -7,5 +7,8 @@ namespace ReactApp1.Server.Contracts
     {
         Task<GeneralResponse> CreateAccount(UserDTO userDTO);
         Task<LoginResponse> LoginAccount(LoginDTO loginDTO);
+        Task<TokenResponse> RefreshTokenAsync(string token, string refreshToken);
+        Task<List<UserDTO>> GetUsers();
+
     }
 }

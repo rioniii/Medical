@@ -7,6 +7,7 @@ using static ReactApp1.Server.DTOs.ServiceResponses;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace ReactApp1.Server.Repositories
 {
@@ -53,21 +54,21 @@ namespace ReactApp1.Server.Repositories
 
         public async Task<LoginResponse> LoginAccount(LoginDTO loginDTO)
         {
-            if (loginDTO == null)
-                return new LoginResponse(false, null!, "Login container is empty");
+            var user = await userManager.FindByEmailAsync(loginDTO.Email);
+            if (user == null)
+                return new LoginResponse(false, null, "User not found");
 
-            var getUser = await userManager.FindByEmailAsync(loginDTO.Email);
-            if (getUser is null)
-                return new LoginResponse(false, null!, "User not found");
-
-            bool checkUserPasswords = await userManager.CheckPasswordAsync(getUser, loginDTO.Password);
+            var checkUserPasswords = await userManager.CheckPasswordAsync(user, loginDTO.Password);
             if (!checkUserPasswords)
-                return new LoginResponse(false, null!, "Invalid email/password");
+                return new LoginResponse(false, null, "Invalid email/password");
 
-            var getUserRole = await userManager.GetRolesAsync(getUser);
-            var userSession = new UserSession(getUser.Id, getUser.Emri, getUser.Email, getUserRole.First());
-            string token = GenerateToken(userSession);
-            return new LoginResponse(true, token!, "Login completed");
+            var token = GenerateToken(user); // Assuming this method generates the JWT token
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); // Set the expiry time
+            await userManager.UpdateAsync(user);
+
+            return new LoginResponse(true, token, refreshToken, "Login successful");
         }
 
         private string GenerateToken(UserSession user)
@@ -90,9 +91,36 @@ namespace ReactApp1.Server.Repositories
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<TokenResponse> RefreshTokenAsync(string token, string refreshToken)
+        {
+            var principal = GetPrincipalFromExpiredToken(token);
+            var username = principal.Identity.Name;
+            var user = await userManager.FindByNameAsync(username);
+
+            if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+                return new TokenResponse(false, null, "Invalid refresh token");
+
+            var newJwtToken = GenerateToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshToken = newRefreshToken;
+            await userManager.UpdateAsync(user);
+
+            return new TokenResponse(true, newJwtToken, newRefreshToken, "Token refreshed successfully");
+        }
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
     }
 }
 
   
     
-}
+
