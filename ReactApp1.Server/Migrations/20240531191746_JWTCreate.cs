@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ReactApp1.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class JWT : Migration
+    public partial class JWTCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,7 +41,7 @@ namespace ReactApp1.Server.Migrations
 
             migrationBuilder.DropColumn(
                 name: "Mbiemri",
-                table: "Pacienti"); 
+                table: "Pacienti");
 
             migrationBuilder.DropColumn(
                 name: "NumriTel",
@@ -78,6 +78,12 @@ namespace ReactApp1.Server.Migrations
                 newName: "IX_UsersRole_RolesId");
 
             migrationBuilder.AddColumn<int>(
+                name: "Faturimi_Id",
+                table: "Pershkrimi",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
                 name: "TerminetTermini_Id",
                 table: "Pershkrimi",
                 type: "int",
@@ -90,6 +96,18 @@ namespace ReactApp1.Server.Migrations
                 type: "nvarchar(450)",
                 nullable: false,
                 defaultValue: "");
+
+            migrationBuilder.AddColumn<int>(
+                name: "Pershkrimi_ID",
+                table: "Faturat",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "Sherbimet_Id",
+                table: "Faturat",
+                type: "int",
+                nullable: true);
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_UsersRole",
@@ -313,6 +331,18 @@ namespace ReactApp1.Server.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Faturat_Pershkrimi_ID",
+                table: "Faturat",
+                column: "Pershkrimi_ID",
+                unique: true,
+                filter: "[Pershkrimi_ID] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Faturat_Sherbimet_Id",
+                table: "Faturat",
+                column: "Sherbimet_Id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -367,6 +397,20 @@ namespace ReactApp1.Server.Migrations
                 column: "UserId");
 
             migrationBuilder.AddForeignKey(
+                name: "FK_Faturat_Pershkrimi_Pershkrimi_ID",
+                table: "Faturat",
+                column: "Pershkrimi_ID",
+                principalTable: "Pershkrimi",
+                principalColumn: "Pershkrimi_Id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Faturat_Sherbimi_Sherbimet_Id",
+                table: "Faturat",
+                column: "Sherbimet_Id",
+                principalTable: "Sherbimi",
+                principalColumn: "Sherbimet_Id");
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_Pacienti_AspNetUsers_UserId",
                 table: "Pacienti",
                 column: "UserId",
@@ -402,6 +446,14 @@ namespace ReactApp1.Server.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Faturat_Pershkrimi_Pershkrimi_ID",
+                table: "Faturat");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Faturat_Sherbimi_Sherbimet_Id",
+                table: "Faturat");
+
             migrationBuilder.DropForeignKey(
                 name: "FK_Pacienti_AspNetUsers_UserId",
                 table: "Pacienti");
@@ -453,9 +505,21 @@ namespace ReactApp1.Server.Migrations
                 name: "IX_Pacienti_UserId",
                 table: "Pacienti");
 
+            migrationBuilder.DropIndex(
+                name: "IX_Faturat_Pershkrimi_ID",
+                table: "Faturat");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Faturat_Sherbimet_Id",
+                table: "Faturat");
+
             migrationBuilder.DropPrimaryKey(
                 name: "PK_UsersRole",
                 table: "UsersRole");
+
+            migrationBuilder.DropColumn(
+                name: "Faturimi_Id",
+                table: "Pershkrimi");
 
             migrationBuilder.DropColumn(
                 name: "TerminetTermini_Id",
@@ -464,6 +528,14 @@ namespace ReactApp1.Server.Migrations
             migrationBuilder.DropColumn(
                 name: "UserId",
                 table: "Pacienti");
+
+            migrationBuilder.DropColumn(
+                name: "Pershkrimi_ID",
+                table: "Faturat");
+
+            migrationBuilder.DropColumn(
+                name: "Sherbimet_Id",
+                table: "Faturat");
 
             migrationBuilder.RenameTable(
                 name: "UsersRole",

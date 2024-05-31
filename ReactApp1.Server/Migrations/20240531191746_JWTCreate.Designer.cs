@@ -12,8 +12,8 @@ using ReactApp1.Server.Data.Models;
 namespace ReactApp1.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240531104433_JWT")]
-    partial class JWT
+    [Migration("20240531191746_JWTCreate")]
+    partial class JWTCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

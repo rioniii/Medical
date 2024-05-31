@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button as BootstrapButton } from 'react-bootstrap';
 import axios from 'axios';
-import Button from "react-bootstrap/Button";
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
-import Form  from 'react-bootstrap/Form';
+import Form from 'react-bootstrap/Form';
 import Navigation from "./Navigation";
 
 const MjekuCRUD = () => {
@@ -62,11 +61,10 @@ const MjekuCRUD = () => {
         }
     };
 
-
     return (
         <>
             <Navigation />
-            <Button onClick={() => handleShow()}>Add New Doctor</Button>
+            <BootstrapButton onClick={() => handleShow()}>Add New Doctor</BootstrapButton>
             <Container>
                 {doctors.map(doctor => (
                     <Row key={doctor.id} className="mb-3">
@@ -77,13 +75,13 @@ const MjekuCRUD = () => {
                         <Col>{doctor.nderrimi}</Col>
                         <Col>{doctor.angazhimi}</Col>
                         <Col>
-                            <Button variant="warning" onClick={() => handleShow(doctor)}>Edit</Button>
-                            <Button variant="danger" onClick={() => handleDelete(doctor.id)}>Delete</Button>
+                            <BootstrapButton variant="warning" onClick={() => handleShow(doctor)}>Edit</BootstrapButton>
+                            <BootstrapButton variant="danger" onClick={() => handleDelete(doctor.id)}>Delete</BootstrapButton>
                         </Col>
                     </Row>
                 ))}
             </Container>
-    
+
             <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>{currentDoctor.id ? 'Edit Doctor' : 'Add Doctor'}</Modal.Title>
@@ -131,11 +129,12 @@ const MjekuCRUD = () => {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>Close</Button>
-                    <Button variant="primary" onClick={handleSubmit}>{currentDoctor.id ? 'Save Changes' : 'Add Doctor'}</Button>
+                    <BootstrapButton variant="secondary" onClick={handleClose}>Close</BootstrapButton>
+                    <BootstrapButton variant="primary" onClick={handleSubmit}>{currentDoctor.id ? 'Save Changes' : 'Add Doctor'}</BootstrapButton>
                 </Modal.Footer>
             </Modal>
         </>
     );
-  }
+}
+
 export default MjekuCRUD;
