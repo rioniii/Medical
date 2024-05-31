@@ -8,6 +8,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReactApp1.Server.Repositories
 {
@@ -16,6 +19,7 @@ namespace ReactApp1.Server.Repositories
         RoleManager<IdentityRole> roleManager, 
         IConfiguration config) 
         : IUserAccount { 
+
 
         public async Task<GeneralResponse> CreateAccount(UserDTO userDTO)
         {
@@ -52,23 +56,50 @@ namespace ReactApp1.Server.Repositories
             }
         }
 
+
+        public async Task<List<UserDTODetails>> GetUsers()
+        {
+            var users = await userManager.Users.ToListAsync();
+            var userDetails = new List<UserDTODetails>();
+
+            foreach (var user in users)
+            {
+                var roles = await userManager.GetRolesAsync(user);
+                userDetails.Add(new UserDTODetails
+                {
+                    id = user.Id,
+                    name = user.Emri ?? string.Empty,
+                    email = user.Email ?? string.Empty, 
+                    Role = roles.FirstOrDefault() ?? string.Empty 
+                });
+            }
+
+            return userDetails;
+        }
+
         public async Task<LoginResponse> LoginAccount(LoginDTO loginDTO)
         {
-            var user = await userManager.FindByEmailAsync(loginDTO.Email);
-            if (user == null)
+            if (loginDTO == null)
+                return new LoginResponse(false, null, "Login container is empty");
+
+            var getUser = await userManager.FindByEmailAsync(loginDTO.Email);
+            if (getUser == null)
                 return new LoginResponse(false, null, "User not found");
 
-            var checkUserPasswords = await userManager.CheckPasswordAsync(user, loginDTO.Password);
+            if (string.IsNullOrEmpty(getUser.Email) || string.IsNullOrEmpty(getUser.UserName))
+                return new LoginResponse(false, null, "User data is incomplete");
+
+            bool checkUserPasswords = await userManager.CheckPasswordAsync(getUser, loginDTO.Password);
             if (!checkUserPasswords)
                 return new LoginResponse(false, null, "Invalid email/password");
 
-            var token = GenerateToken(user); // Assuming this method generates the JWT token
-            var refreshToken = GenerateRefreshToken();
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); // Set the expiry time
-            await userManager.UpdateAsync(user);
+            var getUserRole = await userManager.GetRolesAsync(getUser);
+            if (getUserRole == null || !getUserRole.Any())
+                return new LoginResponse(false, null, "User has no assigned roles");
 
-            return new LoginResponse(true, token, refreshToken, "Login successful");
+            var userSession = new UserSession(getUser.Id, getUser.UserName, getUser.Email, getUserRole.First());
+            string token = GenerateToken(userSession);
+            return new LoginResponse(true, token, "Login completed");
         }
 
         private string GenerateToken(UserSession user)
@@ -92,22 +123,7 @@ namespace ReactApp1.Server.Repositories
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<TokenResponse> RefreshTokenAsync(string token, string refreshToken)
-        {
-            var principal = GetPrincipalFromExpiredToken(token);
-            var username = principal.Identity.Name;
-            var user = await userManager.FindByNameAsync(username);
 
-            if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
-                return new TokenResponse(false, null, "Invalid refresh token");
-
-            var newJwtToken = GenerateToken(user);
-            var newRefreshToken = GenerateRefreshToken();
-            user.RefreshToken = newRefreshToken;
-            await userManager.UpdateAsync(user);
-
-            return new TokenResponse(true, newJwtToken, newRefreshToken, "Token refreshed successfully");
-        }
         private string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
