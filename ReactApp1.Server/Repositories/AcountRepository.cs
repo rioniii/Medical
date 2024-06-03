@@ -7,6 +7,10 @@ using static ReactApp1.Server.DTOs.ServiceResponses;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReactApp1.Server.Repositories
 {
@@ -15,6 +19,7 @@ namespace ReactApp1.Server.Repositories
         RoleManager<IdentityRole> roleManager, 
         IConfiguration config) 
         : IUserAccount { 
+
 
         public async Task<GeneralResponse> CreateAccount(UserDTO userDTO)
         {
@@ -51,23 +56,47 @@ namespace ReactApp1.Server.Repositories
             }
         }
 
+
+        public async Task<List<UserDTODetails>> GetUsers()
+        {
+            var users = await userManager.Users.ToListAsync();
+            var userDetails = new List<UserDTODetails>();
+
+            foreach (var user in users)
+            {
+                var roles = await userManager.GetRolesAsync(user);
+                userDetails.Add(new UserDTODetails
+                {
+                    id = user.Id,
+                    name = user.Emri ?? string.Empty,
+                    email = user.Email ?? string.Empty, 
+                    Role = roles.FirstOrDefault() ?? string.Empty 
+                });
+            }
+
+            return userDetails;
+        }
+
         public async Task<LoginResponse> LoginAccount(LoginDTO loginDTO)
         {
             if (loginDTO == null)
-                return new LoginResponse(false, null!, "Login container is empty");
+                return new LoginResponse(false, null, "Login container is empty");
 
             var getUser = await userManager.FindByEmailAsync(loginDTO.Email);
-            if (getUser is null)
-                return new LoginResponse(false, null!, "User not found");
+            if (getUser == null)
+                return new LoginResponse(false, null, "User not found");
+
+            if (string.IsNullOrEmpty(getUser.Email) || string.IsNullOrEmpty(getUser.UserName))
+                return new LoginResponse(false, null, "User data is incomplete");
 
             bool checkUserPasswords = await userManager.CheckPasswordAsync(getUser, loginDTO.Password);
             if (!checkUserPasswords)
-                return new LoginResponse(false, null!, "Invalid email/password");
+                return new LoginResponse(false, null, "Invalid email/password");
 
             var getUserRole = await userManager.GetRolesAsync(getUser);
             var userSession = new UserSession(getUser.Id, getUser.Name, getUser.Email, getUserRole.First());
             string token = GenerateToken(userSession);
-            return new LoginResponse(true, token!, "Login completed");
+            return new LoginResponse(true, token, "Login completed");
         }
 
         private string GenerateToken(UserSession user)
@@ -90,6 +119,18 @@ namespace ReactApp1.Server.Repositories
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
     }
 }
 

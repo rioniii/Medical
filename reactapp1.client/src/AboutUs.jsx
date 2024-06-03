@@ -4,7 +4,7 @@ import React from 'react';
 import ChangeVideo from './video.module.css'; // Import the CSS file with the styles
 import VideoIntro from '../src/assets/backroom.mp4';
 import Header from './Header';
-import axiosInstance from './axiosConfig'; // axios cookie
+//import axiosInstance from './axiosConfig'; // axios cookie
 function AboutUs  () {
     return (
         <>
