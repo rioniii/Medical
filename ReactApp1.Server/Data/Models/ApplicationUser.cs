@@ -4,7 +4,10 @@ namespace ReactApp1.Server.Data.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public int UserId {  get; set; }
+        public string Name { get; set; }
+
+
+      /*  public int UserId {  get; set; }
         public string Emri { get; set; }
         public string Mbiemri { get; set; }
         public string Ditelindja { get; set; }
@@ -21,7 +24,7 @@ namespace ReactApp1.Server.Data.Models
         public string Departmenti { get; set; }
 
         public Recepcionisti Recepcionisti { get; set; }
-
+      */
 
     }
 }
