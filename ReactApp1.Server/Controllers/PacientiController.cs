@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ReactApp1.Server.Data.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ReactApp1.Server.Controllers
 {
@@ -35,44 +39,56 @@ namespace ReactApp1.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Failed to get patients: {ExceptionMessage}", ex.ToString()); // Use the logger
+                _logger.LogError("Failed to get patients: {ExceptionMessage}", ex.ToString());
                 return StatusCode(500, "Internal server error - see logs for details");
             }
         }
 
-
-
         [HttpGet("{id}")]
-        [AllowAnonymous]
-        public async Task<ActionResult<List<Pacienti>>> GetPatient(int id)
+        public async Task<ActionResult<Pacienti>> GetPatient(int id)
         {
-            var pacienti = await _context.Pacienti.FindAsync(id);
-            if (pacienti == null)
-                return NotFound("Pacienti not found");
-            return Ok(pacienti);
+            try
+            {
+                var pacienti = await _context.Pacienti.FindAsync(id);
+                if (pacienti == null)
+                    return NotFound("Pacienti not found");
+                return Ok(pacienti);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to get patient: {ExceptionMessage}", ex.ToString());
+                return StatusCode(500, "Internal server error - see logs for details");
+            }
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddPatientAndUser(Pacienti pacientet, string userName, string password)
         {
-            var user = new ApplicationUser { UserName = userName };
-            var result = await _userManager.CreateAsync(user, password);
-            if (result.Succeeded)
+            try
             {
-                _context.Pacienti.Add(pacientet);
-                await _context.SaveChangesAsync();
-                return Ok(await _context.Pacienti.ToListAsync());
+                var user = new ApplicationUser { UserName = userName };
+                var result = await _userManager.CreateAsync(user, password);
+                if (result.Succeeded)
+                {
+                    _context.Pacienti.Add(pacientet);
+                    await _context.SaveChangesAsync();
+                    return Ok(await _context.Pacienti.ToListAsync());
+                }
+                else
+                {
+                    return BadRequest(result.Errors);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest(result.Errors);
+                _logger.LogError("Failed to add patient and user: {ExceptionMessage}", ex.ToString());
+                return StatusCode(500, "Internal server error - see logs for details");
             }
         }
 
-
         [HttpPut("{id}")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdatePatient(int id, [FromBody] Pacienti patient)
         {
             if (!ModelState.IsValid)
@@ -102,32 +118,40 @@ namespace ReactApp1.Server.Controllers
                     throw;
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to update patient: {ExceptionMessage}", ex.ToString());
+                return StatusCode(500, "Internal server error - see logs for details");
+            }
 
             return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<List<Pacienti>>> DeletePatient(int id)
+        {
+            try
+            {
+                var dbPacientet = await _context.Pacienti.FindAsync(id);
+                if (dbPacientet == null)
+                    return NotFound("Pacienti not found");
+
+                _context.Pacienti.Remove(dbPacientet);
+                await _context.SaveChangesAsync();
+
+                return Ok(await _context.Pacienti.ToListAsync());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to delete patient: {ExceptionMessage}", ex.ToString());
+                return StatusCode(500, "Internal server error - see logs for details");
+            }
         }
 
         private bool PatientExists(int id)
         {
             return _context.Pacienti.Any(e => e.Patient_Id == id);
         }
-
-
-
-
-        [HttpDelete("{id}")]
-        [AllowAnonymous]
-        public async Task<ActionResult<List<Pacienti>>> DeletePatient(int id)
-        {
-            var dbPacientet = await _context.Pacienti.FindAsync(id);
-            if (dbPacientet == null)
-                return NotFound("Pacienti not found");
-
-            _context.Pacienti.Remove(dbPacientet);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(await _context.Faturat.ToListAsync()); ;
-        }
     }
 }
-
