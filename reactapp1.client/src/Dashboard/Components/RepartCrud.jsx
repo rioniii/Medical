@@ -65,19 +65,6 @@ const RepartCrud = () => {
         axios.post('https://localhost:7107/api/Repart', {
             Emri, Kati, NrDhomave
         })
-<<<<<<< HEAD
-            .then(() => {
-                alert('Repart added successfully!'); // Provide UI feedback
-                getData(); // Refresh data after adding
-                setEmri('');
-                setKati('');
-                setNrDhomave('');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to add repart.'); // Provide UI feedback
-            });
-=======
         .then(() => {
             alert('Repart added successfully!'); // Provide UI feedback
             getData(); // Refresh data after adding
@@ -89,7 +76,6 @@ const RepartCrud = () => {
             console.error('Error:', error);
             alert('Failed to add repart.'); // Provide UI feedback
         });
->>>>>>> 17ae1912ce7626006e969f7ca2ace8a36b8e2015
     };
     const handleDelete = (id) => {
         if (window.confirm("Are you sure you want to delete this repart?")) {

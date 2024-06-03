@@ -26,7 +26,7 @@ namespace ReactApp1.Server.Repositories
             if (userDTO is null) return new GeneralResponse(false, "Model is empty");
             var newUser = new ApplicationUser()
             {
-                Emri = userDTO.Name,
+                Name = userDTO.Name,
                 Email = userDTO.Email,
                 PasswordHash = userDTO.Password,
                 UserName = userDTO.Email
@@ -68,7 +68,7 @@ namespace ReactApp1.Server.Repositories
                 userDetails.Add(new UserDTODetails
                 {
                     id = user.Id,
-                    name = user.Emri ?? string.Empty,
+                    name = user.Name ?? string.Empty,
                     email = user.Email ?? string.Empty, 
                     Role = roles.FirstOrDefault() ?? string.Empty 
                 });
@@ -94,10 +94,7 @@ namespace ReactApp1.Server.Repositories
                 return new LoginResponse(false, null, "Invalid email/password");
 
             var getUserRole = await userManager.GetRolesAsync(getUser);
-            if (getUserRole == null || !getUserRole.Any())
-                return new LoginResponse(false, null, "User has no assigned roles");
-
-            var userSession = new UserSession(getUser.Id, getUser.UserName, getUser.Email, getUserRole.First());
+            var userSession = new UserSession(getUser.Id, getUser.Name, getUser.Email, getUserRole.First());
             string token = GenerateToken(userSession);
             return new LoginResponse(true, token, "Login completed");
         }

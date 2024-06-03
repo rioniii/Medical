@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ReactApp1.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class JWTCreate : Migration
+    public partial class AddFaturimiIdToPershkrimi : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
