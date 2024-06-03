@@ -8,7 +8,6 @@ function RegisterForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
-    const [contactNumber, setContactNumber] = useState('');
     const [passwordMatchError, setPasswordMatchError] = useState('');
     const [emailTakenError, setEmailTakenError] = useState('');
 
@@ -24,12 +23,11 @@ function RegisterForm() {
             name: name,
             email: email,
             password: password,
-            confirmPassword: repeatPassword,
-            numriKontaktues: contactNumber
+            confirmPassword: repeatPassword
         };
 
         try {
-            const response = await fetch('https://localhost:7107/api/User', {
+            const response = await fetch('https://localhost:7107/api/Account/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -50,7 +48,7 @@ function RegisterForm() {
 
             const data = await response.json();
             console.log(data);
-            // Redirect or handle login status here
+            
         } catch (error) {
             console.error('Registration failed:', error);
             setPasswordMatchError('Registration failed. Please try again.');
@@ -67,7 +65,6 @@ function RegisterForm() {
                         <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
                         <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={(e) => setPassword(e.target.value)} pattern="^(?=.*[A-Za-z]).{8,}$" title="Password must contain at least one letter and be at least 8 characters long" />
                         <MDBInput label='Repeat your password' size='lg' id='form4' type='password' value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} />
-                        <MDBInput label='Contact Number' size='lg' id='form5' type='text' value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} pattern="\d{3}-\d{3}-\d{3}" title="Please enter the contact number in the format: 044-xxx-xxx" />
                         {passwordMatchError && <div className="text-danger mb-2">{passwordMatchError}</div>}
                         {emailTakenError && <div className="text-danger mb-2">{emailTakenError}</div>}
                         <MDBBtn className='w-100' size='lg' type='submit'>Register</MDBBtn>
