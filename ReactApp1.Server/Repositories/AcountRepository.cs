@@ -68,7 +68,7 @@ namespace ReactApp1.Server.Repositories
                 userDetails.Add(new UserDTODetails
                 {
                     id = user.Id,
-                    name = user.Emri ?? string.Empty,
+                    name = user.Name ?? string.Empty,
                     email = user.Email ?? string.Empty, 
                     Role = roles.FirstOrDefault() ?? string.Empty 
                 });
