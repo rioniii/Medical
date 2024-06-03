@@ -17,18 +17,6 @@ namespace ReactApp1.Server.Migrations
                 nullable: false,
                 defaultValue: 0);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Faturat_Pershkrimi_Id",
-                table: "Faturat",
-                column: "Pershkrimi_Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Faturat_Pershkrimi_Pershkrimi_Id",
-                table: "Faturat",
-                column: "Pershkrimi_Id",
-                principalTable: "Pershkrimi",
-                principalColumn: "Pershkrimi_Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
@@ -38,13 +26,6 @@ namespace ReactApp1.Server.Migrations
                 name: "FK_Faturat_Pershkrimi_Pershkrimi_Id",
                 table: "Faturat");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Faturat_Pershkrimi_Id",
-                table: "Faturat");
-
-            migrationBuilder.DropColumn(
-                name: "Pershkrimi_Id",
-                table: "Faturat");
         }
     }
 }
