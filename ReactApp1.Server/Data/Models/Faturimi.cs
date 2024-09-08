@@ -9,9 +9,6 @@ namespace ReactApp1.Server.Data.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Fatura_Id { get; set; }
 
-        [Required(ErrorMessage = "Shuma is required")]
-        [Range(0, double.MaxValue, ErrorMessage = "Shuma must be a positive value")]
-        public double Shuma { get; set; }
         public DateTime Data { get; set; }
 
         [Required(ErrorMessage = "Statusi is required")]
@@ -21,5 +18,19 @@ namespace ReactApp1.Server.Data.Models
 
         public Pershkrimi Pershkrimi { get; set; }
 
+        [NotMapped]
+        public double TotalOrderPrice { get; private set; }
+
+        // Method to calculate total order price
+        public void CalculateTotalOrderPrice()
+        {
+            TotalOrderPrice = 0;
+            foreach (var item in OrderItems)
+            {
+                TotalOrderPrice += item.Price * item.Quantity;
+
+            }
+        }
     }
 }
+
