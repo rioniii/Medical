@@ -1,71 +1,60 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace ReactApp1.Server.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
-    public class ContactController : ControllerBase
+    [EnableCors("AllowReactApp")] // Ensure this policy name matches the one you defined
+    public class ContactUsController : ControllerBase
     {
-        public readonly AppDBContext _context;
+        private readonly AppDBContext _context;
 
-        public ContactController(AppDBContext context)
+        public ContactUsController(AppDBContext context)
         {
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<Contact>>> GetAllFaturat()
+        [HttpGet, Authorize]
+        public async Task<ActionResult<IEnumerable<ContactRequest>>> GetAllContactRequests()
         {
-            var contacti = await _context.Contacti.ToListAsync();
-
-            return Ok(contacti);
+            var contactRequests = await _context.ContactRequests.ToListAsync();
+            return Ok(contactRequests);
         }
 
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<List<Contact>>> GetContacti(int id)
+        [HttpPost, Authorize]
+        public async Task<ActionResult<ContactRequest>> Contact([FromBody] ContactRequest contactRequest)
         {
-            var contacti = await _context.Contacti.FindAsync(id);
-            if (contacti == null)
-                return NotFound("Contacti not found");
-            return Ok(contacti);
-        }
+            Console.WriteLine("Received contact request for Name: " + contactRequest.Name);
 
-        [HttpPost]
-        public async Task<ActionResult<List<Contact>>> AddContact(Contact contacti)
-        {
-            _context.Contacti.Add(contacti);
+            // Create a response object with name, email, and message
+            var contactResponse = new ContactRequest
+            {
+                Name = contactRequest.Name,
+                Email = contactRequest.Email,
+                Message = contactRequest.Message
+            };
+
+            // Add the contact request to the context and save changes
+            _context.ContactRequests.Add(contactResponse);
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.Contacti.ToListAsync()); ;
-        }
-
-
-
-        [HttpPatch]
-        [Route("UpdateContacti/{id}")]
-        public async Task<Contact> UpdateContact(Contact objContacti)
-        {
-            _context.Entry(objContacti).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return objContacti;
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<List<Contact>>> DeleteContacti(int id)
-        {
-            var dbContacti = await _context.Contacti.FindAsync(id);
-            if (dbContacti == null)
-                return NotFound("Contacti not found");
-
-            _context.Contacti.Remove(dbContacti);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(await _context.Contacti.ToListAsync()); ;
+            return Ok(contactResponse);
         }
     }
+}
+
+public class ContactRequest
+{
+    [Key]
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string Message { get; set; }
 }

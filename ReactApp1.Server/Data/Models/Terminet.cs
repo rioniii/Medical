@@ -14,7 +14,5 @@ namespace ReactApp1.Server.Data.Models
        
         public DateTime Data { get; set; }
 
-        public int Pacienti_Id { get; set; }
-        public Pacienti Pacienti { get; set; }
     }
 }

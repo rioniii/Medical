@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReactApp1.Server.Contracts;
 using ReactApp1.Server.Data.Models;
 using ReactApp1.Server.DTOs;
-using ReactApp1.Server.Data.Models;
+using System.Collections.Generic;
 
 namespace ReactApp1.Server.Controllers
 {
@@ -14,24 +14,24 @@ namespace ReactApp1.Server.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IUserAccount _userAccountService;
+        private readonly IUserAccount userAccount;
 
-        public AccountController(IUserAccount userAccountService)
+        public AccountController(IUserAccount userAccount)
         {
-            _userAccountService = userAccountService;
+            this.userAccount = userAccount;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserDTO userDTO)
         {
-            var response = await _userAccountService.CreateAccount(userDTO);
+            var response = await userAccount.CreateAccount(userDTO);
             return Ok(response);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
         {
-            var response = await _userAccountService.LoginAccount(loginDTO);
+            var response = await userAccount.LoginAccount(loginDTO);
             var refreshToken = GenerateRefreshToken();
             SetRefreshToken(refreshToken);
             return Ok(response);
@@ -40,8 +40,19 @@ namespace ReactApp1.Server.Controllers
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
-            var users = await _userAccountService.GetUsers();
+            var users = await userAccount.GetUsers();
             return Ok(users);
+        }
+
+
+        [HttpPatch("update/{id}")]
+        public async Task<IActionResult> UpdateUser(string id, UserDTODetails userDTODetails)
+        {
+            var response = await userAccount.UpdateUser(id, userDTODetails);
+            if (!response.Flag)
+                return BadRequest(response);
+
+            return Ok(response);
         }
 
         private RefreshToken GenerateRefreshToken()
@@ -65,9 +76,5 @@ namespace ReactApp1.Server.Controllers
             Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
         }
 
-
-
-
-    } 
-
+    }
 }

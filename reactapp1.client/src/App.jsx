@@ -40,7 +40,7 @@ const Header = () => {
                         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
                             <ListGroup className="NavList mb-2 mb-lg-0" horizontal="lg">
                                 <ListGroup.Item variant="success" action href="/">Home</ListGroup.Item>
-                                <ListGroup.Item variant="success" action href="#AboutUs">About Us</ListGroup.Item>
+                                <ListGroup.Item variant="success" action href="#AboutUs">About</ListGroup.Item>
                                 <ListGroup.Item variant="success" action href="#Clinic">Clinic</ListGroup.Item>
                                 <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>
                                 <ListGroup.Item variant="success" action href="#Contact">Contact</ListGroup.Item>

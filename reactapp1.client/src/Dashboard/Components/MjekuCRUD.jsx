@@ -9,7 +9,15 @@ import Navigation from "./Navigation";
 const MjekuCRUD = () => {
     const [doctors, setDoctors] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [currentDoctor, setCurrentDoctor] = useState({ id: '', emri: '', mbiemri: '', reparti: '', specializimi: '', nderrimi: '', angazhimi: '' });
+    const [currentDoctor, setCurrentDoctor] = useState({
+        id: '',
+        emri: '',
+        mbiemri: '',
+        reparti: '',
+        specializimi: '',
+        nderrimi: '',
+        angazhimi: ''
+    });
 
     useEffect(() => {
         fetchDoctors();
@@ -24,40 +32,63 @@ const MjekuCRUD = () => {
         }
     };
 
-    const handleShow = (doctor = { id: '', emri: '', mbiemri: '', reparti: '', specializimi: '', nderrimi: '', angazhimi: '' }) => {
+    const handleShow = (doctor = {
+        id: '',
+        emri: '',
+        mbiemri: '',
+        reparti: '',
+        specializimi: '',
+        nderrimi: '',
+        angazhimi: ''
+    }) => {
         setCurrentDoctor(doctor);
         setShowModal(true);
     };
 
     const handleClose = () => {
         setShowModal(false);
+        setCurrentDoctor({
+            id: '',
+            emri: '',
+            mbiemri: '',
+            reparti: '',
+            specializimi: '',
+            nderrimi: '',
+            angazhimi: ''
+        });
     };
 
     const handleChange = (e) => {
-        setCurrentDoctor({ ...currentDoctor, [e.target.name]: e.target.value });
+        setCurrentDoctor({
+            ...currentDoctor,
+            [e.target.name]: e.target.value
+        });
     };
 
     const handleSubmit = async () => {
-        if (currentDoctor.id) {
-            await axios.put(`https://localhost:7107/api/Mjeku/${currentDoctor.id}`, currentDoctor);
-        } else {
-            await axios.post('https://localhost:7107/api/Mjeku', currentDoctor);
+        try {
+            if (currentDoctor.id) {
+                await axios.put(`https://localhost:7107/api/Mjeku/${currentDoctor.id}`, currentDoctor);
+            } else {
+                await axios.post('https://localhost:7107/api/Mjeku', currentDoctor);
+            }
+            fetchDoctors();
+            handleClose();
+        } catch (error) {
+            console.error('Error saving doctor:', error);
         }
-        fetchDoctors();
-        handleClose();
     };
 
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this Doctor?")) {
-            await axios.delete(`https://localhost:7107/api/Mjeku/${id}`)
-                .then(response => {
-                    alert("Doctor deleted successfully!");
-                    fetchDoctors(); // Refresh the data to reflect the deletion
-                })
-                .catch(error => {
-                    console.error("Error deleting doctor:", error);
-                    alert("Failed to delete doctor.");
-                });
+            try {
+                await axios.delete(`https://localhost:7107/api/Mjeku/${id}`);
+                alert("Doctor deleted successfully!");
+                fetchDoctors(); // Refresh the data to reflect the deletion
+            } catch (error) {
+                console.error("Error deleting doctor:", error);
+                alert("Failed to delete doctor.");
+            }
         }
     };
 
@@ -66,20 +97,35 @@ const MjekuCRUD = () => {
             <Navigation />
             <BootstrapButton onClick={() => handleShow()}>Add New Doctor</BootstrapButton>
             <Container>
-                {doctors.map(doctor => (
-                    <Row key={doctor.id} className="mb-3">
-                        <Col>{doctor.emri}</Col>
-                        <Col>{doctor.mbiemri}</Col>
-                        <Col>{doctor.reparti}</Col>
-                        <Col>{doctor.specializimi}</Col>
-                        <Col>{doctor.nderrimi}</Col>
-                        <Col>{doctor.angazhimi}</Col>
-                        <Col>
-                            <BootstrapButton variant="warning" onClick={() => handleShow(doctor)}>Edit</BootstrapButton>
-                            <BootstrapButton variant="danger" onClick={() => handleDelete(doctor.id)}>Delete</BootstrapButton>
-                        </Col>
-                    </Row>
-                ))}
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Emri</th>
+                            <th>Mbiemri</th>
+                            <th>Reparti</th>
+                            <th>Specializimi</th>
+                            <th>Nderrimi</th>
+                            <th>Angazhimi</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {doctors.map(doctor => (
+                            <tr key={doctor.id}>
+                                <td>{doctor.emri}</td>
+                                <td>{doctor.mbiemri}</td>
+                                <td>{doctor.reparti}</td>
+                                <td>{doctor.specializimi}</td>
+                                <td>{doctor.nderrimi}</td>
+                                <td>{doctor.angazhimi}</td>
+                                <td>
+                                    <BootstrapButton variant="warning" onClick={() => handleShow(doctor)}>Edit</BootstrapButton>
+                                    <BootstrapButton variant="danger" onClick={() => handleDelete(doctor.id)}>Delete</BootstrapButton>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
             </Container>
 
             <Modal show={showModal} onHide={handleClose}>
@@ -130,7 +176,9 @@ const MjekuCRUD = () => {
                 </Modal.Body>
                 <Modal.Footer>
                     <BootstrapButton variant="secondary" onClick={handleClose}>Close</BootstrapButton>
-                    <BootstrapButton variant="primary" onClick={handleSubmit}>{currentDoctor.id ? 'Save Changes' : 'Add Doctor'}</BootstrapButton>
+                    <BootstrapButton variant="primary" onClick={handleSubmit}>
+                        {currentDoctor.id ? 'Save Changes' : 'Add Doctor'}
+                    </BootstrapButton>
                 </Modal.Footer>
             </Modal>
         </>

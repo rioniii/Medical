@@ -15,13 +15,8 @@ namespace ReactApp1.Server.Data.Models
         public int Kapaciteti { get; set; }
         [Required(ErrorMessage = "Numri Pacienteve is required!")]
         [Range(0, int.MaxValue, ErrorMessage = "Numri i Pacienteve must be a positive value")]
-        public int NrPacienteve { get; set; }
-
-
-        public int? Pacienti_ID { get; }
         public int? Reparti_Id { get; }
         public Repart Repart { get; set; }
-        public List<Pacienti> Pacientat { get; set; }
 
 
 
