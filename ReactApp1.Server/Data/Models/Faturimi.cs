@@ -22,7 +22,7 @@ namespace ReactApp1.Server.Data.Models
         public double TotalOrderPrice { get; private set; }
 
         // Method to calculate total order price
-        public void CalculateTotalOrderPrice()
+       /* public void CalculateTotalOrderPrice()
         {
             TotalOrderPrice = 0;
             foreach (var item in OrderItems)
@@ -30,7 +30,7 @@ namespace ReactApp1.Server.Data.Models
                 TotalOrderPrice += item.Price * item.Quantity;
 
             }
-        }
+        }*/
     }
 }
 

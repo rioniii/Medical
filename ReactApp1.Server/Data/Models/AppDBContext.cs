@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using ReactApp1.Server.Migrations;
+/*using ReactApp1.Server.Migrations;*/
 
 namespace ReactApp1.Server.Data.Models
 {
@@ -19,7 +19,7 @@ namespace ReactApp1.Server.Data.Models
         public DbSet<Terminet> Termini { get; set; }
         public DbSet<Roli> Rolis { get; set; }
         public DbSet<Userr> Userrs { get; set; }
-        public DbSet<UsersRoles> UsersRoless { get; set; }
+        public DbSet<UserRoles> UsersRoless { get; set; }
         public DbSet<ContactRequest> ContactRequests { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

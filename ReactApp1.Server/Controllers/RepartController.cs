@@ -19,22 +19,27 @@ namespace ReactApp1.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Repart>>> GetAllRepartet()
+        public async Task<IActionResult> GetAllRepartet()
         {
-            var Reparti = await _context.Reparti.FindAsync();
-            return Ok(Reparti);
+            var repartet = await _context.Reparti.ToListAsync();
+            return Ok(repartet);
         }
 
-
         [HttpGet("{id}")]
-        public async Task<ActionResult<List<Repart>>> GetRepartin(int id)
+        public async Task<IActionResult> GetRepartById(int id)
         {
-            var Reparti = await _context.Reparti.ToListAsync();
-            if (Reparti == null)
-                return NotFound("Reparti wasn't found");
-            return Ok(Reparti);
+            if (id == 0)
+            {
+                return BadRequest("Invalid ID");
+            }
 
+            var repart = await _context.Reparti.FindAsync(id);
+            if (repart == null)
+            {
+                return NotFound();
+            }
 
+            return Ok(repart);
         }
 
         [HttpPost]
