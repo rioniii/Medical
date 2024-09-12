@@ -17,7 +17,7 @@ namespace ReactApp1.Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -378,7 +378,7 @@ namespace ReactApp1.Server.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("JWT");
+                    b.ToTable("JWTs");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Mjeku", b =>
@@ -460,7 +460,7 @@ namespace ReactApp1.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Cmimi")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Emri_Sherbimit")
                         .IsRequired()
