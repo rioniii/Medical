@@ -19,7 +19,7 @@ function Register() {
     const handlePasswordChange = (event) => setPassword(event.target.value);
     const handleConfirmPasswordChange = (event) => setConfirmPassword(event.target.value);
 
-    const handleRegister = (event) => {
+    const handleRegister = async (event) => { // Mark the function as async
         event.preventDefault();
 
         if (password !== confirmPassword) {
@@ -29,7 +29,7 @@ function Register() {
 
         const userData = {
             id: 0,
-            name: name,
+            name: fullName,
             email: email,
             password: password,
             confirmPassword: repeatPassword
@@ -53,10 +53,9 @@ function Register() {
                     setPasswordMatchError(errorData.title);
                 }
                 return;
+            } else {
+                setPasswordMatchError('');
             }
-        } else {
-            setPasswordMatchError('');
-        }
 
             const data = await response.json();
             console.log(data);
@@ -65,7 +64,6 @@ function Register() {
             console.error('Registration failed:', error);
             setPasswordMatchError('Registration failed. Please try again.');
         }
-        // Here, you should handle the registration logic
     };
 
     return (
@@ -73,11 +71,11 @@ function Register() {
             <MDBCard className='p-4' style={{ maxWidth: '500px', width: '100%', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '15px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)' }}>
                 <MDBCardBody className='px-5 py-4'>
                     <h2 className="text-uppercase text-center mb-3">Create an account</h2>
-                    <form onSubmit={handleSubmit}>
-                        <MDBInput label='Your Name' size='lg' id='form1' type='text' value={name} onChange={(e) => setName(e.target.value)} />
-                        <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
-                        <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={(e) => setPassword(e.target.value)} pattern="^(?=.*[A-Za-z]).{8,}$" title="Password must contain at least one letter and be at least 8 characters long" />
-                        <MDBInput label='Repeat your password' size='lg' id='form4' type='password' value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} />
+                    <form onSubmit={handleRegister}>
+                        <MDBInput label='Your Name' size='lg' id='form1' type='text' value={fullName} onChange={handleFullNameChange} />
+                        <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={handleEmailChange} />
+                        <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={handlePasswordChange} pattern="^(?=.*[A-Za-z]).{8,}$" title="Password must contain at least one letter and be at least 8 characters long" />
+                        <MDBInput label='Repeat your password' size='lg' id='form4' type='password' value={confirmPassword} onChange={handleConfirmPasswordChange} />
                         {passwordMatchError && <div className="text-danger mb-2">{passwordMatchError}</div>}
                         {emailTakenError && <div className="text-danger mb-2">{emailTakenError}</div>}
                         <MDBBtn className='w-100' size='lg' type='submit'>Register</MDBBtn>
@@ -85,48 +83,6 @@ function Register() {
                     <NavLink to="/LoginForm" className="text-center d-block mt-3" style={{ color: 'green' }}>Already have an account? Log in here</NavLink>
                 </MDBCardBody>
             </MDBCard>
-        </div>
-        <div className="register-form-container" style={{
-            backgroundImage: `url(${contactImage})`,
-            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column' // Use column direction to stack Header and Form vertically
-        }}>
-            <Header /> {/* Render the Header component */}
-            <div style={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '20px'
-            }}>
-                <MDBCard className='p-4' style={{
-                    maxWidth: '500px',
-                    width: '100%',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    borderRadius: '15px',
-                    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)'
-                }}>
-                    <MDBCardBody className='px-5 py-4'>
-                        <h2 className="text-uppercase text-center mb-3">Create an account</h2>
-                        <form onSubmit={handleRegister}>
-                            <MDBInput label='Your Name' size='lg' id='form1' type='text' value={fullName} onChange={handleFullNameChange} />
-                            <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={handleEmailChange} />
-                            <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={handlePasswordChange} />
-                            <MDBInput label='Repeat your password' size='lg' id='form4' type='password' value={confirmPassword} onChange={handleConfirmPasswordChange} />
-
-                            {passwordMatchError && <div className="text-danger mb-2">{passwordMatchError}</div>}
-                            {emailTakenError && <div className="text-danger mb-2">{emailTakenError}</div>}
-                            {errorMessage && <div className="text-danger mb-2">{errorMessage}</div>}
-                            <MDBBtn className='w-100' size='lg' type='submit'>Register</MDBBtn>
-                        </form>
-                        <NavLink to="/LoginForm" className="text-center d-block mt-3" style={{ color: 'green' }}>Already have an account? Log in here</NavLink>
-                    </MDBCardBody>
-                </MDBCard>
-            </div>
         </div>
     );
 }
