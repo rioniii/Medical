@@ -3,45 +3,55 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using ReactApp1.Server.Contracts;
 using ReactApp1.Server.Data.Models;
-using ReactApp1.Server.Repositories;
+using ReactApp1.Server.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbContext<AppDBContext>(options =>
+
+
+// Konfigurimi i Entity Framecore me SQL Server
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add Identity services
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<AppDBContext>()
-    .AddDefaultTokenProviders();
+
+
+// Shtimi i Identity Services 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequiredLength = 5;
+}).AddEntityFrameworkStores<ApplicationDbContext>();
+
+
 
 // Configure JWT authentication
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-builder.Services.AddAuthentication(options =>
+
+builder.Services.AddAuthentication(auth =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
+
+    auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+}).AddJwtBearer(options =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters
+
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+        ValidAudience = "https://localhost:5173/",
+        ValidIssuer = "https://localhost:5173/",
+        RequireExpirationTime = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("This is the key that we will use in encryption")),
+        ValidateIssuerSigningKey = true
     };
 });
 
-// Add Scoped Service
-builder.Services.AddScoped<IUserAccount, AccountRepository>();
+
+//Add Scoped Service
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Add CORS policy
 builder.Services.AddCors(options =>
