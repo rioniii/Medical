@@ -20,8 +20,8 @@ namespace ReactApp1.Server.Data.Models
             public DbSet<Sherbimi> Sherbimet { get; set; }
             public DbSet<Dhoma> Dhomat { get; set; }
             public DbSet<DhomaPacientit> DhomaPacienteve { get; set; }
-          /*  public DbSet<JWT> JWTs { get; set; }
-*/
+            public DbSet<JWT> JWTs { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
@@ -75,9 +75,6 @@ namespace ReactApp1.Server.Data.Models
                 .OnDelete(DeleteBehavior.Restrict);
 
       
-
-
-
             // One-to-one relationship between User and JWT (for refresh tokens)
             modelBuilder.Entity<JWT>()
                 .HasOne(j => j.User)
