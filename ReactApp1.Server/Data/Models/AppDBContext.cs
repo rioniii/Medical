@@ -56,7 +56,7 @@ function Register() {
 
             const data = await response.json();
             console.log(data);
-
+            
         } catch (error) {
             console.error('Registration failed:', error);
             setErrorMessage('Registration failed. Please try again.');
