@@ -1,19 +1,35 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ReactApp1.Server.Services
 {
     public interface IUserService
     {
         Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model);
+        Task<UserManagerResponse> LoginUserAsync(LogInViewModel model);
+/*
+        Task<UserManagerResponse> ConfirmEmailAsync(string userId, string token);
+
+        Task<UserManagerResponse> ForgetPasswordAsync(string email);
+
+        Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordViewModel model);*/
     }
 
     public class UserService : IUserService
     {
         private UserManager<IdentityUser> _userManager;
+        private IConfiguration _configuration;
 
-        public UserService(UserManager<IdentityUser> userManager)
+
+        public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
+            _configuration = configuration;
+
         }
 
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
@@ -52,5 +68,55 @@ namespace ReactApp1.Server.Services
             };
 
         }
+
+
+        public async Task<UserManagerResponse> LoginUserAsync(LogInViewModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                return new UserManagerResponse
+                {
+                    Message = "There is no user with that Email address",
+                    isSucces = false,
+                };
+            }
+
+            var result = await _userManager.CheckPasswordAsync(user, model.Password);
+
+            if (!result)
+                return new UserManagerResponse
+                {
+                    Message = "Invalid password",
+                    isSucces = false,
+                };
+
+            var claims = new[]
+            {
+                new Claim("Email", model.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["AuthSettings:Issuer"],
+                audience: _configuration["AuthSettings:Audience"], 
+                claims: claims,
+                expires: DateTime.Now.AddDays(30),
+                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
+
+            string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return new UserManagerResponse
+            {
+                Message = tokenAsString,
+                isSucces = true,
+                ExpireDate = token.ValidTo
+            };
+        }
+
+
     }
 }

@@ -28,6 +28,7 @@ const Header = () => {
 
 
 
+            document.title = "Welcome"
     return (
         <div>
             <header>
