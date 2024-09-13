@@ -5,26 +5,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ReactApp1.Server.Data.Models
 {
-    public class ApplicationDbContext: IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
-            public ApplicationDbContext(DbContextOptions options):base (options)
-            {
-            }
-            public DbSet<User> Users { get; set; }
-            public DbSet<Role> Roles { get; set; }
-            public DbSet<Mjeku> Mjeket { get; set; }
-            public DbSet<Pacienti> Pacientet { get; set; }
-            public DbSet<Termini> Terminet { get; set; }
-            public DbSet<Historiku> Historiqet { get; set; }
-            public DbSet<Fatura> Faturat { get; set; }
-            public DbSet<Sherbimi> Sherbimet { get; set; }
-            public DbSet<Dhoma> Dhomat { get; set; }
-            public DbSet<DhomaPacientit> DhomaPacienteve { get; set; }
-            public DbSet<JWT> JWTs { get; set; }
+        public ApplicationDbContext(DbContextOptions options) : base(options)
+        {
+        }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<Mjeku> Mjeket { get; set; }
+        public DbSet<Pacienti> Pacientet { get; set; }
+        public DbSet<Termini> Terminet { get; set; }
+        public DbSet<Historiku> Historiqet { get; set; }
+        public DbSet<Fatura> Faturat { get; set; }
+        public DbSet<Sherbimi> Sherbimet { get; set; }
+        public DbSet<Dhoma> Dhomat { get; set; }
+        public DbSet<DhomaPacientit> DhomaPacienteve { get; set; }
+        public DbSet<JWT> JWTs { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-            {
+        {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<IdentityUserLogin<string>>()
@@ -74,12 +74,22 @@ namespace ReactApp1.Server.Data.Models
                 .HasForeignKey(mr => mr.PacientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-      
+
             // One-to-one relationship between User and JWT (for refresh tokens)
             modelBuilder.Entity<JWT>()
                 .HasOne(j => j.User)
                 .WithOne()
                 .HasForeignKey<JWT>(j => j.UserId);
+
+            // Specify precision and scale for the Cmimi property in Sherbimi
+            modelBuilder.Entity<Sherbimi>()
+                .Property(s => s.Cmimi)
+                .HasColumnType("decimal(18, 2)"); // Adjust precision and scale as needed
+
+            // Specify precision and scale for the Shuma property in Fatura
+            modelBuilder.Entity<Fatura>()
+                .Property(f => f.Shuma)
+                .HasColumnType("decimal(18, 2)"); // Adjust precision and scale as needed
         }
     }
 }
