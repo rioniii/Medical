@@ -9,13 +9,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
 // Konfigurimi i Entity Framecore me SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-
 
 // Shtimi i Identity Services 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
@@ -23,8 +19,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
     options.Password.RequireLowercase = true;
     options.Password.RequiredLength = 5;
 }).AddEntityFrameworkStores<ApplicationDbContext>();
-
-
 
 // Configure JWT authentication
 
@@ -54,14 +48,16 @@ builder.Services.AddAuthentication(auth =>
 builder.Services.AddScoped<IUserService, UserService>();
 
 // Add CORS policy
+builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
-        builder => builder
-            .WithOrigins("http://localhost:3000") // Update with your frontend URL
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials());
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins("https://localhost:5173") // Your React app URL
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
 });
 
 // Add Swagger services
@@ -106,7 +102,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
     // specifying the Swagger JSON endpoint.
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ReactApp1 API v1"));
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
 }
 else
 {
@@ -118,13 +114,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
-app.UseCors("AllowReactApp");
+app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapFallbackToFile("/index.html");
-
 app.Run();

@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MDBBtn, MDBCard, MDBCardBody, MDBInput } from 'mdb-react-ui-kit';
 import { NavLink } from 'react-router-dom';
 import contactImage from './assets/R.jpeg'; // Ensure the image path is correct
 import Header from './Header'; // Import the Header component
 
 function Register() {
+    document.title = "Register";
+
+    // Redirect if user is already registered
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if (user) {
+            document.location = "/";
+        }
+    }, []);
+
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -35,7 +45,7 @@ function Register() {
         };
 
         try {
-            const response = await fetch('https://localhost:7107/api/Account/register', {
+            const response = await fetch('https://localhost:7107/api/Auth/Register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -56,6 +66,7 @@ function Register() {
 
             const data = await response.json();
             console.log(data);
+            document.location = "/login"; // Redirect to login on successful registration
 
         } catch (error) {
             console.error('Registration failed:', error);
