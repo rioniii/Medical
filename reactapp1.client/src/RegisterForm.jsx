@@ -19,6 +19,7 @@ function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState(''); // New state for date of birth
     const [errorMessage, setErrorMessage] = useState('');
     const [passwordMatchError, setPasswordMatchError] = useState('');
     const [emailTakenError, setEmailTakenError] = useState('');
@@ -27,6 +28,7 @@ function Register() {
     const handleEmailChange = (event) => setEmail(event.target.value);
     const handlePasswordChange = (event) => setPassword(event.target.value);
     const handleConfirmPasswordChange = (event) => setConfirmPassword(event.target.value);
+    const handleDateOfBirthChange = (event) => setDateOfBirth(event.target.value); // Handle date of birth change
 
     const handleRegister = async (event) => {
         event.preventDefault();
@@ -37,12 +39,14 @@ function Register() {
         }
 
         const userData = {
-            id: 0,
-            name: fullName,
             email: email,
             password: password,
-            confirmPassword: confirmPassword
+            confirmPassword: confirmPassword,
+            fullName: fullName, // Include full name
+            dateOfBirth: dateOfBirth // Include date of birth
         };
+
+       /* console.log('User data being sent:', userData);*/
 
         try {
             const response = await fetch('https://localhost:7107/api/Auth/Register', {
@@ -66,7 +70,7 @@ function Register() {
 
             const data = await response.json();
             console.log(data);
-            document.location = "/login"; // Redirect to login on successful registration
+            /*document.location = "/login"; // Redirect to login on successful registration*/
 
         } catch (error) {
             console.error('Registration failed:', error);
@@ -106,6 +110,7 @@ function Register() {
                             <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={handleEmailChange} />
                             <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={handlePasswordChange} />
                             <MDBInput label='Repeat your password' size='lg' id='form4' type='password' value={confirmPassword} onChange={handleConfirmPasswordChange} />
+                            <MDBInput label='Date of Birth' size='lg' id='form5' type='date' value={dateOfBirth} onChange={handleDateOfBirthChange} />
 
                             {passwordMatchError && <div className="text-danger mb-2">{passwordMatchError}</div>}
                             {emailTakenError && <div className="text-danger mb-2">{emailTakenError}</div>}

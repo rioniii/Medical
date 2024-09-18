@@ -3,7 +3,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
+using ReactApp1.Server.Data.Models;
 
 namespace ReactApp1.Server.Services
 {
@@ -23,12 +25,14 @@ namespace ReactApp1.Server.Services
     {
         private UserManager<IdentityUser> _userManager;
         private IConfiguration _configuration;
+        private ApplicationDbContext _context; // Assuming you have a DbContext for your custom user table
 
 
-        public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration, ApplicationDbContext context)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _context = context;
 
         }
 
@@ -38,35 +42,37 @@ namespace ReactApp1.Server.Services
                 throw new NullReferenceException("Register Model is null");
 
             if (model.Password != model.ConfirmPassword)
-                return new UserManagerResponse {
-                    Message = "Confirm Password doesnt match the password",
+                return new UserManagerResponse
+                {
+                    Message = "Confirm Password doesn't match the password",
                     isSucces = false
-            };
+                };
 
-            var identityUser = new IdentityUser
+            var user = new User
             {
                 Email = model.Email,
-                UserName = model.Email,
-
+                UserName = model.Email, // You can also use a separate username field if needed
+                FullName = model.FullName, // Map FullName
+                DateOfBirth = model.DateOfBirth // Map DateOfBirth
             };
 
-            var result = await _userManager.CreateAsync(identityUser,model.Password);
-            
+            var result = await _userManager.CreateAsync(user, model.Password);
+
             if (result.Succeeded)
             {
                 return new UserManagerResponse
                 {
-                    Message = "User created succesfully!",
+                    Message = "User created successfully!",
                     isSucces = true,
                 };
             }
+
             return new UserManagerResponse
             {
                 Message = "User was not created",
                 isSucces = false,
                 Errors = result.Errors.Select(e => e.Description)
             };
-
         }
 
 

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace ReactApp1.Server
 {
@@ -10,12 +11,19 @@ namespace ReactApp1.Server
         public string Email { get; set; }
 
         [Required]
-        [StringLength(50, MinimumLength =5)]
+        [StringLength(50, MinimumLength = 5)]
         public string Password { get; set; }
 
         [Required]
         [StringLength(50, MinimumLength = 5)]
-        public string ConfirmPassword {  get; set; }
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
 
+        [Required]
+        [StringLength(100)]
+        public string FullName { get; set; } // New property for full name
+
+        [Required]
+        public DateTime DateOfBirth { get; set; } // New property for date of birth
     }
 }
