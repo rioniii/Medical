@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using ReactApp1.Server.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReactApp1.Server.Services
 {
@@ -13,6 +14,8 @@ namespace ReactApp1.Server.Services
     {
         Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model);
         Task<UserManagerResponse> LoginUserAsync(LogInViewModel model);
+        Task<IEnumerable<IdentityUser>> GetAllUsersAsync();
+
 /*
         Task<UserManagerResponse> ConfirmEmailAsync(string userId, string token);
 
@@ -25,7 +28,8 @@ namespace ReactApp1.Server.Services
     {
         private UserManager<IdentityUser> _userManager;
         private IConfiguration _configuration;
-        private ApplicationDbContext _context; // Assuming you have a DbContext for your custom user table
+        private ApplicationDbContext _context; 
+
 
 
         public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration, ApplicationDbContext context)
@@ -35,7 +39,6 @@ namespace ReactApp1.Server.Services
             _context = context;
 
         }
-
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
         {
             if (model == null)
@@ -44,35 +47,34 @@ namespace ReactApp1.Server.Services
             if (model.Password != model.ConfirmPassword)
                 return new UserManagerResponse
                 {
-                    Message = "Confirm Password doesn't match the password",
+                    Message = "Confirm Password doesnt match the password",
                     isSucces = false
                 };
 
-            var user = new User
+            var identityUser = new IdentityUser
             {
                 Email = model.Email,
-                UserName = model.Email, // You can also use a separate username field if needed
-                FullName = model.FullName, // Map FullName
-                DateOfBirth = model.DateOfBirth // Map DateOfBirth
+                UserName = model.Email,
+
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(identityUser, model.Password);
 
             if (result.Succeeded)
             {
                 return new UserManagerResponse
                 {
-                    Message = "User created successfully!",
+                    Message = "User created succesfully!",
                     isSucces = true,
                 };
             }
-
             return new UserManagerResponse
             {
                 Message = "User was not created",
                 isSucces = false,
                 Errors = result.Errors.Select(e => e.Description)
             };
+
         }
 
 
@@ -123,6 +125,10 @@ namespace ReactApp1.Server.Services
             };
         }
 
+   public async Task<IEnumerable<IdentityUser>> GetAllUsersAsync()
+    {
+        return await _userManager.Users.ToListAsync(); 
+    }
 
     }
 }

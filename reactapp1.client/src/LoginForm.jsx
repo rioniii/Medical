@@ -5,36 +5,24 @@ import contactImage from './assets/R.jpeg'; // Ensure the image path is correct
 import Header from './Header'; // Import the Header component
 
 function Register() {
-    const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [passwordMatchError, setPasswordMatchError] = useState('');
-    const [emailTakenError, setEmailTakenError] = useState('');
 
-    const handleFullNameChange = (event) => setFullName(event.target.value);
     const handleEmailChange = (event) => setEmail(event.target.value);
     const handlePasswordChange = (event) => setPassword(event.target.value);
-    const handleConfirmPasswordChange = (event) => setConfirmPassword(event.target.value);
 
     const handleRegister = async (event) => {
         event.preventDefault();
 
-        if (password !== confirmPassword) {
-            setPasswordMatchError('Passwords do not match');
-            return;
-        }
 
         const userData = {
-            fullName: fullName,
             email: email,
             password: password,
-            confirmPassword: confirmPassword
         };
 
         try {
-            const response = await fetch('https://localhost:7107/api/Account/register', {
+            const response = await fetch('https://localhost:7107/api/Auth/Login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -52,10 +40,19 @@ function Register() {
                 }
                 return;
             }
-
             const data = await response.json();
             console.log(data);
-            // Handle successful registration (e.g., redirect to login page)
+/*
+            if (role == 'user') {
+                console.log(data);
+            }
+            if (role == 'admin') {
+                //Linku per dashboard
+            }
+            if (role == 'mjek') {
+                //linku per dashboard te mjekut
+            }*/
+
         } catch (error) {
             console.error('Registration failed:', error);
             setErrorMessage('Registration failed. Please try again.');
@@ -90,13 +87,9 @@ function Register() {
                     <MDBCardBody className='px-5 py-4'>
                         <h2 className="text-uppercase text-center mb-3">Create an account</h2>
                         <form onSubmit={handleRegister}>
-                            <MDBInput label='Your Name' size='lg' id='form1' type='text' value={fullName} onChange={handleFullNameChange} />
                             <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={handleEmailChange} />
                             <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={handlePasswordChange} />
-                            <MDBInput label='Repeat your password' size='lg' id='form4' type='password' value={confirmPassword} onChange={handleConfirmPasswordChange} />
 
-                            {passwordMatchError && <div className="text-danger mb-2">{passwordMatchError}</div>}
-                            {emailTakenError && <div className="text-danger mb-2">{emailTakenError}</div>}
                             {errorMessage && <div className="text-danger mb-2">{errorMessage}</div>}
                             <MDBBtn className='w-100' size='lg' type='submit'>Register</MDBBtn>
                         </form>

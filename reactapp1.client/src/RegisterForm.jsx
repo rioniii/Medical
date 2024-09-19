@@ -46,7 +46,6 @@ function Register() {
             dateOfBirth: dateOfBirth // Include date of birth
         };
 
-       /* console.log('User data being sent:', userData);*/
 
         try {
             const response = await fetch('https://localhost:7107/api/Auth/Register', {
@@ -70,7 +69,7 @@ function Register() {
 
             const data = await response.json();
             console.log(data);
-            /*document.location = "/login"; // Redirect to login on successful registration*/
+            document.location = "/login"; // Redirect to login on successful registration
 
         } catch (error) {
             console.error('Registration failed:', error);

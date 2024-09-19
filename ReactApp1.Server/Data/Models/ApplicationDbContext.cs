@@ -27,6 +27,8 @@ namespace ReactApp1.Server.Data.Models
         {
             base.OnModelCreating(modelBuilder);
 
+            SeedRoles(modelBuilder);
+
             modelBuilder.Entity<IdentityUserLogin<string>>()
                 .HasKey(l => new { l.LoginProvider, l.ProviderKey });
 
@@ -90,6 +92,19 @@ namespace ReactApp1.Server.Data.Models
             modelBuilder.Entity<Fatura>()
                 .Property(f => f.Shuma)
                 .HasColumnType("decimal(18, 2)"); // Adjust precision and scale as needed
+        }
+
+        private void SeedRoles(ModelBuilder builder) {
+
+            builder.Entity<IdentityRole>().HasData(
+                    new IdentityRole() { Name = "Admin" , ConcurrencyStamp="1", NormalizedName="Admin"},
+                    new IdentityRole() { Name = "User", ConcurrencyStamp="2", NormalizedName="User" },
+                    new IdentityRole() { Name = "Doctor", ConcurrencyStamp="3", NormalizedName="Doctor" }
+
+
+
+
+                );
         }
     }
 }

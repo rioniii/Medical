@@ -1,41 +1,69 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿namespace ReactApp1.Server.Controllers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReactApp1.Server.Services;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Azure;
 
-namespace ReactApp1.Server.Controllers
-{
+
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IUserService _userService;
+        private readonly ILogger<AuthController> _logger;
+        private readonly IConfiguration _configuration;
 
-        private IUserService _userService;
-
-        public AuthController(IUserService userService)
+        public AuthController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IUserService userService, ILogger<AuthController> logger, IConfiguration configuration)
         {
+            _userManager = userManager;
+            _roleManager = roleManager;
             _userService = userService;
+            _logger = logger;
+            _configuration = configuration;
         }
 
         // /api/auth/register
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterViewModel model) {
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterViewModel registerUser, string role)
+        {
 
-            if (ModelState.IsValid) 
-            { 
-                var result = await _userService.RegisterUserAsync(model);
+            var userExists = await _userManager.FindByEmailAsync(registerUser.Email);
 
-                if (result.isSucces) 
-                    return Ok(result); // status code 200
-
-                return BadRequest(result);
-            
+            if (userExists != null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new UserManagerResponse { isSucces = false, Message = "User already exists!" });
             }
 
-            return BadRequest("Some properties are not valid"); //Status code 400
+            IdentityUser user = new()
+            {
+                Email = registerUser.Email,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = registerUser.FullName
+            };
+
+            var result = await _userManager.CreateAsync(user, registerUser.Password);
+
+            if (result.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status201Created,
+                    new UserManagerResponse { isSucces = true , Message = "User created successfully!" });
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                   new UserManagerResponse { isSucces = false, Message = "User Failed to Create!" });
+            }
+
         }
 
-        // /api/auth/login
-        [HttpPost("Login")]
+            // /api/auth/login
+            [HttpPost("Login")]
         public async Task<IActionResult> LoginAsync([FromBody] LogInViewModel model)
         {
             if (ModelState.IsValid)
@@ -53,7 +81,22 @@ namespace ReactApp1.Server.Controllers
             return BadRequest("Some properties are not valid");
         }
 
-/*        // /api/auth/confirmemail?userid&token
+        [HttpGet("Users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                var users = await _userService.GetAllUsersAsync();
+                return Ok(users); // Return the list of users
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving users.");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /*        // /api/auth/confirmemail?userid&token
         [HttpGet("ConfirmEmail")]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
@@ -105,4 +148,4 @@ namespace ReactApp1.Server.Controllers
 
 
     }
-}
+
