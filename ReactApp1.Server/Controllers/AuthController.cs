@@ -27,40 +27,52 @@ using Azure;
             _configuration = configuration;
         }
 
-        // /api/auth/register
-        [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegisterViewModel registerUser, string role)
+    // /api/auth/register
+    [HttpPost("Register")]
+    public async Task<IActionResult> RegisterAsync([FromBody] RegisterViewModel registerUser, string role)
+    {
+
+        var userExists = await _userManager.FindByEmailAsync(registerUser.Email);
+
+        if (userExists != null)
         {
+            return StatusCode(StatusCodes.Status403Forbidden,
+                new UserManagerResponse { isSucces = false, Message = "User already exists!" });
+        }
 
-            var userExists = await _userManager.FindByEmailAsync(registerUser.Email);
+        IdentityUser user = new()
+        {
+            Email = registerUser.Email,
+            SecurityStamp = Guid.NewGuid().ToString(),
+            UserName = registerUser.FullName
+        };
 
-            if (userExists != null)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden,
-                    new UserManagerResponse { isSucces = false, Message = "User already exists!" });
-            }
 
-            IdentityUser user = new()
-            {
-                Email = registerUser.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = registerUser.FullName
-            };
+        if (await _roleManager.RoleExistsAsync(role))
+        {
 
             var result = await _userManager.CreateAsync(user, registerUser.Password);
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                return StatusCode(StatusCodes.Status201Created,
-                    new UserManagerResponse { isSucces = true , Message = "User created successfully!" });
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new UserManagerResponse { isSucces = false, Message = "User Failed to Create!" });
-            }
 
+
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                  new UserManagerResponse { isSucces = false, Message = "User Failed to Create!" });
+            }
+            //Add role to the user...
+            await _userManager.AddToRoleAsync(user, role);
+            return StatusCode(StatusCodes.Status200OK,
+             new UserManagerResponse { isSucces = true, Message = "User created Successfully!" });
         }
+        else
+        {
+
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new UserManagerResponse { isSucces = false, Message = "This Role doesn't Exist." });
+        }
+
+    }
 
             // /api/auth/login
             [HttpPost("Login")]
