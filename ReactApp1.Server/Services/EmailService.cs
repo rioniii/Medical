@@ -1,4 +1,4 @@
-﻿using MimeKit;
+﻿/*using MimeKit;
 using ReactApp1.Server.Data.Models;
 using static System.Net.Mime.MediaTypeNames;
 using System.Net.Mail;
@@ -54,3 +54,4 @@ namespace ReactApp1.Server.Services
     } 
 }
 
+*/

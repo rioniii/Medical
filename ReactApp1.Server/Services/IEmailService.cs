@@ -1,4 +1,4 @@
-﻿namespace ReactApp1.Server.Services
+﻿/*namespace ReactApp1.Server.Services
 {
     public interface IEmailService
     {
@@ -6,3 +6,4 @@
 
     }
 }
+*/

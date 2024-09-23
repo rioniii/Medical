@@ -10,7 +10,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Konfigurimi i Entity Framecore me SQL Server
-var configuration = builder.Services.AddDbContext<ApplicationDbContext>(options =>
+ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Shtimi i Identity Services 
@@ -20,7 +20,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
     options.Password.RequiredLength = 5;
 }).AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);
+/*builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);*/
 
 // Configure JWT authentication
 
@@ -49,12 +49,15 @@ builder.Services.AddAuthentication(auth =>
 //Add Scoped Service
 builder.Services.AddScoped<IUserService, UserService>();
 
+/*builder.Services.AddScoped<IEmailService, EmailService>();*/
 
-//Email Configuration
+
+/*Email Configuration
 
 var emailConfig = configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
-builder.Services.AddSingleton(emailConfig);
 
+builder.Services.AddSingleton(emailConfig);
+*/
 
 
 

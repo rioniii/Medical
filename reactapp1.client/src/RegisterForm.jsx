@@ -15,6 +15,7 @@ function Register() {
         }
     }, []);
 
+    const [role,setRole] = useState('');
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -24,6 +25,7 @@ function Register() {
     const [passwordMatchError, setPasswordMatchError] = useState('');
     const [emailTakenError, setEmailTakenError] = useState('');
 
+    const handleRoleChange = (event) => setRole(event.target.value);
     const handleFullNameChange = (event) => setFullName(event.target.value);
     const handleEmailChange = (event) => setEmail(event.target.value);
     const handlePasswordChange = (event) => setPassword(event.target.value);
@@ -38,7 +40,12 @@ function Register() {
             return;
         }
 
+        if (role !== 'Admin' && role !== 'Doctor' && role !== 'User') {
+            setErrorMessage("Role doesn't exist");
+            return;
+        }
         const userData = {
+            role: role,
             email: email,
             password: password,
             confirmPassword: confirmPassword,
@@ -46,9 +53,9 @@ function Register() {
             dateOfBirth: dateOfBirth // Include date of birth
         };
 
-
+         
         try {
-            const response = await fetch('https://localhost:7107/api/Auth/Register', {
+            const response = await fetch(`https://localhost:7107/api/Auth/Register?role=${role}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -105,6 +112,7 @@ function Register() {
                     <MDBCardBody className='px-5 py-4'>
                         <h2 className="text-uppercase text-center mb-3">Create an account</h2>
                         <form onSubmit={handleRegister}>
+                            <MDBInput label='Role' size='lg' id='form6' type='text' value={role} onChange={handleRoleChange} />
                             <MDBInput label='Your Name' size='lg' id='form1' type='text' value={fullName} onChange={handleFullNameChange} />
                             <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={handleEmailChange} />
                             <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={handlePasswordChange} />
