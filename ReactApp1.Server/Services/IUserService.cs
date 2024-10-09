@@ -125,10 +125,10 @@ namespace ReactApp1.Server.Services
             };
         }
 
-        public async Task<IEnumerable<IdentityUser>> GetAllUsersAsync()
+        /*public async Task<IEnumerable<IdentityUser>> GetAllUsersAsync()
         {
             return await _userManager.Users.ToListAsync();
-        }
+        }*/
 
     }
 }
