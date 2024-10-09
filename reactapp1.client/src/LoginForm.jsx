@@ -44,10 +44,11 @@ function Register() {
             }
             const data = await response.json();
             console.log(data);
-/*
+
             if (role == 'user') {
                 console.log(data);
             }
+            /*
             if (role == 'admin') {
                 //Linku per dashboard
             }
