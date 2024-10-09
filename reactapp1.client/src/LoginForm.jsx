@@ -21,6 +21,8 @@ function Register() {
             password: password,
         };
 
+        console.log('User Data:', userData);
+
         try {
             const response = await fetch('https://localhost:7107/api/Auth/Login', {
                 method: 'POST',
