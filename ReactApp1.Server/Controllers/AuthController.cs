@@ -6,9 +6,13 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
-
-    [Route("api/[controller]")]
+[Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -74,25 +78,44 @@ using Azure;
 
     }
 
-            // /api/auth/login
-            [HttpPost("Login")]
-        public async Task<IActionResult> LoginAsync([FromBody] LogInViewModel model)
+    // /api/auth/login
+        
+        [HttpPost("Login")]
+        public async Task<IActionResult> LoginAsync([FromBody] LogInViewModel loginModel)
         {
-            if (ModelState.IsValid)
-            {
-                var result = await _userService.LoginUserAsync(model);
 
-                if (result.isSucces)
+            var user = await _userManager.FindByNameAsync(loginModel.Email);
+
+
+            if (user == null && await _userManager.CheckPasswordAsync(user,loginModel.Password))
+            {
+                var authClaims = new List<Claim>
                 {
-                    return Ok(result);
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+
+                };
+
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                foreach (var role in userRoles) 
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, role));
                 }
 
-                return BadRequest(result);
+                var jwtToken = GetToken(authClaims);
+
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+                    SecurityTokenNoExpirationException = jwtToken.ValidTo
+
+                });
             }
+            return Unauthorized();
 
-            return BadRequest("Some properties are not valid");
+
         }
-
         [HttpGet("Users")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -107,6 +130,25 @@ using Azure;
                 return StatusCode(500, "Internal server error");
             }
         }
+
+
+    private JwtSecurityToken GetToken(List<Claim> authClaims) {
+
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
+            expires: DateTime.Now.AddHours(3),
+            claims: authClaims,
+            signingCredentials: new SigningCredentials(authSigningKey,SecurityAlgorithms.HmacSha256)
+        );
+
+        return token;
+    }
+
+
+
 
         /*        // /api/auth/confirmemail?userid&token
         [HttpGet("ConfirmEmail")]

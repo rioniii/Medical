@@ -16,8 +16,8 @@ namespace ReactApp1.Server.Services
         Task<UserManagerResponse> LoginUserAsync(LogInViewModel model);
         Task<IEnumerable<IdentityUser>> GetAllUsersAsync();
 
-/*
-        Task<UserManagerResponse> ConfirmEmailAsync(string userId, string token);
+
+/*        Task<UserManagerResponse> ConfirmEmailAsync(string userId, string token);
 
         Task<UserManagerResponse> ForgetPasswordAsync(string email);
 
@@ -28,7 +28,7 @@ namespace ReactApp1.Server.Services
     {
         private UserManager<IdentityUser> _userManager;
         private IConfiguration _configuration;
-        private ApplicationDbContext _context; 
+        private ApplicationDbContext _context;
 
 
 
@@ -39,6 +39,7 @@ namespace ReactApp1.Server.Services
             _context = context;
 
         }
+
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
         {
             if (model == null)
@@ -77,7 +78,6 @@ namespace ReactApp1.Server.Services
 
         }
 
-
         public async Task<UserManagerResponse> LoginUserAsync(LogInViewModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -110,7 +110,7 @@ namespace ReactApp1.Server.Services
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["AuthSettings:Issuer"],
-                audience: _configuration["AuthSettings:Audience"], 
+                audience: _configuration["AuthSettings:Audience"],
                 claims: claims,
                 expires: DateTime.Now.AddDays(30),
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
@@ -125,10 +125,10 @@ namespace ReactApp1.Server.Services
             };
         }
 
-   public async Task<IEnumerable<IdentityUser>> GetAllUsersAsync()
-    {
-        return await _userManager.Users.ToListAsync(); 
-    }
+        public async Task<IEnumerable<IdentityUser>> GetAllUsersAsync()
+        {
+            return await _userManager.Users.ToListAsync();
+        }
 
     }
 }
