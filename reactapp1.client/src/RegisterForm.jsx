@@ -15,7 +15,7 @@ function Register() {
         }
     }, []);
 
-    const [role,setRole] = useState('');
+    const [role, setRole] = useState('');
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -35,6 +35,11 @@ function Register() {
     const handleRegister = async (event) => {
         event.preventDefault();
 
+        // Reset errors
+        setPasswordMatchError('');
+        setEmailTakenError('');
+        setErrorMessage('');
+
         if (password !== confirmPassword) {
             setPasswordMatchError('Passwords do not match');
             return;
@@ -44,6 +49,7 @@ function Register() {
             setErrorMessage("Role doesn't exist");
             return;
         }
+
         const userData = {
             role: role,
             email: email,
@@ -53,7 +59,6 @@ function Register() {
             dateOfBirth: dateOfBirth // Include date of birth
         };
 
-         
         try {
             const response = await fetch(`https://localhost:7107/api/Auth/Register?role=${role}`, {
                 method: 'POST',
@@ -66,16 +71,19 @@ function Register() {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error('Registration failed:', errorData);
+
                 if (errorData.title === 'Email already taken') {
                     setEmailTakenError('Email is already taken!');
+                } else if (errorData.title === 'Passwords do not match') {
+                    setPasswordMatchError('Passwords do not match');
                 } else {
-                    setPasswordMatchError(errorData.title);
+                    setErrorMessage(errorData.title || 'Registration failed. Please try again.');
                 }
                 return;
             }
 
             const data = await response.json();
-            console.log(data);
+            console.log('Registration successful:', data);
             document.location = "/login"; // Redirect to login on successful registration
 
         } catch (error) {
