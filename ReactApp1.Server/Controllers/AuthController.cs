@@ -11,10 +11,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
+[ApiController]
 [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+/*[EnableCors("AllowSpecificOrigin")]
+[Authorize]*/
+
+
+public class AuthController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -78,45 +83,46 @@ using Microsoft.AspNetCore.Authorization;
 
     }
 
+
+
+
+
     // /api/auth/login
-        
-        [HttpPost("Login")]
-        public async Task<IActionResult> LoginAsync([FromBody] LogInViewModel loginModel)
+    [HttpPost("Login")]
+    public async Task<IActionResult> LoginAsync([FromBody] LogInViewModel loginModel)
+    {
+        var user = await _userManager.FindByNameAsync(loginModel.Email);
+
+        if (user == null || !await _userManager.CheckPasswordAsync(user, loginModel.Password))
         {
-
-            var user = await _userManager.FindByNameAsync(loginModel.Email);
-
-
-            if (user == null && await _userManager.CheckPasswordAsync(user,loginModel.Password))
-            {
-                var authClaims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-
-                };
-
-                var userRoles = await _userManager.GetRolesAsync(user);
-
-                foreach (var role in userRoles) 
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, role));
-                }
-
-                var jwtToken = GetToken(authClaims);
-
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-                    SecurityTokenNoExpirationException = jwtToken.ValidTo
-
-                });
-            }
             return Unauthorized();
-
-
         }
-        [HttpGet("Users")]
+
+        var authClaims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Email),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+    };
+
+        var userRoles = await _userManager.GetRolesAsync(user);
+        foreach (var role in userRoles)
+        {
+            authClaims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        var jwtToken = GetToken(authClaims);
+        return Ok(new
+        {
+            token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+            expiration = jwtToken.ValidTo
+        });
+    }
+
+
+
+
+
+    [HttpGet("Users")]
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -132,16 +138,16 @@ using Microsoft.AspNetCore.Authorization;
         }
 
 
-    private JwtSecurityToken GetToken(List<Claim> authClaims) {
-
+    private JwtSecurityToken GetToken(List<Claim> authClaims)
+    {
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
-            expires: DateTime.Now.AddHours(3),
+            expires: DateTime.Now.AddDays(Convert.ToDouble(_configuration["Jwt:ExpiresInDays"])),
             claims: authClaims,
-            signingCredentials: new SigningCredentials(authSigningKey,SecurityAlgorithms.HmacSha256)
+            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );
 
         return token;
@@ -150,56 +156,57 @@ using Microsoft.AspNetCore.Authorization;
 
 
 
-        /*        // /api/auth/confirmemail?userid&token
-        [HttpGet("ConfirmEmail")]
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
-        {
-            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
-                return NotFound();
 
-            var result = await _userService.ConfirmEmailAsync(userId, token);
+    /*        // /api/auth/confirmemail?userid&token
+    [HttpGet("ConfirmEmail")]
+    public async Task<IActionResult> ConfirmEmail(string userId, string token)
+    {
+        if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+            return NotFound();
+
+        var result = await _userService.ConfirmEmailAsync(userId, token);
+
+        if (result.IsSuccess)
+        {
+            return Redirect($"{_configuration["AppUrl"]}/ConfirmEmail.html");
+        }
+
+        return BadRequest(result);
+    }
+
+    // api/auth/forgetpassword
+    [HttpPost("ForgetPassword")]
+    public async Task<IActionResult> ForgetPassword(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+            return NotFound();
+
+        var result = await _userService.ForgetPasswordAsync(email);
+
+        if (result.IsSuccess)
+            return Ok(result); // 200
+
+        return BadRequest(result); // 400
+    }
+
+    // api/auth/resetpassword
+    [HttpPost("ResetPassword")]
+    public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var result = await _userService.ResetPasswordAsync(model);
 
             if (result.IsSuccess)
-            {
-                return Redirect($"{_configuration["AppUrl"]}/ConfirmEmail.html");
-            }
+                return Ok(result);
 
             return BadRequest(result);
         }
 
-        // api/auth/forgetpassword
-        [HttpPost("ForgetPassword")]
-        public async Task<IActionResult> ForgetPassword(string email)
-        {
-            if (string.IsNullOrEmpty(email))
-                return NotFound();
-
-            var result = await _userService.ForgetPasswordAsync(email);
-
-            if (result.IsSuccess)
-                return Ok(result); // 200
-
-            return BadRequest(result); // 400
-        }
-
-        // api/auth/resetpassword
-        [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var result = await _userService.ResetPasswordAsync(model);
-
-                if (result.IsSuccess)
-                    return Ok(result);
-
-                return BadRequest(result);
-            }
-
-            return BadRequest("Some properties are not valid");
-        }*/
+        return BadRequest("Some properties are not valid");
+    }*/
 
 
 
-    }
+}
 

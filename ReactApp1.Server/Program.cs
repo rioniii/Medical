@@ -9,8 +9,10 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+
 // Konfigurimi i Entity Framecore me SQL Server
- builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Shtimi i Identity Services 
@@ -21,6 +23,12 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
 }).AddEntityFrameworkStores<ApplicationDbContext>();
 
 /*builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);*/
+
+
+
+// Add JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
 // Configure JWT authentication
 
@@ -38,11 +46,12 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtSettings["Audience"],
+        ValidAudience = builder.Configuration["Issuer"],
         RequireExpirationTime = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-        ValidateIssuerSigningKey = true
+        IssuerSigningKey = new SymmetricSecurityKey(key),
     };
 });
 
@@ -64,17 +73,18 @@ builder.Services.AddSingleton(emailConfig);
 
 
 // Add CORS policy
-builder.Services.AddControllers();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        builder =>
-        {
-            builder.WithOrigins("https://localhost:5173") // Your React app URL
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowSpecificOrigin", builder =>
+    {
+        builder.WithOrigins("https://localhost:5173")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials(); // If you're using credentials like cookies
+    });
 });
+
 
 // Add Swagger services
 builder.Services.AddSwaggerGen(c =>
@@ -107,8 +117,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
+app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
