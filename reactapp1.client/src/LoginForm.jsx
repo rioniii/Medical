@@ -294,7 +294,7 @@ function Register() {
                     boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)'
                 }}>
                     <MDBCardBody className='px-5 py-4'>
-                        <h2 className="text-uppercase text-center mb-3">Create an account</h2>
+                        <h2 className="text-uppercase text-center mb-3">:LogIn</h2>
                         <form onSubmit={handleRegister}>
                             <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={handleEmailChange} />
                             <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={handlePasswordChange} />
@@ -302,7 +302,7 @@ function Register() {
                             {errorMessage && <div className="text-danger mb-2">{errorMessage}</div>}
                             {successMessage && <div className="text-success mb-2">{successMessage}</div>}
 
-                            <MDBBtn className='w-100' size='lg' type='submit'>Register</MDBBtn>
+                            <MDBBtn className='w-100' size='lg' type='submit'>LogIn</MDBBtn>
                         </form>
                         <NavLink to="/LoginForm" className="text-center d-block mt-3" style={{ color: 'green' }}>
                             Already have an account? Log in here
