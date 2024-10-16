@@ -34,11 +34,11 @@ function Register() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('Registration failed:', errorData);
+                console.error('LogIn failed:', errorData);
                 if (errorData.errors && errorData.errors.Email) {
                     setEmailTakenError('Email is already taken!');
                 } else {
-                    setErrorMessage('Registration failed. Please try again.');
+                    setErrorMessage('LogIn failed. Please try again.');
                 }
                 return;
             }
@@ -55,8 +55,8 @@ function Register() {
             }*/
 
         } catch (error) {
-            console.error('Registration failed:', error);
-            setErrorMessage('Registration failed. Please try again.');
+            console.error('LogIn failed:', error);
+            setErrorMessage('LogIn failed. Please try again.');
         }
     };
 
