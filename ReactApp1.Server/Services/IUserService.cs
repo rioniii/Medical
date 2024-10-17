@@ -80,31 +80,29 @@ namespace ReactApp1.Server.Services
 
         public async Task<UserManagerResponse> LoginUserAsync(LogInViewModel model)
         {
+            if (model == null)
+                return new UserManagerResponse
+                {
+                    Message = "Login model cannot be null.",
+                    isSucces = false,
+                };
+
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            if (user == null)
+            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 return new UserManagerResponse
                 {
-                    Message = "There is no user with that Email address",
+                    Message = "Invalid login attempt.",
                     isSucces = false,
                 };
             }
 
-            var result = await _userManager.CheckPasswordAsync(user, model.Password);
-
-            if (!result)
-                return new UserManagerResponse
-                {
-                    Message = "Invalid password",
-                    isSucces = false,
-                };
-
             var claims = new[]
             {
-                new Claim("Email", model.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-            };
+        new Claim(ClaimTypes.Email, model.Email),
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
+    };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
 
@@ -112,7 +110,7 @@ namespace ReactApp1.Server.Services
                 issuer: _configuration["AuthSettings:Issuer"],
                 audience: _configuration["AuthSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(30),
+                expires: DateTime.Now.AddHours(1), // Shortened expiration time
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
 
             string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
@@ -124,7 +122,6 @@ namespace ReactApp1.Server.Services
                 ExpireDate = token.ValidTo
             };
         }
-
         public async Task<IEnumerable<IdentityUser>> GetAllUsersAsync()
         {
             return await _userManager.Users.ToListAsync();

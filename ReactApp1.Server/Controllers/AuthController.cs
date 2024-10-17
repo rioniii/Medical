@@ -89,18 +89,25 @@ public class AuthController : ControllerBase
 
     // /api/auth/login
     [HttpPost("Login")]
+    
     public async Task<IActionResult> LoginAsync([FromBody] LogInViewModel loginModel)
     {
-        var user = await _userManager.FindByNameAsync(loginModel.Email);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var user = await _userManager.FindByEmailAsync(loginModel.Email);
 
         if (user == null || !await _userManager.CheckPasswordAsync(user, loginModel.Password))
         {
-            return Unauthorized();
+            return Unauthorized(new { Message = "Invalid login attempt." });
         }
 
         var authClaims = new List<Claim>
     {
-        new Claim(ClaimTypes.Name, user.Email),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
     };
 
@@ -117,7 +124,6 @@ public class AuthController : ControllerBase
             expiration = jwtToken.ValidTo
         });
     }
-
 
 
 
