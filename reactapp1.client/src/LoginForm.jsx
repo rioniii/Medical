@@ -75,14 +75,8 @@ const LoginForm = () => {
                     <MDBCardBody className='px-5 py-4'>
                         <h2 className="text-uppercase text-center mb-3">Log In</h2>
                         <form onSubmit={handleRegister}>
+                            {/* Combined Floating Label for Email and Password */}
                             <div style={{ position: 'relative', marginBottom: '1rem' }}>
-                                <label style={{
-                                    position: 'absolute',
-                                    left: '12px',
-                                    top: '8px',
-                                    transition: '0.2s',
-                                    fontSize: '0.9rem',
-                                }}>Your Email</label>
                                 <MDBInput
                                     placeholder='Your Email'
                                     id='form1'
@@ -91,15 +85,6 @@ const LoginForm = () => {
                                     onChange={(e) => setEmail(e.target.value)}
                                     style={{ padding: '0.5rem 12px', fontSize: '0.9rem' }}
                                 />
-                            </div>
-                            <div style={{ position: 'relative', marginBottom: '1rem' }}>
-                                <label style={{
-                                    position: 'absolute',
-                                    left: '12px',
-                                    top: '8px',
-                                    transition: '0.2s',
-                                    fontSize: '0.9rem',
-                                }}>Password</label>
                                 <MDBInput
                                     placeholder='Password'
                                     id='form2'
@@ -108,22 +93,23 @@ const LoginForm = () => {
                                     onChange={(e) => setPassword(e.target.value)}
                                     style={{ padding: '0.5rem 12px', fontSize: '0.9rem' }}
                                 />
-
-                                {errorMessage && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{errorMessage}</div>}
-                                {successMessage && <div className="text-success mb-2" style={{ fontSize: '0.8rem' }}>{successMessage}</div>}
-
-                                <MDBBtn
-                                    className='register-btn'
-                                    size='lg'
-                                    type='submit'
-                                    style={{
-                                        width: '120px',
-                                        height: '40px',
-                                        alignSelf: 'center',
-                                        fontSize: '0.9rem',
-                                    }}
-                                >Login</MDBBtn>
+                              
                             </div>
+
+                            {errorMessage && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{errorMessage}</div>}
+                            {successMessage && <div className="text-success mb-2" style={{ fontSize: '0.8rem' }}>{successMessage}</div>}
+
+                            <MDBBtn
+                                className='register-btn'
+                                size='lg'
+                                type='submit'
+                                style={{
+                                    width: '120px',
+                                    height: '40px',
+                                    alignSelf: 'center',
+                                    fontSize: '0.9rem',
+                                }}
+                            >Login</MDBBtn>
                         </form>
                         <NavLink to="/ForgotPassword" className="text-center d-block mt-2" style={{ color: 'green', fontSize: '0.9rem' }}>
                             Forgot Password?
