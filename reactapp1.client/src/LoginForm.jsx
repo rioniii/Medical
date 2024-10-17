@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { MDBBtn, MDBCard, MDBCardBody, MDBInput } from 'mdb-react-ui-kit';
 import { NavLink, useNavigate } from 'react-router-dom';
-import contactImage from './assets/R.jpeg';
-import Header from './Header';
+import contactImage from './assets/R.jpeg'; // Ensure the image path is correct
+import Header from './Header'; // Import the Header component
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
@@ -15,8 +15,8 @@ const LoginForm = () => {
         event.preventDefault();
 
         const userData = {
-            email: email,
-            password: password,
+            email,
+            password,
         };
 
         try {
@@ -84,7 +84,8 @@ const LoginForm = () => {
                                     fontSize: '0.9rem',
                                 }}>Your Email</label>
                                 <MDBInput
-                                    size='lg'
+                                    placeholder='Your Email'
+                                    id='form1'
                                     type='email'
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -100,31 +101,32 @@ const LoginForm = () => {
                                     fontSize: '0.9rem',
                                 }}>Password</label>
                                 <MDBInput
-                                    size='lg'
+                                    placeholder='Password'
+                                    id='form2'
                                     type='password'
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     style={{ padding: '0.5rem 12px', fontSize: '0.9rem' }}
                                 />
-                            </div>
 
-                            {errorMessage && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{errorMessage}</div>}
-                            {successMessage && <div className="text-success mb-2" style={{ fontSize: '0.8rem' }}>{successMessage}</div>}
-                            <MDBBtn
-                                className='register-btn'
-                                size='lg'
-                                type='submit'
-                                style={{
-                                    width: '120px',
-                                    height: '40px',
-                                    alignSelf: 'center',
-                                    fontSize: '0.9rem',
-                                    padding: '0'
-                                }}
-                            >Login</MDBBtn>
+                                {errorMessage && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{errorMessage}</div>}
+                                {successMessage && <div className="text-success mb-2" style={{ fontSize: '0.8rem' }}>{successMessage}</div>}
+
+                                <MDBBtn
+                                    className='register-btn'
+                                    size='lg'
+                                    type='submit'
+                                    style={{
+                                        width: '120px',
+                                        height: '40px',
+                                        alignSelf: 'center',
+                                        fontSize: '0.9rem',
+                                    }}
+                                >Login</MDBBtn>
+                            </div>
                         </form>
-                        <NavLink to="/LoginForm" className="text-center d-block mt-2" style={{ color: 'green', fontSize: '0.9rem' }}>
-                            Forget Password
+                        <NavLink to="/ForgotPassword" className="text-center d-block mt-2" style={{ color: 'green', fontSize: '0.9rem' }}>
+                            Forgot Password?
                         </NavLink>
                     </MDBCardBody>
                 </MDBCard>
