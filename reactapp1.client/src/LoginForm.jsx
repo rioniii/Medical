@@ -34,11 +34,11 @@ function Register() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('LogIn failed:', errorData);
+                console.error('Registration failed:', errorData);
                 if (errorData.errors && errorData.errors.Email) {
                     setEmailTakenError('Email is already taken!');
                 } else {
-                    setErrorMessage('LogIn failed. Please try again.');
+                    setErrorMessage('Registration failed. Please try again.');
                 }
                 return;
             }
@@ -55,8 +55,8 @@ function Register() {
             }
 
         } catch (error) {
-            console.error('LogIn failed:', error);
-            setErrorMessage('LogIn failed. Please try again.');
+            console.error('Registration failed:', error);
+            setErrorMessage('Registration failed. Please try again.');
         }
     };
 
@@ -238,7 +238,7 @@ function Register() {
         };
 
         try {
-            const response = await fetch('https://localhost:7107/api/Auth/Login', { // Try using http if SSL is not working
+            const response = await fetch('https://localhost:7107/api/Auth/Login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -255,11 +255,7 @@ function Register() {
 
             const data = await response.json();
             console.log('Login successful:', data);
-
-            // Optionally, you can store the token in local storage or state
             localStorage.setItem('token', data.token);
-
-            // Redirect to homepage after successful login
             navigate('/');
 
         } catch (error) {
@@ -284,28 +280,72 @@ function Register() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '20px'
+                padding: '10px'
             }}>
-                <MDBCard className='p-4' style={{
-                    maxWidth: '500px',
+                <MDBCard className='p-3' style={{
+                    maxWidth: '400px',
                     width: '100%',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    borderRadius: '15px',
-                    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)'
+                    borderRadius: '10px',
+                    boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)'
                 }}>
                     <MDBCardBody className='px-5 py-4'>
                         <h2 className="text-uppercase text-center mb-3">LogIn</h2>
                         <form onSubmit={handleRegister}>
-                            <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={handleEmailChange} />
-                            <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={handlePasswordChange} />
+                            <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                                <label style={{
+                                    position: 'absolute',
+                                    left: '12px',
+                                    top: '8px',
+                                    transition: '0.2s',
+                                    fontSize: '0.9rem',
+                             
+                                }}>Your Email</label>
+                                <MDBInput
+                                    size='lg'
+                                    type='email'
+                                    value={email}
+                                    onChange={handleEmailChange}
+                                    onFocus={() => setEmail(email)} // Optional: Keeps the label transparent on focus
+                                    style={{ padding: '0.5rem 12px', fontSize: '0.9rem' }}
+                                />
+                            </div>
+                            <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                                <label style={{
+                                    position: 'absolute',
+                                    left: '12px',
+                                    top: '8px',
+                                    transition: '0.2s',
+                                    fontSize: '0.9rem',
+                                   
+                                }}>Password</label>
+                                <MDBInput
+                                    size='lg'
+                                    type='password'
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    onFocus={() => setPassword(password)} // Optional: Keeps the label transparent on focus
+                                    style={{ padding: '0.5rem 12px', fontSize: '0.9rem' }}
+                                />
+                            </div>
 
-                            {errorMessage && <div className="text-danger mb-2">{errorMessage}</div>}
-                            {successMessage && <div className="text-success mb-2">{successMessage}</div>}
-
-                            <MDBBtn className='w-100' size='lg' type='submit'>LogIn</MDBBtn>
+                            {errorMessage && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{errorMessage}</div>}
+                            {successMessage && <div className="text-success mb-2" style={{ fontSize: '0.8rem' }}>{successMessage}</div>}
+                            <MDBBtn
+                                className='register-btn'
+                                size='lg'
+                                type='submit'
+                                style={{
+                                    width: '120px',
+                                    height: '40px',
+                                    alignSelf: 'center',
+                                    fontSize: '0.9rem',
+                                    padding: '0'
+                                }}
+                            >Login</MDBBtn>
                         </form>
-                        <NavLink to="/LoginForm" className="text-center d-block mt-3" style={{ color: 'green' }}>
-                            Already have an account? Log in here
+                        <NavLink to="/LoginForm" className="text-center d-block mt-2" style={{ color: 'green', fontSize: '0.9rem' }}>
+                            Forget Password
                         </NavLink>
                     </MDBCardBody>
                 </MDBCard>

@@ -2,36 +2,32 @@ import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
-import ListGroup from 'react-bootstrap/ListGroup';
+import Nav from 'react-bootstrap/Nav';
+import './Header.css'; // Make sure to create a CSS file for additional styles
 
 const Header = () => {
     return (
         <header>
-            <Navbar bg="dark" variant="dark" expand="lg">
+            <Navbar bg="dark" variant="dark" expand="lg" className="shadow">
                 <Container fluid>
                     <Navbar.Brand href="./Ballina.jsx">Medical</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav" >
-                        <ListGroup className="NavList mb-2 mb-lg-0" horizontal="lg" style={{
-                            margin: "auto",
-                            display: "flex",
-                            justifyContent: "center"
-                        }}>
-                            <ListGroup.Item variant="success" action href="/
-">Home</ListGroup.Item>
-                            <ListGroup.Item variant="success" action href="#AboutUs">About</ListGroup.Item>
-                            <ListGroup.Item variant="success" action href="#Clinic">Clinic</ListGroup.Item>
-                            <ListGroup.Item variant="success" action href="#Doctors">Doctors</ListGroup.Item>
-                            <ListGroup.Item variant="success" action href="#Contact">Contact</ListGroup.Item>
-                            <ListGroup.Item variant="success" action href="#RegisterForm">Register</ListGroup.Item>
-                            <ListGroup.Item variant="success" action href="#LoginForm">Login</ListGroup.Item>
-                        </ListGroup>
-                        <Button variant="success" className="ms-auto">Make an appointment</Button>
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="me-auto" style={{ margin: "auto" }}>
+                            <Nav.Link href="/" className="nav-item">Home</Nav.Link>
+                            <Nav.Link href="#AboutUs" className="nav-item">About</Nav.Link>
+                            <Nav.Link href="#Clinic" className="nav-item">Clinic</Nav.Link>
+                            <Nav.Link href="#Doctors" className="nav-item">Doctors</Nav.Link>
+                            <Nav.Link href="#Contact" className="nav-item">Contact</Nav.Link>
+                            <Nav.Link href="#RegisterForm" className="nav-item">Register</Nav.Link>
+                            <Nav.Link href="#LoginForm" className="nav-item">Login</Nav.Link>
+                        </Nav>
+                        <Button variant="success" className="ms-auto">Make an Appointment</Button>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
         </header>
     );
-}
+};
 
 export default Header;

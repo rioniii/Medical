@@ -108,31 +108,92 @@ function Register() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '20px'
+                padding: '10px' // Reduced padding
             }}>
-                <MDBCard className='p-4' style={{
-                    maxWidth: '500px',
+                <MDBCard className='p-3' style={{
+                    maxWidth: '400px', // Reduced max width
                     width: '100%',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    borderRadius: '15px',
-                    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)'
+                    borderRadius: '10px',
+                    boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)'
                 }}>
-                    <MDBCardBody className='px-5 py-4'>
-                        <h2 className="text-uppercase text-center mb-3">Create an account</h2>
+                    <MDBCardBody className='px-4 py-3'>
+                        <h2 className="text-uppercase text-center mb-2" style={{ fontSize: '1.3rem' }}>Create an account</h2>
                         <form onSubmit={handleRegister}>
-                            <MDBInput label='Role' size='lg' id='form6' type='text' value={role} onChange={handleRoleChange} />
-                            <MDBInput label='Your Name' size='lg' id='form1' type='text' value={fullName} onChange={handleFullNameChange} />
-                            <MDBInput label='Your Email' size='lg' id='form2' type='email' value={email} onChange={handleEmailChange} />
-                            <MDBInput label='Password' size='lg' id='form3' type='password' value={password} onChange={handlePasswordChange} />
-                            <MDBInput label='Repeat your password' size='lg' id='form4' type='password' value={confirmPassword} onChange={handleConfirmPasswordChange} />
-                            <MDBInput label='Date of Birth' size='lg' id='form5' type='date' value={dateOfBirth} onChange={handleDateOfBirthChange} />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <MDBInput
+                                    placeholder='Role'
+                                    id='form6'
+                                    type='text'
+                                    value={role}
+                                    onChange={handleRoleChange}
+                                    required
+                                    style={{ fontSize: '0.9rem' }}
+                                />
+                                <MDBInput
+                                    placeholder='Your Name'
+                                    id='form1'
+                                    type='text'
+                                    value={fullName}
+                                    onChange={handleFullNameChange}
+                                    required
+                                    style={{ fontSize: '0.9rem' }}
+                                />
+                                <MDBInput
+                                    placeholder='Your Email'
+                                    id='form2'
+                                    type='email'
+                                    value={email}
+                                    onChange={handleEmailChange}
+                                    required
+                                    style={{ fontSize: '0.9rem' }}
+                                />
+                                <MDBInput
+                                    placeholder='Password'
+                                    id='form3'
+                                    type='password'
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    required
+                                    style={{ fontSize: '0.9rem' }}
+                                />
+                                <MDBInput
+                                    placeholder='Repeat your password'
+                                    id='form4'
+                                    type='password'
+                                    value={confirmPassword}
+                                    onChange={handleConfirmPasswordChange}
+                                    required
+                                    style={{ fontSize: '0.9rem' }}
+                                />
+                                <MDBInput
+                                    placeholder='Date of Birth'
+                                    id='form5'
+                                    type='date'
+                                    value={dateOfBirth}
+                                    onChange={handleDateOfBirthChange}
+                                    required
+                                    style={{ fontSize: '0.9rem' }}
+                                />
 
-                            {passwordMatchError && <div className="text-danger mb-2">{passwordMatchError}</div>}
-                            {emailTakenError && <div className="text-danger mb-2">{emailTakenError}</div>}
-                            {errorMessage && <div className="text-danger mb-2">{errorMessage}</div>}
-                            <MDBBtn className='w-100' size='lg' type='submit'>Register</MDBBtn>
+                                {passwordMatchError && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{passwordMatchError}</div>}
+                                {emailTakenError && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{emailTakenError}</div>}
+                                {errorMessage && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{errorMessage}</div>}
+
+                                <MDBBtn
+                                    className='register-btn'
+                                    size='lg'
+                                    type='submit'
+                                    style={{
+                                        width: '120px', // Reduced width
+                                        height: '40px', // Reduced height
+                                        alignSelf: 'center',
+                                        fontSize: '0.9rem', // Smaller font size
+                                    }}
+                                >Register</MDBBtn>
+                            </div>
                         </form>
-                        <NavLink to="/LoginForm" className="text-center d-block mt-3" style={{ color: 'green' }}>Already have an account? Log in here</NavLink>
+                        <NavLink to="/LoginForm" className="text-center d-block mt-2" style={{ color: 'green', fontSize: '0.9rem' }}>Already have an account? Log in here</NavLink>
                     </MDBCardBody>
                 </MDBCard>
             </div>
