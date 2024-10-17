@@ -48,8 +48,8 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
 
-        ValidIssuer = jwtSettings["Audience"],
-        ValidAudience = builder.Configuration["Issuer"],
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
         RequireExpirationTime = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
     };
