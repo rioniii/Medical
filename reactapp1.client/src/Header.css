@@ -1,1 +1,34 @@
 
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-item {
+    margin: 0 15px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+    .nav-item:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+
+.navbar {
+    padding: 1rem 2rem;
+}
+
+.shadow {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 576px) {
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+
+    .nav-item {
+        margin: 0 10px;
+    }
+}
