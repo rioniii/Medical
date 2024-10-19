@@ -15,8 +15,7 @@ using Microsoft.AspNetCore.Cors;
 
 [ApiController]
 [Route("api/[controller]")]
-/*[EnableCors("AllowSpecificOrigin")]
-[Authorize]*/
+
 
 
 public class AuthController : ControllerBase
