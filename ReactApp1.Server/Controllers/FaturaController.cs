@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data.Models;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace ReactApp1.Server.Controllers
         }
 
         // GET: api/Fatura
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Fatura>>> GetFaturas()
         {

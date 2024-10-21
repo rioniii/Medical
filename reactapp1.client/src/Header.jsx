@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
-import './Header.css'; // Make sure to create a CSS file for additional styles
+import './Header.css'; // Make sure this file exists
 
-const Header = () => {
+const Header = ({ userRole }) => {
+    const [isDoctor, setIsDoctor] = useState(false);
+
+    useEffect(() => {
+        // Check the user role and update state
+        if (userRole === 'Doctor') {
+            setIsDoctor(true);
+        } else {
+            setIsDoctor(false);
+        }
+    }, [userRole]);
+
     return (
         <header>
             <Navbar bg="dark" variant="dark" expand="lg" className="shadow">
@@ -21,6 +32,10 @@ const Header = () => {
                             <Nav.Link href="#Contact" className="nav-item">Contact</Nav.Link>
                             <Nav.Link href="#RegisterForm" className="nav-item">Register</Nav.Link>
                             <Nav.Link href="#LoginForm" className="nav-item">Login</Nav.Link>
+                            {/* Conditionally render Dashboard link */}
+                            {isDoctor && (
+                                <Nav.Link href="#PatientCRUD" className="nav-item">Dashboard</Nav.Link>
+                            )}
                         </Nav>
                         <Button variant="success" className="ms-auto">Make an Appointment</Button>
                     </Navbar.Collapse>

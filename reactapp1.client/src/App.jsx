@@ -17,29 +17,39 @@ const RegisterForm = React.lazy(() => import("./RegisterForm"));
 const LoginForm = React.lazy(() => import("./LoginForm"));
 const AboutUs = React.lazy(() => import("./AboutUs"));
 const Contact = React.lazy(() => import("./Contact"));
+/*
+const [userRole, setUserRole] = useState('');
+const RegisterForm = React.lazy(() => import("./RegisterForm"));
+const LoginForm = React.lazy(() => import("./LoginForm"));
+const AboutUs = React.lazy(() => import("./AboutUs"));
+const Contact = React.lazy(() => import("./Contact"));*/
+const userRole = 'Doctor'; // Simulated user role
+
 
 class App extends Component {
     render() {
         return (
             <Suspense fallback={<div>Loading...</div>}>
                 <HashRouter>
+                    {/* Render Header outside Routes so it's visible on all pages */}
+                    <Header userRole={userRole} />
                     <Routes>
                         <Route path="/" element={
                             <div>
-                                <Header />  {/* Show the Header component here */}
+                                {/* Main Page Content */}
                                 <Ballina />
                                 <IntervalSlider images={[i4, i3, i2]} interval={3000} />
                                 <Card />
                                 <Footer />
                             </div>
                         } />
-                        <Route path="/RegisterForm" element={<RegisterForm />}></Route>
-                        <Route path="/LoginForm" element={<LoginForm />}></Route>
-                        <Route path="/AboutUs" element={<AboutUs />}></Route>
-                        <Route path="/Contact" element={<Contact />}></Route>
-                        <Route path="/PatientCRUD" element={<PatientCRUD />}></Route>
-                        <Route path="/RepartCrud" element={<RepartCrud />}></Route>
-                        <Route path="/MjekuCRUD" element={<MjekuCRUD />}></Route>
+                        <Route path="/RegisterForm" element={<RegisterForm />} />
+                        <Route path="/LoginForm" element={<LoginForm />} />
+                        <Route path="/AboutUs" element={<AboutUs />} />
+                        <Route path="/Contact" element={<Contact />} />
+                        <Route path="/PatientCRUD" element={<PatientCRUD />} />
+                        <Route path="/RepartCrud" element={<RepartCrud />} />
+                        <Route path="/MjekuCRUD" element={<MjekuCRUD />} />
                     </Routes>
                 </HashRouter>
             </Suspense>
