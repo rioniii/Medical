@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReactApp1.Server.Data.Models;
 
@@ -11,9 +12,11 @@ using ReactApp1.Server.Data.Models;
 namespace ReactApp1.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241021000151_DhomaPacientit")]
+    partial class DhomaPacientit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,21 +54,21 @@ namespace ReactApp1.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "db3c815d-5641-44fa-84a0-2186a0f6fe7d",
+                            Id = "95951639-284a-4279-a5b3-132ac9cc0d97",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "6971cb79-47cc-4d52-85f9-e7f7f842501d",
+                            Id = "38825f45-3f37-4d45-94e1-9d73c02f9112",
                             ConcurrencyStamp = "2",
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = "83b926be-419c-4451-994b-4df848dd12d5",
+                            Id = "e9c9e528-95e2-4424-89ff-afee63aabf4f",
                             ConcurrencyStamp = "3",
                             Name = "Doctor",
                             NormalizedName = "Doctor"
@@ -375,7 +378,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("PacientId");
 
-                    b.ToTable("Historiks");
+                    b.ToTable("Historiqet");
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.JWT", b =>
