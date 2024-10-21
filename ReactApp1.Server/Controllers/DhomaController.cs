@@ -10,7 +10,7 @@ namespace ReactApp1.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DhomaController : Controller
+    public class DhomaController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
