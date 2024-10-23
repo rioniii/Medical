@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
 using ReactApp1.Server.Data.Models;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReactApp1.Server.Controllers
 {
+    [Authorize(Roles = "DoctorPolicy")]    
     [Route("api/[controller]")]
     [ApiController]
     public class PacientiController : ControllerBase

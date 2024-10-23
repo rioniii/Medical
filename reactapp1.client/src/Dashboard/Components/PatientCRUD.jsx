@@ -52,7 +52,7 @@ const PatientCRUD = () => {
 
 
     const handleUpdate = () => {
-        axios.put(`https://localhost:7107/api/Pacienti/${editId}`, {
+        axios.put(`https://localhost:7107/api/Pacienti/${Id}`, {
             Patient_Id: editId,
             Emri: editEmri,
             Mbiemri: editMbiemri,
@@ -81,7 +81,7 @@ const PatientCRUD = () => {
 
     const handleDelete = (id) => {
         if (window.confirm("Are you sure you want to delete this patient?")) {
-            axios.delete(`https://localhost:7107/api/Pacienti/${id}`)
+            axios.delete(`https://localhost:7107/api/Pacienti/${Id}`)
                 .then(response => {
                     alert("Patient deleted successfully!");
                     getData(); // Refresh the data to reflect the deletion
