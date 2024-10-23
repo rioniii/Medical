@@ -3,13 +3,13 @@ import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
-import './Header.css'; // Make sure this file exists
+import './Header.css'; 
 
 const Header = ({ userRole }) => {
     const [isDoctor, setIsDoctor] = useState(false);
 
     useEffect(() => {
-        // Check the user role and update state
+      
         if (userRole === 'Doctor') {
             setIsDoctor(true);
         } else {

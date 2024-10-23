@@ -69,7 +69,7 @@ const Contact = () => {
 
     return (
         <div>
-            <Header />
+          
             <div className="contact-container" style={{ backgroundImage: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <div className='ContactForm' style={{ backgroundIm: `url(${contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', width: "100%", }} >
                     <div className='container' style={{ backgroundColor: "rgba(255, 255, 255, 0.7)" }} >

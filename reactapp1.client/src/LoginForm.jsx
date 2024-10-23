@@ -57,7 +57,7 @@ const LoginForm = () => {
             display: 'flex',
             flexDirection: 'column'
         }}>
-            <Header />
+           
             <div style={{
                 flex: 1,
                 display: 'flex',
