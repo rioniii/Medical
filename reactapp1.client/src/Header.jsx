@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom'; // Add react-router-dom for navigation
+import { NavLink, useNavigate } from 'react-router-dom';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
+import PropTypes from 'prop-types';
 import './Header.css';
 
-const Header = ({ userRole }) => {
+const Header = () => {
     const [isDoctor, setIsDoctor] = useState(false);
-    const token = localStorage.getItem('token'); // Check if user is logged in
-    const navigate = useNavigate(); // Initialize navigation
+    const token = localStorage.getItem('token');
+    const userRoles = JSON.parse(localStorage.getItem('userRoles')) || [];
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (userRole === 'Doctor') {
-            setIsDoctor(true);
-        } else {
-            setIsDoctor(false);
-        }
-    }, [userRole]);
+        setIsDoctor(userRoles.includes('Doctor'));
+    }, [userRoles]);
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Clear token on logout
-        navigate('/LoginForm'); // Redirect to login form after logout
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRoles');
+        navigate('/LoginForm');
     };
 
     return (
@@ -31,20 +30,12 @@ const Header = ({ userRole }) => {
                     <Navbar.Brand href="#/">Medical</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto" style={{ margin: "auto" }}>
+                        <Nav className="me-auto">
                             <Nav.Link as={NavLink} to="/" className="nav-item">Home</Nav.Link>
                             <Nav.Link as={NavLink} to="/AboutUs" className="nav-item">About</Nav.Link>
-                            <Nav.Link as={NavLink} to="/Clinic" className="nav-item">Clinic</Nav.Link>
-                            <Nav.Link as={NavLink} to="/Doctors" className="nav-item">Doctors</Nav.Link>
                             <Nav.Link as={NavLink} to="/Contact" className="nav-item">Contact</Nav.Link>
-                            {/* Conditionally render links based on login status */}
                             {token ? (
-                                <>
-                                    {isDoctor && (
-                                        <Nav.Link as={NavLink} to="/PatientCRUD" className="nav-item">Dashboard</Nav.Link>
-                                    )}
-                                    <Button variant="danger" onClick={handleLogout}>Log Out</Button>
-                                </>
+                                <Button variant="danger" onClick={handleLogout}>Log Out</Button>
                             ) : (
                                 <>
                                     <Nav.Link as={NavLink} to="/RegisterForm" className="nav-item">Register</Nav.Link>
@@ -52,12 +43,25 @@ const Header = ({ userRole }) => {
                                 </>
                             )}
                         </Nav>
-                        <Button variant="success" className="ms-auto">Make an Appointment</Button>
+                        {isDoctor && (
+                            <Button
+                                variant="info"
+                                onClick={() => navigate('/PatientCRUD')}
+                                className="ms-auto"
+                            >
+                                Dashboard
+                            </Button>
+                        )}
+                        <Button variant="success" className="ms-2">Make an Appointment</Button>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
         </header>
     );
+};
+
+Header.propTypes = {
+    userRoles: PropTypes.array,
 };
 
 export default Header;
