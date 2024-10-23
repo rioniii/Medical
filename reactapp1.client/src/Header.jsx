@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom'; // Add react-router-dom for navigation
+import { NavLink, useNavigate } from 'react-router-dom';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -8,20 +8,19 @@ import './Header.css';
 
 const Header = ({ userRole }) => {
     const [isDoctor, setIsDoctor] = useState(false);
-    const token = localStorage.getItem('token'); // Check if user is logged in
-    const navigate = useNavigate(); // Initialize navigation
+    const [isAdmin, setIsAdmin] = useState(false);
+    const token = localStorage.getItem('token');
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (userRole === 'Doctor') {
-            setIsDoctor(true);
-        } else {
-            setIsDoctor(false);
-        }
+        setIsAdmin(userRole === 'Admin');
+        setIsDoctor(userRole === 'Doctor');
+        console.log("User Role in Header:", userRole); // Log userRole for debugging
     }, [userRole]);
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Clear token on logout
-        navigate('/LoginForm'); // Redirect to login form after logout
+        localStorage.removeItem('token');
+        navigate('/LoginForm');
     };
 
     return (
@@ -34,17 +33,15 @@ const Header = ({ userRole }) => {
                         <Nav className="me-auto" style={{ margin: "auto" }}>
                             <Nav.Link as={NavLink} to="/" className="nav-item">Home</Nav.Link>
                             <Nav.Link as={NavLink} to="/AboutUs" className="nav-item">About</Nav.Link>
-                            <Nav.Link as={NavLink} to="/Clinic" className="nav-item">Clinic</Nav.Link>
-                            <Nav.Link as={NavLink} to="/Doctors" className="nav-item">Doctors</Nav.Link>
                             <Nav.Link as={NavLink} to="/Contact" className="nav-item">Contact</Nav.Link>
-                            {/* Conditionally render links based on login status */}
+                            {isAdmin && (
+                                <Nav.Link as={NavLink} to="/admin-dashboard" className="nav-item">Admin Dashboard</Nav.Link>
+                            )}
+                            {isDoctor && (
+                                <Nav.Link as={NavLink} to="/PatientCRUD" className="nav-item">Doctor Dashboard</Nav.Link>
+                            )}
                             {token ? (
-                                <>
-                                    {isDoctor && (
-                                        <Nav.Link as={NavLink} to="/PatientCRUD" className="nav-item">Dashboard</Nav.Link>
-                                    )}
-                                    <Button variant="danger" onClick={handleLogout}>Log Out</Button>
-                                </>
+                                <Button variant="danger" onClick={handleLogout}>Log Out</Button>
                             ) : (
                                 <>
                                     <Nav.Link as={NavLink} to="/RegisterForm" className="nav-item">Register</Nav.Link>

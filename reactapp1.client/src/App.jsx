@@ -6,35 +6,38 @@ import IntervalSlider from './IntervalSlider';
 import Ballina from './Ballina';
 import PatientCRUD from './Dashboard/Components/PatientCRUD';
 import RepartCrud from './Dashboard/Components/RepartCrud';
-import { Route, Routes, HashRouter } from 'react-router-dom';
+import { Route, Routes, HashRouter, Navigate } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
 import MjekuCRUD from './Dashboard/Components/MjekuCRUD';
-import Header from './Header'; // Import the Header component
+import Header from './Header';
 
-// Lazy loading components
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
 const LoginForm = React.lazy(() => import("./LoginForm"));
 const AboutUs = React.lazy(() => import("./AboutUs"));
 const Contact = React.lazy(() => import("./Contact"));
-/*
-const [userRole, setUserRole] = useState('');
-const RegisterForm = React.lazy(() => import("./RegisterForm"));
-const LoginForm = React.lazy(() => import("./LoginForm"));
-const AboutUs = React.lazy(() => import("./AboutUs"));
-const Contact = React.lazy(() => import("./Contact"));*/
-const userRole = 'Doctor'; // Simulated user role
 
 class App extends Component {
     render() {
+        const token = localStorage.getItem('token');
+        let userRole = 'User'; // Default to 'User'
+
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                console.log("Decoded Payload:", payload); // Log the decoded payload
+                userRole = payload.role; // Ensure this matches how your role is structured
+            } catch (error) {
+                console.error("Token decoding error:", error); // Log any decoding errors
+            }
+        }
+
         return (
             <Suspense fallback={<div>Loading...</div>}>
                 <HashRouter>
-                    {/* Global Header (Navbar) */}
-                    <Header />
+                    <Header userRole={userRole} />
 
-                    {/* Page-specific Routes */}
                     <Routes>
                         <Route path="/" element={
                             <div>
@@ -50,9 +53,10 @@ class App extends Component {
                         <Route path="/PatientCRUD" element={<PatientCRUD />} />
                         <Route path="/RepartCrud" element={<RepartCrud />} />
                         <Route path="/MjekuCRUD" element={<MjekuCRUD />} />
+                        <Route path="/admin-dashboard" element={userRole === 'Admin' ? <MjekuCRUD /> : <Navigate to="/" />} />
+                        <Route path="*" element={<Navigate to="/" />} />
                     </Routes>
 
-                    {/* Global Footer */}
                     <Footer />
                 </HashRouter>
             </Suspense>
