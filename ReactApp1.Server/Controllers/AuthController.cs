@@ -37,51 +37,71 @@ public class AuthController : ControllerBase
 
     // /api/auth/register
     [HttpPost("Register")]
-    public async Task<IActionResult> RegisterAsync([FromBody] RegisterViewModel registerUser, string role)
+    public async Task<IActionResult> RegisterAsync([FromBody] RegisterViewModel registerUser  )
+{
+    string defaultRole = "User";
+
+    try
     {
+        _logger.LogInformation($"Register request received for email: {registerUser .Email}");
 
-        var userExists = await _userManager.FindByEmailAsync(registerUser.Email);
-
-        if (userExists != null)
+        // Check if the user already exists
+        if (await _userManager.FindByEmailAsync(registerUser .Email) != null)
         {
-            return StatusCode(StatusCodes.Status403Forbidden,
-                new UserManagerResponse { isSucces = false, Message = "User already exists!" });
+            _logger.LogError($"User  with email '{registerUser .Email}' already exists.");
+            return StatusCode(StatusCodes.Status403Forbidden, 
+                new UserManagerResponse { isSucces = false, Message = "User  already exists!" });
         }
 
-        IdentityUser user = new()
+        // Create a new user
+        var user = new IdentityUser   
         {
-            Email = registerUser.Email,
-            SecurityStamp = Guid.NewGuid().ToString(),
-            UserName = registerUser.FullName
+            Email = registerUser .Email,
+            UserName = registerUser .FullName,
+            SecurityStamp = Guid.NewGuid().ToString()
         };
 
-
-        if (await _roleManager.RoleExistsAsync(role))
+        // Ensure the default role exists
+        if (!await _roleManager.RoleExistsAsync(defaultRole))
         {
-
-            var result = await _userManager.CreateAsync(user, registerUser.Password);
-
-            if (!result.Succeeded)
-            {
-
-
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                  new UserManagerResponse { isSucces = false, Message = "User Failed to Create!" });
-            }
-            //Add role to the user...
-            await _userManager.AddToRoleAsync(user, role);
-            return StatusCode(StatusCodes.Status200OK,
-             new UserManagerResponse { isSucces = true, Message = "User created Successfully!" });
-        }
-        else
-        {
-
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                new UserManagerResponse { isSucces = false, Message = "This Role doesn't Exist." });
+            _logger.LogError($"Role '{defaultRole}' does not exist.");
+            return StatusCode(StatusCodes.Status500InternalServerError, 
+                new UserManagerResponse { isSucces = false, Message = "This role doesn't exist." });
         }
 
+        // Create the user
+        var createResult = await _userManager.CreateAsync(user, registerUser .Password);
+        if (!createResult.Succeeded)
+        {
+            var errorMessage = string.Join(", ", createResult.Errors.Select(e => $"{e.Code} - {e.Description}"));
+            _logger.LogError($"Failed to create user: {errorMessage}");
+            return StatusCode(StatusCodes.Status500InternalServerError, 
+                new UserManagerResponse { isSucces = false, Message = "User  creation failed"});
+        }
+
+        _logger.LogInformation($"User  '{user.Email}' created successfully.");
+
+        // Assign the user to the default role
+        var roleResult = await _userManager.AddToRoleAsync(user, defaultRole);
+        if (!roleResult.Succeeded)
+        {
+            var roleErrorMessage = string.Join(", ", roleResult.Errors.Select(e => $"{e.Code} - {e.Description}"));
+            _logger.LogError($"Failed to add user to role: {roleErrorMessage}");
+            return StatusCode(StatusCodes.Status500InternalServerError, 
+                new UserManagerResponse { isSucces = false, Message = "Failed to add user to role" });
+        }
+
+        _logger.LogInformation($"User '{user.Email}' added to role '{defaultRole}' successfully.");
+        return StatusCode(StatusCodes.Status200OK, 
+            new UserManagerResponse { isSucces = true, Message = "User  created successfully!" });
+            
     }
-
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error registering user: {Message}", ex.Message);
+        return StatusCode(500, new UserManagerResponse { isSucces = false, Message = "Internal Server Error." });
+    }
+}
 
 
 
