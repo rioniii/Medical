@@ -17,14 +17,8 @@ const RegisterForm = React.lazy(() => import("./RegisterForm"));
 const LoginForm = React.lazy(() => import("./LoginForm"));
 const AboutUs = React.lazy(() => import("./AboutUs"));
 const Contact = React.lazy(() => import("./Contact"));
-/*
-const [userRole, setUserRole] = useState('');
-const RegisterForm = React.lazy(() => import("./RegisterForm"));
-const LoginForm = React.lazy(() => import("./LoginForm"));
-const AboutUs = React.lazy(() => import("./AboutUs"));
-const Contact = React.lazy(() => import("./Contact"));*/
-const userRole = 'Doctor'; // Simulated user role
 
+const userRole = 'Doctor'; // Simulated user role
 
 class App extends Component {
     render() {

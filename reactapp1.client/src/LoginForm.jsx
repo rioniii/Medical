@@ -39,8 +39,14 @@ const LoginForm = () => {
             console.log('Login successful:', data);
             localStorage.setItem('token', data.token); // Save the received token
             setSuccessMessage('Login successful!');
-            navigate('/');  // Redirect after successful login
 
+            // Redirect based on user role
+            const userRole = data.role; // Assuming `role` is part of the returned data
+            if (userRole === 'admin') {
+                navigate('/dashboard');  // Redirect admins to dashboard
+            } else {
+                navigate('/');  // Redirect other users to homepage
+            }
         } catch (error) {
             console.error('Login error:', error);
             setErrorMessage('An error occurred. Please try again later.');
