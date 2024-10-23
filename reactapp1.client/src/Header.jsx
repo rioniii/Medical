@@ -4,22 +4,22 @@ import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
+import PropTypes from 'prop-types';
 import './Header.css';
 
-const Header = ({ userRole }) => {
+const Header = () => {
     const [isDoctor, setIsDoctor] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
     const token = localStorage.getItem('token');
+    const userRoles = JSON.parse(localStorage.getItem('userRoles')) || [];
     const navigate = useNavigate();
 
     useEffect(() => {
-        setIsAdmin(userRole === 'Admin');
-        setIsDoctor(userRole === 'Doctor');
-        console.log("User Role in Header:", userRole); // Log userRole for debugging
-    }, [userRole]);
+        setIsDoctor(userRoles.includes('Doctor'));
+    }, [userRoles]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('userRoles');
         navigate('/LoginForm');
     };
 
@@ -30,16 +30,10 @@ const Header = ({ userRole }) => {
                     <Navbar.Brand href="#/">Medical</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto" style={{ margin: "auto" }}>
+                        <Nav className="me-auto">
                             <Nav.Link as={NavLink} to="/" className="nav-item">Home</Nav.Link>
                             <Nav.Link as={NavLink} to="/AboutUs" className="nav-item">About</Nav.Link>
                             <Nav.Link as={NavLink} to="/Contact" className="nav-item">Contact</Nav.Link>
-                            {isAdmin && (
-                                <Nav.Link as={NavLink} to="/admin-dashboard" className="nav-item">Admin Dashboard</Nav.Link>
-                            )}
-                            {isDoctor && (
-                                <Nav.Link as={NavLink} to="/PatientCRUD" className="nav-item">Doctor Dashboard</Nav.Link>
-                            )}
                             {token ? (
                                 <Button variant="danger" onClick={handleLogout}>Log Out</Button>
                             ) : (
@@ -49,12 +43,25 @@ const Header = ({ userRole }) => {
                                 </>
                             )}
                         </Nav>
-                        <Button variant="success" className="ms-auto">Make an Appointment</Button>
+                        {isDoctor && (
+                            <Button
+                                variant="info"
+                                onClick={() => navigate('/PatientCRUD')}
+                                className="ms-auto"
+                            >
+                                Dashboard
+                            </Button>
+                        )}
+                        <Button variant="success" className="ms-2">Make an Appointment</Button>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
         </header>
     );
+};
+
+Header.propTypes = {
+    userRoles: PropTypes.array,
 };
 
 export default Header;

@@ -88,7 +88,6 @@ public class AuthController : ControllerBase
 
     // /api/auth/login
     [HttpPost("Login")]
-    
     public async Task<IActionResult> LoginAsync([FromBody] LogInViewModel loginModel)
     {
         if (!ModelState.IsValid)
@@ -97,7 +96,6 @@ public class AuthController : ControllerBase
         }
 
         var user = await _userManager.FindByEmailAsync(loginModel.Email);
-
 
         if (user == null || !await _userManager.CheckPasswordAsync(user, loginModel.Password))
         {
@@ -117,12 +115,14 @@ public class AuthController : ControllerBase
             authClaims.Add(new Claim(ClaimTypes.Role, role));
         }
 
-
         var jwtToken = GetToken(authClaims);
+
+        // Include user roles in the response
         return Ok(new
         {
             token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-            expiration = jwtToken.ValidTo
+            expiration = jwtToken.ValidTo,
+            roles = userRoles // Include the roles in the response
         });
     }
 

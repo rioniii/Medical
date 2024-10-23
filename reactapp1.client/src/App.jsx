@@ -6,38 +6,48 @@ import IntervalSlider from './IntervalSlider';
 import Ballina from './Ballina';
 import PatientCRUD from './Dashboard/Components/PatientCRUD';
 import RepartCrud from './Dashboard/Components/RepartCrud';
-import { Route, Routes, HashRouter, Navigate } from 'react-router-dom';
+import MjekuCRUD from './Dashboard/Components/MjekuCRUD';
+import { Route, Routes, HashRouter } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
-import MjekuCRUD from './Dashboard/Components/MjekuCRUD';
 import Header from './Header';
 
+// Lazy loading components
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
 const LoginForm = React.lazy(() => import("./LoginForm"));
 const AboutUs = React.lazy(() => import("./AboutUs"));
 const Contact = React.lazy(() => import("./Contact"));
 
+// Error Boundary Component
+class ErrorBoundary extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError(error) {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.error("Error occurred in child component:", error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return <h1>Something went wrong.</h1>;
+        }
+        return this.props.children;
+    }
+}
+
 class App extends Component {
     render() {
-        const token = localStorage.getItem('token');
-        let userRole = 'User'; // Default to 'User'
-
-        if (token) {
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                console.log("Decoded Payload:", payload); // Log the decoded payload
-                userRole = payload.role; // Ensure this matches how your role is structured
-            } catch (error) {
-                console.error("Token decoding error:", error); // Log any decoding errors
-            }
-        }
-
         return (
             <Suspense fallback={<div>Loading...</div>}>
                 <HashRouter>
-                    <Header userRole={userRole} />
-
+                    <Header />
                     <Routes>
                         <Route path="/" element={
                             <div>
@@ -46,17 +56,14 @@ class App extends Component {
                                 <Card />
                             </div>
                         } />
-                        <Route path="/RegisterForm" element={<RegisterForm />} />
-                        <Route path="/LoginForm" element={<LoginForm />} />
-                        <Route path="/AboutUs" element={<AboutUs />} />
-                        <Route path="/Contact" element={<Contact />} />
-                        <Route path="/PatientCRUD" element={<PatientCRUD />} />
-                        <Route path="/RepartCrud" element={<RepartCrud />} />
-                        <Route path="/MjekuCRUD" element={<MjekuCRUD />} />
-                        <Route path="/admin-dashboard" element={userRole === 'Admin' ? <MjekuCRUD /> : <Navigate to="/" />} />
-                        <Route path="*" element={<Navigate to="/" />} />
+                        <Route path="/RegisterForm" element={<ErrorBoundary><RegisterForm /></ErrorBoundary>} />
+                        <Route path="/LoginForm" element={<ErrorBoundary><LoginForm /></ErrorBoundary>} />
+                        <Route path="/AboutUs" element={<ErrorBoundary><AboutUs /></ErrorBoundary>} />
+                        <Route path="/Contact" element={<ErrorBoundary><Contact /></ErrorBoundary>} />
+                        <Route path="/PatientCRUD" element={<ErrorBoundary><PatientCRUD /></ErrorBoundary>} />
+                        <Route path="/RepartCrud" element={<ErrorBoundary><RepartCrud /></ErrorBoundary>} />
+                        <Route path="/MjekuCRUD" element={<ErrorBoundary><MjekuCRUD /></ErrorBoundary>} />
                     </Routes>
-
                     <Footer />
                 </HashRouter>
             </Suspense>
