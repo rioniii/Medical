@@ -98,6 +98,7 @@ public class AuthController : ControllerBase
 
         var user = await _userManager.FindByEmailAsync(loginModel.Email);
 
+
         if (user == null || !await _userManager.CheckPasswordAsync(user, loginModel.Password))
         {
             return Unauthorized(new { Message = "Invalid login attempt." });
@@ -115,6 +116,7 @@ public class AuthController : ControllerBase
         {
             authClaims.Add(new Claim(ClaimTypes.Role, role));
         }
+
 
         var jwtToken = GetToken(authClaims);
         return Ok(new

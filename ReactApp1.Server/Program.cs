@@ -11,43 +11,36 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Konfigurimi i Entity Framecore me SQL Server
+// Entity Framework and SQL Server Configuration
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Shtimi i Identity Services 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
+// Add Identity Services with Role management
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequiredLength = 5;
 }).AddEntityFrameworkStores<ApplicationDbContext>();
 
-/*builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);*/
-
-
-
 // Add JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
-// Configure JWT authentication
-
+// Configure JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
-
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-}).AddJwtBearer(options =>
+})
+.AddJwtBearer(options =>
 {
-
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         RequireExpirationTime = true,
@@ -55,46 +48,38 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Add role-based authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("DoctorPolicy", policy =>
+        policy.RequireRole("Doctor"));
+});
 
-//Add Scoped Service
+// Add Scoped Services for User Management (if applicable)
 builder.Services.AddScoped<IUserService, UserService>();
 
-/*builder.Services.AddScoped<IEmailService, EmailService>();*/
-
-
-/*Email Configuration
-
-var emailConfig = configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
-
-builder.Services.AddSingleton(emailConfig);
-*/
-
-
-
-
-// Add CORS policy
-
+// CORS Policy Configuration
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
-        builder.WithOrigins("https://localhost:5173")
+        builder.WithOrigins("https://localhost:5173") // Adjust for your front-end URL
                .AllowAnyMethod()
                .AllowAnyHeader()
-               .AllowCredentials(); // If you're using credentials like cookies
+               .AllowCredentials(); // Allow credentials if needed
     });
 });
 
-
-// Add Swagger services
+// Swagger Configuration for API documentation
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Auth API",
+        Title = "Medical API",
         Version = "v1"
     });
 
+    // Add JWT Authorization to Swagger
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -121,22 +106,21 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+// Apply CORS Policy
 app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    // Enable middleware to serve generated Swagger as a JSON endpoint.
+    // Enable Swagger for development
     app.UseSwagger();
-    // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-    // specifying the Swagger JSON endpoint.
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Medical API v1"));
 }
 else
 {
@@ -144,15 +128,17 @@ else
     app.UseHsts();
 }
 
+// Enable Middleware
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseCors("AllowSpecificOrigin");
+app.UseCors("AllowSpecificOrigin"); // Ensure CORS policy is applied
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthentication();  // Enable Authentication Middleware
+app.UseAuthorization();   // Enable Authorization Middleware
 
 app.MapControllers();
 app.MapFallbackToFile("/index.html");
+
 app.Run();
