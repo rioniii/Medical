@@ -3,9 +3,20 @@ import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
-import './Header.css'; // Make sure to create a CSS file for additional styles
+import './Header.css'; 
 
-const Header = () => {
+const Header = ({ userRole }) => {
+    const [isDoctor, setIsDoctor] = useState(false);
+
+    useEffect(() => {
+      
+        if (userRole === 'Doctor') {
+            setIsDoctor(true);
+        } else {
+            setIsDoctor(false);
+        }
+    }, [userRole]);
+
     return (
         <header>
             <Navbar bg="dark" variant="dark" expand="lg" className="shadow">

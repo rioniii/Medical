@@ -6,7 +6,7 @@ import Header from './Header';
 function AboutUs() {
     return (
         <>
-            <Header />
+          
             <div className={ChangeVideo.kontekst}>
                 {/* Video as background */}
                 <div className={ChangeVideo.vid}>
