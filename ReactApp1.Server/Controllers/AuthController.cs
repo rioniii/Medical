@@ -1,32 +1,40 @@
-﻿namespace ReactApp1.Server.Controllers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using ReactApp1.Server.Services;
-using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Azure;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
+﻿namespace ReactApp1.Server.Controllers
+{
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using ReactApp1.Server.Services;
+    using Microsoft.AspNetCore.Identity;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using System.Security.Claims;
+    using Microsoft.IdentityModel.Tokens;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Text;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Configuration;
+    using System.Security.Cryptography;
+    using System;
+    using System.Linq;
+    using ReactApp1.Server.Data.Models;
 
-[ApiController]
-[Route("api/[controller]")]
-
-
-
-public class AuthController : ControllerBase
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AuthController : ControllerBase
     {
+
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserService _userService;
         private readonly ILogger<AuthController> _logger;
         private readonly IConfiguration _configuration;
-
-        public AuthController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IUserService userService, ILogger<AuthController> logger, IConfiguration configuration)
+        public AuthController(
+            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IUserService userService,
+            ILogger<AuthController> logger,
+            IConfiguration configuration,
+            User user)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -35,121 +43,111 @@ public class AuthController : ControllerBase
             _configuration = configuration;
         }
 
-    // /api/auth/register
-    [HttpPost("Register")]
-    public async Task<IActionResult> RegisterAsync([FromBody] RegisterViewModel registerUser  )
-{
-    string defaultRole = "User";
-
-    try
-    {
-        _logger.LogInformation($"Register request received for email: {registerUser .Email}");
-
-        // Check if the user already exists
-        if (await _userManager.FindByEmailAsync(registerUser .Email) != null)
+        // /api/auth/register
+        [HttpPost("Register")]
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterViewModel registerUser)
         {
-            _logger.LogError($"User  with email '{registerUser .Email}' already exists.");
-            return StatusCode(StatusCodes.Status403Forbidden, 
-                new UserManagerResponse { isSucces = false, Message = "User  already exists!" });
+            string defaultRole = "User";
+
+            try
+            {
+                _logger.LogInformation($"Register request received for email: {registerUser.Email}");
+
+                // Check if the user already exists
+                if (await _userManager.FindByEmailAsync(registerUser.Email) != null)
+                {
+                    _logger.LogError($"User with email '{registerUser.Email}' already exists.");
+                    return StatusCode(StatusCodes.Status403Forbidden, new UserManagerResponse { isSucces = false, Message = "User already exists!" });
+                }
+
+                // Create a new user
+                var user = new IdentityUser
+                {
+                    Email = registerUser.Email,
+                    UserName = registerUser.FullName,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
+
+                // Ensure the default role exists
+                if (!await _roleManager.RoleExistsAsync(defaultRole))
+                {
+                    _logger.LogError($"Role '{defaultRole}' does not exist.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, new UserManagerResponse { isSucces = false, Message = "This role doesn't exist." });
+                }
+
+                // Create the user
+                var createResult = await _userManager.CreateAsync(user, registerUser.Password);
+                if (!createResult.Succeeded)
+                {
+                    var errorMessage = string.Join(", ", createResult.Errors.Select(e => $"{e.Code} - {e.Description}"));
+                    _logger.LogError($"Failed to create user: {errorMessage}");
+                    return StatusCode(StatusCodes.Status500InternalServerError, new UserManagerResponse { isSucces = false, Message = "User creation failed" });
+                }
+
+                _logger.LogInformation($"User '{user.Email}' created successfully.");
+
+                // Assign the user to the default role
+                var roleResult = await _userManager.AddToRoleAsync(user, defaultRole);
+                if (!roleResult.Succeeded)
+                {
+                    var roleErrorMessage = string.Join(", ", roleResult.Errors.Select(e => $"{e.Code} - {e.Description}"));
+                    _logger.LogError($"Failed to add user to role: {roleErrorMessage}");
+                    return StatusCode(StatusCodes.Status500InternalServerError, new UserManagerResponse { isSucces = false, Message = "Failed to add user to role" });
+                }
+
+                _logger.LogInformation($"User '{user.Email}' added to role '{defaultRole}' successfully.");
+                return StatusCode(StatusCodes.Status200OK, new UserManagerResponse { isSucces = true, Message = "User created successfully!" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error registering user: {Message}", ex.Message);
+                return StatusCode(500, new UserManagerResponse { isSucces = false, Message = "Internal Server Error." });
+            }
         }
 
-        // Create a new user
-        var user = new IdentityUser   
+        // /api/auth/login
+        [HttpPost("Login")]
+        public async Task<IActionResult> LoginAsync([FromBody] LogInViewModel loginModel)
         {
-            Email = registerUser .Email,
-            UserName = registerUser .FullName,
-            SecurityStamp = Guid.NewGuid().ToString()
-        };
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        // Ensure the default role exists
-        if (!await _roleManager.RoleExistsAsync(defaultRole))
-        {
-            _logger.LogError($"Role '{defaultRole}' does not exist.");
-            return StatusCode(StatusCodes.Status500InternalServerError, 
-                new UserManagerResponse { isSucces = false, Message = "This role doesn't exist." });
+            var user = await _userManager.FindByEmailAsync(loginModel.Email);
+
+            if (user == null || !await _userManager.CheckPasswordAsync(user, loginModel.Password))
+            {
+                return Unauthorized(new { Message = "Invalid login attempt." });
+            }
+
+            var authClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            foreach (var role in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var jwtToken = GetToken(authClaims);
+            var refreshToken = GenerateRefreshToken();
+            SetRefreshToken(refreshToken,User);
+
+            // Include user roles in the response
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+                expiration = jwtToken.ValidTo,
+                roles = userRoles // Include the roles in the response
+            });
         }
 
-        // Create the user
-        var createResult = await _userManager.CreateAsync(user, registerUser .Password);
-        if (!createResult.Succeeded)
-        {
-            var errorMessage = string.Join(", ", createResult.Errors.Select(e => $"{e.Code} - {e.Description}"));
-            _logger.LogError($"Failed to create user: {errorMessage}");
-            return StatusCode(StatusCodes.Status500InternalServerError, 
-                new UserManagerResponse { isSucces = false, Message = "User  creation failed"});
-        }
-
-        _logger.LogInformation($"User  '{user.Email}' created successfully.");
-
-        // Assign the user to the default role
-        var roleResult = await _userManager.AddToRoleAsync(user, defaultRole);
-        if (!roleResult.Succeeded)
-        {
-            var roleErrorMessage = string.Join(", ", roleResult.Errors.Select(e => $"{e.Code} - {e.Description}"));
-            _logger.LogError($"Failed to add user to role: {roleErrorMessage}");
-            return StatusCode(StatusCodes.Status500InternalServerError, 
-                new UserManagerResponse { isSucces = false, Message = "Failed to add user to role" });
-        }
-
-        _logger.LogInformation($"User '{user.Email}' added to role '{defaultRole}' successfully.");
-        return StatusCode(StatusCodes.Status200OK, 
-            new UserManagerResponse { isSucces = true, Message = "User  created successfully!" });
-            
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Error registering user: {Message}", ex.Message);
-        return StatusCode(500, new UserManagerResponse { isSucces = false, Message = "Internal Server Error." });
-    }
-}
-
-
-
-
-    // /api/auth/login
-    [HttpPost("Login")]
-    public async Task<IActionResult> LoginAsync([FromBody] LogInViewModel loginModel)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        var user = await _userManager.FindByEmailAsync(loginModel.Email);
-
-        if (user == null || !await _userManager.CheckPasswordAsync(user, loginModel.Password))
-        {
-            return Unauthorized(new { Message = "Invalid login attempt." });
-        }
-
-        var authClaims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.NameIdentifier, user.Id),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-    };
-
-        var userRoles = await _userManager.GetRolesAsync(user);
-        foreach (var role in userRoles)
-        {
-            authClaims.Add(new Claim(ClaimTypes.Role, role));
-        }
-
-        var jwtToken = GetToken(authClaims);
-
-        // Include user roles in the response
-        return Ok(new
-        {
-            token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-            expiration = jwtToken.ValidTo,
-            roles = userRoles // Include the roles in the response
-        });
-    }
-
-
-
-
-    [HttpGet("Users")]
+        [HttpGet("Users")]
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -164,22 +162,46 @@ public class AuthController : ControllerBase
             }
         }
 
+        private JwtSecurityToken GetToken(List<Claim> authClaims)
+        {
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
-    private JwtSecurityToken GetToken(List<Claim> authClaims)
-    {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                expires: DateTime.Now.AddHours(Convert.ToDouble(_configuration["Jwt:ExpiresInHours"])),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+            );
 
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            expires: DateTime.Now.AddDays(Convert.ToDouble(_configuration["Jwt:ExpiresInDays"])),
-            claims: authClaims,
-            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-        );
+            return token;
+        }
 
-        return token;
+        private RefreshToken GenerateRefreshToken()
+        {
+            var refreshToken = new RefreshToken
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Expires = DateTime.Now.AddDays(7),
+                
+            };
+            return refreshToken;
+        }
+
+        private void SetRefreshToken(RefreshToken newRefreshToken, User user)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = newRefreshToken.Expires,
+            };
+            Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
+
+            user.RefreshToken = newRefreshToken.Token;
+            user.TokenCreated = newRefreshToken.Created;
+            user.TokenExpires = newRefreshToken.Expires;
+        }
     }
-
 
 
 

@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
+using System.Data;
 
 namespace ReactApp1.Server.Data.Models
 {
@@ -9,7 +10,13 @@ namespace ReactApp1.Server.Data.Models
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public string FullName { get; set; } 
-        public DateTime DateOfBirth { get; set; } 
+        public DateTime DateOfBirth { get; set; }
+
+        public required string RefreshToken { get; set; } = string.Empty;
+
+        public DateTime TokenCreated { get; set; } = DateTime.Now;
+
+        public DateTime TokenExpires { get; set; }
 
         // Foreign key for Role
         public int RoleId { get; set; }
