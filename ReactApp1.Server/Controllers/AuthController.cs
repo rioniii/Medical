@@ -12,6 +12,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.SqlServer;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using NuGet.Common;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -26,7 +32,7 @@ public class AuthController : ControllerBase
         private readonly ILogger<AuthController> _logger;
         private readonly IConfiguration _configuration;
 
-        public AuthController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IUserService userService, ILogger<AuthController> logger, IConfiguration configuration)
+    public AuthController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IUserService userService, ILogger<AuthController> logger, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -180,6 +186,47 @@ public class AuthController : ControllerBase
         return token;
     }
 
+
+
+        [Authorize]
+    [HttpPost("ChangeRole")]
+    public async Task<IActionResult> ChangeRoleAsync(string userId, string newRole)
+    {
+        // Ensure the role exists
+        if (!await _roleManager.RoleExistsAsync(newRole))
+        {
+            return BadRequest(new { Message = "The specified role does not exist." });
+        }
+
+        // Find the user by ID
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return NotFound(new { Message = "User not found." });
+        }
+
+        // Get the user's current roles
+        var currentRoles = await _userManager.GetRolesAsync(user);
+
+        // Remove all roles from the user
+        var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+        if (!removeResult.Succeeded)
+        {
+            var errors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
+            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = $"Error removing roles: {errors}" });
+        }
+
+        // Add the user to the new role
+        var addRoleResult = await _userManager.AddToRoleAsync(user, newRole);
+        if (!addRoleResult.Succeeded)
+        {
+            var errors = string.Join(", ", addRoleResult.Errors.Select(e => e.Description));
+            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = $"Error adding new role: {errors}" });
+        }
+
+        _logger.LogInformation($"User '{user.Email}' role changed to '{newRole}' successfully.");
+        return Ok(new { Message = $"User role changed to {newRole} successfully." });
+    }
 
 
 
