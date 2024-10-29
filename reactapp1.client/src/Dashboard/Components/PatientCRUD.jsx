@@ -1,90 +1,91 @@
-import React, { useState, useEffect } from "react";
-import Navigation from "./Navigation.jsx";
-import Button from "react-bootstrap/Button";
-import Table from 'react-bootstrap/Table';
-import Modal from 'react-bootstrap/Modal';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Button, Modal, Table, Form } from 'react-bootstrap';
 
 const PatientCRUD = () => {
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
-    const [Emri, setEmri] = useState('');
-    const [Mbiemri, setMbiemri] = useState('');
-    const [Gjinia, setGjinia] = useState('M');
-    const [VitiLindjes, setVitiLindjes] = useState('');
-
-    const [editId, setEditId] = useState('');
-    const [editEmri, setEditEmri] = useState('');
-    const [editMbiemri, setEditMbiemri] = useState('');
-    const [editGjinia, setEditGjinia] = useState('M');
-    const [editVitiLindjes, setEditVitiLindjes] = useState('');
-
+    // State for storing data
     const [data, setData] = useState([]);
 
+
+    // States for adding new patient
+    const [UserId, setUserId] = useState('');
+    const [Historiku, setHistoriku] = useState('');
+    const [Ditelindja, setDitelindja] = useState('');
+
+    // States for editing an existing patient
+    const [editId, setEditId] = useState('');
+    const [editUserId, setEditUserId] = useState('');
+    const [editHistoriku, setEditHistoriku] = useState('');
+    const [editDitelindja, setEditDitelindja] = useState('');
+
+    // State to manage modal visibility
+    const [show, setShow] = useState(false);
+
+    // Fetch patients data on component load
     useEffect(() => {
         getData();
     }, []);
 
+    // Function to fetch data
     const getData = () => {
         axios.get('https://localhost:7107/api/Pacienti')
             .then(response => {
-                setData(response.data); // Set the fetched data to state
+                setData(response.data);
             })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
+            .catch(error => console.error('Error fetching data:', error));
     };
 
+    // Function to handle new patient addition
+    const handleAddPatient = () => {
+        const payload = {
+            UserId,
+            Historiku,
+            Ditelindja,
+        };
+        console.log("Payload:", payload);  // Log to verify payload structure
+
+        axios.post('https://localhost:7107/api/Pacienti', payload)
+            .then(() => {
+                getData(); // Refresh data after adding
+                setUserId('');
+                setHistoriku('');
+                setDitelindja('');
+            })
+            .catch(error => console.error('Error adding patient:', error));
+    };
+
+
+    // Function to open edit modal and populate fields
     const handleEdit = (patient) => {
-        setEditId(patient.patient_Id);
-        setEditEmri(patient.emri);
-        setEditMbiemri(patient.mbiemri);
-        setEditGjinia(patient.gjinia);
-        setEditVitiLindjes(patient.vitiLindjes);
+        setEditId(patient.id);
+        setEditUserId(patient.userId);
+        setEditHistoriku(patient.historiku);
+        setEditDitelindja(patient.ditelindja);
         handleShow();
     };
 
-
-
+    // Function to update existing patient
     const handleUpdate = () => {
-        axios.put(`https://localhost:7107/api/Pacienti/${Id}`, {
-            Patient_Id: editId,
-            Emri: editEmri,
-            Mbiemri: editMbiemri,
-            Gjinia: editGjinia
+        axios.put(`https://localhost:7107/api/Pacienti/${editId}`, {
+            Id: editId,
+            UserId: editUserId,
+            Historiku: editHistoriku,
+            Ditelindja: editDitelindja,
         })
             .then(() => {
                 handleClose();
-                getData(); // Refresh data after updating
+                getData();
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error updating patient:', error));
     };
 
-    const handleAddPatient = () => {
-        axios.post('https://localhost:7107/api/Pacienti', {
-            Emri, Mbiemri, Gjinia, VitiLindjes
-        })
-            .then(() => {
-                getData(); // Refresh data after adding
-                setEmri('');
-                setMbiemri('');
-                setGjinia('M'); // Reset to default
-                setVitiLindjes('');
-            })
-            .catch(error => console.error('Error:', error));
-    };
-
+    // Function to delete a patient
     const handleDelete = (id) => {
         if (window.confirm("Are you sure you want to delete this patient?")) {
-            axios.delete(`https://localhost:7107/api/Pacienti/${Id}`)
-                .then(response => {
+            axios.delete(`https://localhost:7107/api/Pacienti/${id}`)
+                .then(() => {
                     alert("Patient deleted successfully!");
-                    getData(); // Refresh the data to reflect the deletion
+                    getData();
                 })
                 .catch(error => {
                     console.error("Error deleting patient:", error);
@@ -93,146 +94,86 @@ const PatientCRUD = () => {
         }
     };
 
+    // Modal visibility handlers
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     return (
-        <>
-            <Navigation />
-            <br />
-            <div>
-                <h2 className="dashboard-title">Dashboard</h2>
-                <h6 className="dashboard-title" style={{ color: 'grey' }}>Welcome to Dashboard Admin</h6>
-            </div>
-            <br />
+        <div>
+            <h1>Manage Patients</h1>
 
-            <Container className="edit-form">
-                <Row>
-                    <Col>
-                        <input type="text" className="form-control" placeholder="Enter Emri"
-                            value={Emri} onChange={(e) => setEmri(e.target.value)} />
-                    </Col>
-                    <Col>
-                        <input type="text" className="form-control" placeholder="Enter Mbiemri"
-                            value={Mbiemri} onChange={(e) => setMbiemri(e.target.value)} />
-                    </Col>
-                    <Col>
-                        <input
-                            type="radio"
-                            value="F"
-                            name="gjinia"
-                            checked={Gjinia === 'F'}
-                            onChange={(e) => setGjinia(e.target.value)}
-                        /> F   
-                        <input
-                            type="radio"
-                            value="M"
-                            name="gjinia"
-                            checked={Gjinia === 'M'}
-                            onChange={(e) => setGjinia(e.target.value)}
-                        /> M
-                    </Col>
-                    <Col>
-                        <input type="text" className="form-control" placeholder="Enter VitiLindjes"
-                            value={VitiLindjes} onChange={(e) => setVitiLindjes(e.target.value)} />
-                    </Col>
-                    <Col>
-                        <button className="btn btn-primary" onClick={handleAddPatient}>Add Patient</button>
-                    </Col>
-                </Row>
-            </Container>
-            <br />
+            <Form>
+                <Form.Group className="mb-3">
+                    <Form.Label>User ID</Form.Label>
+                    <Form.Control type="text" value={UserId} onChange={e => setUserId(e.target.value)} />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Label>Historiku</Form.Label>
+                    <Form.Control type="text" value={Historiku} onChange={e => setHistoriku(e.target.value)} />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Label>Ditelindja</Form.Label>
+                    <Form.Control type="date" value={Ditelindja} onChange={e => setDitelindja(e.target.value)} />
+                </Form.Group>
+                <Button variant="primary" onClick={handleAddPatient}>Add Patient</Button>
+            </Form>
 
-            <div>
-                <Table responsive="md">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Emri</th>
-                            <th>Mbiemri</th>
-                            <th>Gjinia</th>
-                            <th>VitiLindjes</th>
-                            <th>Actions</th>
+            <Table responsive="md" className="mt-4">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>User Id</th>
+                        <th>Historiku</th>
+                        <th>Ditelindja</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.length > 0 ? data.map((item, index) => (
+                        <tr key={index}>
+                            <td>{item.id}</td>
+                            <td>{item.userId}</td>
+                            <td>{item.historiku}</td>
+                            <td>{item.ditelindja}</td>
+                            <td>
+                                <Button onClick={() => handleEdit(item)} variant="warning" className="me-2">Edit</Button>
+                                <Button onClick={() => handleDelete(item.id)} variant="danger">Delete</Button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {data.length > 0 ? data.map((item, index) => (
-                            <tr key={index}>
-                                <td>{item.patient_Id}</td>
-                                <td>{item.emri}</td>
-                                <td>{item.mbiemri}</td>
-                                <td>{item.gjinia}</td>
-                                <td>{item.vitiLindjes}</td>
-                                <td>
-                                    <span className="me-2">
-                                        <Button onClick={() => handleEdit(item)} variant="warning">Edit</Button>
-                                    </span>
-                                    <span>
-                                        <Button onClick={() => handleDelete(item.patient_Id)} variant="danger">Delete</Button>
-                                    </span>
-                                </td>
-                            </tr>
-                        )) : (
-                            <tr>
-                                <td colSpan="6" style={{ textAlign: "center" }}>No data available or failed to load data.</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </Table>
-            </div>
+                    )) : (
+                        <tr>
+                            <td colSpan="5" style={{ textAlign: "center" }}>No data available or failed to load data.</td>
+                        </tr>
+                    )}
+                </tbody>
+            </Table>
+
+            {/* Modal for editing patient */}
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Update Patient</Modal.Title>
+                    <Modal.Title>Edit Patient</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Container className="edit-form">
-                        <Row>
-                            <Col>
-                                <input type="text" className="form-control" placeholder="Enter Emri"
-                                    value={editEmri} onChange={(e) => setEditEmri(e.target.value)} />
-                            </Col>
-                            <Col>
-                                <input type="text" className="form-control" placeholder="Enter Mbiemri"
-                                    value={editMbiemri} onChange={(e) => setEditMbiemri(e.target.value)} />
-                            </Col>
-                            <Col>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="gjinia"
-                                        value="M"
-                                        checked={editGjinia === 'M'}
-                                        onChange={(e) => setEditGjinia(e.target.value)}
-                                    />
-                                    Male
-                                </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="gjinia"
-                                        value="F"
-                                        checked={editGjinia === 'F'}
-                                        onChange={(e) => setEditGjinia(e.target.value)}
-                                    />
-                                    Female
-                                </label>
-                            </Col>
-                            <Col>
-                                <input type="text" className="form-control" placeholder="Enter VitiLindjes"
-                                    value={editVitiLindjes} onChange={(e) => setEditVitiLindjes(e.target.value)} />
-                            </Col>
-                        </Row>
-                    </Container>
+                    <Form.Group className="mb-3">
+                        <Form.Label>User ID</Form.Label>
+                        <Form.Control type="text" value={editUserId} onChange={e => setEditUserId(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Historiku</Form.Label>
+                        <Form.Control type="text" value={editHistoriku} onChange={e => setEditHistoriku(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Ditelindja</Form.Label>
+                        <Form.Control type="date" value={editDitelindja} onChange={e => setEditDitelindja(e.target.value)} />
+                    </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={handleUpdate}>
-                        Save Changes
-                    </Button>
-                    <Button></Button>
+                    <Button variant="secondary" onClick={handleClose}>Close</Button>
+                    <Button variant="primary" onClick={handleUpdate}>Save Changes</Button>
                 </Modal.Footer>
             </Modal>
-        </>
+        </div>
     );
-}
+};
 
 export default PatientCRUD;

@@ -45,7 +45,7 @@ const Header = () => {
                         </Nav>
                         {isDoctor && (
                             <Button
-                                variant="info"
+                                variant="success"
                                 onClick={() => navigate('/PatientCRUD')}
                                 className="ms-auto"
                             >

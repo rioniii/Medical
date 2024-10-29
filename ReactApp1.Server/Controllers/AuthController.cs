@@ -1,4 +1,24 @@
-﻿namespace ReactApp1.Server.Controllers
+﻿namespace ReactApp1.Server.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using ReactApp1.Server.Services;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Azure;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.SqlServer;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using NuGet.Common;
+namespace ReactApp1.Server.Controllers
 {
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -28,6 +48,8 @@
         private readonly IUserService _userService;
         private readonly ILogger<AuthController> _logger;
         private readonly IConfiguration _configuration;
+
+    public AuthController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IUserService userService, ILogger<AuthController> logger, IConfiguration configuration)
         public AuthController(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
@@ -188,6 +210,47 @@
             return refreshToken;
         }
 
+
+
+        [Authorize]
+    [HttpPost("ChangeRole")]
+    public async Task<IActionResult> ChangeRoleAsync(string userId, string newRole)
+    {
+        // Ensure the role exists
+        if (!await _roleManager.RoleExistsAsync(newRole))
+        {
+            return BadRequest(new { Message = "The specified role does not exist." });
+        }
+
+        // Find the user by ID
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return NotFound(new { Message = "User not found." });
+        }
+
+        // Get the user's current roles
+        var currentRoles = await _userManager.GetRolesAsync(user);
+
+        // Remove all roles from the user
+        var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+        if (!removeResult.Succeeded)
+        {
+            var errors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
+            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = $"Error removing roles: {errors}" });
+        }
+
+        // Add the user to the new role
+        var addRoleResult = await _userManager.AddToRoleAsync(user, newRole);
+        if (!addRoleResult.Succeeded)
+        {
+            var errors = string.Join(", ", addRoleResult.Errors.Select(e => e.Description));
+            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = $"Error adding new role: {errors}" });
+        }
+
+        _logger.LogInformation($"User '{user.Email}' role changed to '{newRole}' successfully.");
+        return Ok(new { Message = $"User role changed to {newRole} successfully." });
+    }
         private void SetRefreshToken(RefreshToken newRefreshToken, User user)
         {
             var cookieOptions = new CookieOptions
