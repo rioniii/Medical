@@ -50,7 +50,8 @@ const LoginForm = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '10px'
+                padding: '10px',
+                marginTop: '50px' // Adjust this value to move the login form lower
             }}>
                 <MDBCard className='p-3' style={{
                     maxWidth: '400px',
@@ -85,6 +86,7 @@ const LoginForm = () => {
                                     height: '40px',
                                     alignSelf: 'center',
                                     fontSize: '0.9rem',
+                                    marginTop: '1rem', // Add margin to move the button down
                                 }}
                             >Login</MDBBtn>
                         </form>
