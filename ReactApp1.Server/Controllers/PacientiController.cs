@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReactApp1.Server.Controllers
 {
-    [Authorize(Roles = "DoctorPolicy")]    
+    //[Authorize]    
     [Route("api/[controller]")]
     [ApiController]
     public class PacientiController : ControllerBase

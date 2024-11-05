@@ -63,10 +63,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
-        builder.WithOrigins("https://localhost:5173") // Adjust for your front-end URL
+        builder.WithOrigins("https://localhost:5173")
                .AllowAnyMethod()
                .AllowAnyHeader()
-               .AllowCredentials(); // Allow credentials if needed
+               .AllowCredentials();
     });
 });
 
@@ -107,7 +107,6 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

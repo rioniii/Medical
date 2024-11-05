@@ -1,15 +1,19 @@
-﻿namespace ReactApp1.Server.Controllers;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ReactApp1.Server.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Azure;
+using System;
 using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using ReactApp1.Server.Services;
+using ReactApp1.Server.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using ReactApp1.Server.Data.Models;
@@ -227,13 +231,13 @@ public class AuthController : ControllerBase
     {
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            expires: DateTime.Now.AddDays(Convert.ToDouble(_configuration["Jwt:ExpiresInDays"])),
-            claims: authClaims,
-            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-        );
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                expires: DateTime.Now.AddHours(Convert.ToDouble(_configuration["Jwt:ExpiresInHours"])),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+            );
 
         return token;
     }
@@ -242,6 +246,11 @@ public class AuthController : ControllerBase
         public string RefreshToken { get; set; }
     }
 
+            // Update the user in the database
+            await _userManager.UpdateAsync(user);
+        }
+    }
+}
 
 
 
@@ -252,49 +261,49 @@ public class AuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
             return NotFound();
 
-        var result = await _userService.ConfirmEmailAsync(userId, token);
-
-        if (result.IsSuccess)
-        {
-            return Redirect($"{_configuration["AppUrl"]}/ConfirmEmail.html");
-        }
-
-        return BadRequest(result);
-    }
-
-    // api/auth/forgetpassword
-    [HttpPost("ForgetPassword")]
-    public async Task<IActionResult> ForgetPassword(string email)
-    {
-        if (string.IsNullOrEmpty(email))
-            return NotFound();
-
-        var result = await _userService.ForgetPasswordAsync(email);
-
-        if (result.IsSuccess)
-            return Ok(result); // 200
-
-        return BadRequest(result); // 400
-    }
-
-    // api/auth/resetpassword
-    [HttpPost("ResetPassword")]
-    public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordViewModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            var result = await _userService.ResetPasswordAsync(model);
+            var result = await _userService.ConfirmEmailAsync(userId, token);
 
             if (result.IsSuccess)
-                return Ok(result);
+            {
+                return Redirect($"{_configuration["AppUrl"]}/ConfirmEmail.html");
+            }
 
             return BadRequest(result);
         }
 
-        return BadRequest("Some properties are not valid");
-    }*/
+        // api/auth/forgetpassword
+        [HttpPost("ForgetPassword")]
+        public async Task<IActionResult> ForgetPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return NotFound();
+
+            var result = await _userService.ForgetPasswordAsync(email);
+
+            if (result.IsSuccess)
+                return Ok(result); // 200
+
+            return BadRequest(result); // 400
+        }
+
+        // api/auth/resetpassword
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _userService.ResetPasswordAsync(model);
+
+                if (result.IsSuccess)
+                    return Ok(result);
+
+                return BadRequest(result);
+            }
+
+            return BadRequest("Some properties are not valid");
+        }*/
 
 
 
-}
+    }
 
