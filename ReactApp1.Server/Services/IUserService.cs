@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using ReactApp1.Server.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace ReactApp1.Server.Services
 {
@@ -15,20 +16,23 @@ namespace ReactApp1.Server.Services
         Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model);
         Task<UserManagerResponse> LoginUserAsync(LogInViewModel model);
         Task<IEnumerable<IdentityUser>> GetAllUsersAsync();
+        Task<(string accessToken, string refreshToken, DateTime expiration, IList<string> roles)> GenerateTokensAsync(IdentityUser user);
+        Task<(string accessToken, string refreshToken, DateTime expiration)> RefreshTokenAsync(string refreshToken);
+        Task RevokeRefreshTokenAsync(string userId);
 
 
-/*        Task<UserManagerResponse> ConfirmEmailAsync(string userId, string token);
+        /*        Task<UserManagerResponse> ConfirmEmailAsync(string userId, string token);
 
-        Task<UserManagerResponse> ForgetPasswordAsync(string email);
+                Task<UserManagerResponse> ForgetPasswordAsync(string email);
 
-        Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordViewModel model);*/
+                Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordViewModel model);*/
     }
 
     public class UserService : IUserService
     {
-        private UserManager<IdentityUser> _userManager;
-        private IConfiguration _configuration;
-        private ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IConfiguration _configuration;
+        private readonly ApplicationDbContext _context;
 
 
 
@@ -80,52 +84,116 @@ namespace ReactApp1.Server.Services
 
         public async Task<UserManagerResponse> LoginUserAsync(LogInViewModel model)
         {
-            if (model == null)
-                return new UserManagerResponse
-                {
-                    Message = "Login model cannot be null.",
-                    isSucces = false,
-                };
-
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
+            if (user == null)
             {
                 return new UserManagerResponse
                 {
-                    Message = "Invalid login attempt.",
-                    isSucces = false,
+                    Message = "Invalid email or password",
+                    isSucces = false
                 };
             }
 
-            var claims = new[]
+            var result = await _userManager.CheckPasswordAsync(user, model.Password);
+
+            if (!result)
             {
-        new Claim(ClaimTypes.Email, model.Email),
-        new Claim(ClaimTypes.NameIdentifier, user.Id),
-    };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["AuthSettings:Issuer"],
-                audience: _configuration["AuthSettings:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddHours(1), // Shortened expiration time
-                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
-
-            string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
+                return new UserManagerResponse
+                {
+                    Message = "Invalid email or password",
+                    isSucces = false
+                };
+            }
 
             return new UserManagerResponse
             {
-                Message = tokenAsString,
-                isSucces = true,
-                ExpireDate = token.ValidTo
+                Message = "Login successful",
+                isSucces = true
             };
         }
+
         public async Task<IEnumerable<IdentityUser>> GetAllUsersAsync()
         {
             return await _userManager.Users.ToListAsync();
         }
 
+        public async Task<(string accessToken, string refreshToken, DateTime expiration, IList<string> roles)> GenerateTokensAsync(IdentityUser user)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        };
+
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+
+            var authSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
+
+            var expiration = DateTime.UtcNow.AddMinutes(100); // Token expires in 100 minutes
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JWT:Issuer"],
+                audience: _configuration["JWT:Audience"],
+                expires: expiration,
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(
+                    authSigningKey, SecurityAlgorithms.HmacSha256)
+            );
+
+            var refreshToken = GenerateRefreshToken();
+
+            return (
+                accessToken: new JwtSecurityTokenHandler().WriteToken(token),
+                refreshToken: refreshToken,
+                expiration: expiration,
+                roles: userRoles
+            );
+        }
+
+        public async Task<(string accessToken, string refreshToken, DateTime expiration)> RefreshTokenAsync(string refreshToken)
+        {
+            var jwtEntry = await _context.JWTs
+                .FirstOrDefaultAsync(j => j.RefreshToken == refreshToken);
+
+            if (jwtEntry == null || jwtEntry.ExpiryDate <= DateTime.UtcNow)
+            {
+                throw new SecurityTokenException("Invalid or expired refresh token");
+            }
+
+            var user = await _userManager.FindByIdAsync(jwtEntry.UserId.ToString());
+            if (user == null)
+            {
+                throw new SecurityTokenException("User not found");
+            }
+
+            var (accessToken, newRefreshToken, expiration, _) = await GenerateTokensAsync(user);
+            return (accessToken, newRefreshToken, expiration);
+        }
+
+        public async Task RevokeRefreshTokenAsync(string userId)
+        {
+            var jwtEntry = await _context.JWTs.FirstOrDefaultAsync(j => j.UserId == int.Parse(userId));
+            if (jwtEntry != null)
+            {
+                jwtEntry.RefreshToken = null;
+                jwtEntry.ExpiryDate = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
     }
 }

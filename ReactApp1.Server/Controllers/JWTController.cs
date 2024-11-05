@@ -99,6 +99,18 @@ namespace ReactApp1.Server.Controllers
 
             return NoContent();
         }
+        [HttpPost("revoke")]
+        public async Task<IActionResult> Revoke(int userId)
+        {
+            var jwtEntry = await _context.JWTs.FirstOrDefaultAsync(j => j.UserId == userId);
+            if (jwtEntry == null) return BadRequest("No refresh token found for this user");
+
+            jwtEntry.RefreshToken = null;
+            jwtEntry.ExpiryDate = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
 
         private bool JWTExists(int id)
         {
