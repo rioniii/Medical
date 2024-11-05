@@ -247,11 +247,7 @@ public class AuthController : ControllerBase
         public string RefreshToken { get; set; }
     }
 
-            // Update the user in the database
-            await _userManager.UpdateAsync(user);
-        }
-    }
-}
+  
 
 
 
