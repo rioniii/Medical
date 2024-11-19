@@ -4,17 +4,16 @@ namespace ReactApp1.Server.Data.Models
 {
     public class Termini
     {
-            public int Id { get; set; }
+        public string Id { get; set; }
 
-            // Foreign key for Doctor
-            public int DoktorId { get; set; }
-            public Mjeku Mjeku { get; set; }
 
-            // Foreign key for Patient
-            public int PacientId { get; set; }
-            public Pacienti Pacienti { get; set; }
+        public DateTime DataTerminit { get; set; }
+        public string Statusi { get; set; } 
 
-            public DateTime DataTerminit { get; set; }
-            public string Statusi { get; set; } // e.g., "Scheduled", "Completed"
+        public string DoktorId { get; set; }
+        public Mjeku Mjeku { get; set; }
+
+        public string PacientId { get; set; }
+        public Pacienti Pacienti { get; set; }
     }
 }

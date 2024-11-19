@@ -14,6 +14,7 @@ const Header = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Check if user has 'Doctor' role
         setIsDoctor(userRoles.includes('Doctor'));
     }, [userRoles]);
 
@@ -21,6 +22,11 @@ const Header = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userRoles');
         navigate('/LoginForm');
+    };
+
+    const handleDashboardClick = () => {
+        // Redirect to PatientCRUD page if user is a doctor
+        navigate('/PatientCRUD');
     };
 
     return (
@@ -45,8 +51,8 @@ const Header = () => {
                         </Nav>
                         {isDoctor && (
                             <Button
-                                variant="success"
-                                onClick={() => navigate('/PatientCRUD')}
+                                variant="info"
+                                onClick={handleDashboardClick} // Redirect on click
                                 className="ms-auto"
                             >
                                 Dashboard

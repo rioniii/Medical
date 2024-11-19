@@ -1,110 +1,90 @@
-﻿using System.Numerics;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ReactApp1.Server.Data.Models;
 
-namespace ReactApp1.Server.Data.Models
+public class ApplicationDbContext : IdentityDbContext<User>  // Use User here instead of IdentityUser
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
-        public ApplicationDbContext(DbContextOptions options) : base(options)
-        {
-        }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<Mjeku> Mjeket { get; set; }
-        public DbSet<Pacienti> Pacientet { get; set; }
-        public DbSet<Termini> Terminet { get; set; }
-        public DbSet<Historiku> Historiks { get; set; }
-        public DbSet<Fatura> Faturat { get; set; }
-        public DbSet<Sherbimi> Sherbimet { get; set; }
-        public DbSet<Dhoma> Dhomat { get; set; }
-        public DbSet<DhomaPacientit> DhomaPacienteve { get; set; }
-        public DbSet<JWT> JWTs { get; set; }
+    }
 
+    // Removed DbSet<User> as it's automatically handled by IdentityDbContext
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Mjeku> Mjeket { get; set; }
+    public DbSet<Pacienti> Pacientet { get; set; }
+    public DbSet<Termini> Terminet { get; set; }
+    public DbSet<Historiku> Historiks { get; set; }
+    public DbSet<Fatura> Faturat { get; set; }
+    public DbSet<Sherbimi> Sherbimet { get; set; }
+    public DbSet<Dhoma> Dhomat { get; set; }
+    public DbSet<DhomaPacientit> DhomaPacienteve { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
 
-            SeedRoles(modelBuilder);
+        // Ensure correct mapping for Identity
+        modelBuilder.Entity<User>()
+            .ToTable("AspNetUsers");
 
-            modelBuilder.Entity<IdentityUserLogin<string>>()
-                .HasKey(l => new { l.LoginProvider, l.ProviderKey });
+        modelBuilder.Entity<IdentityRole>()
+            .ToTable("AspNetRoles");
 
-            // Many-to-one relationship between User and Role
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.Role)
-                .WithMany(r => r.Users)
-                .HasForeignKey(u => u.RoleId);
+        // One-to-many relationship between Pacienti and Termini
+        modelBuilder.Entity<Pacienti>()
+            .HasMany(p => p.Terminet)
+            .WithOne(t => t.Pacienti)
+            .HasForeignKey(t => t.PacientId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // One-to-one relationship between Doctor and User
-            modelBuilder.Entity<Mjeku>()
-                .HasOne(d => d.User)
-                .WithOne()
-                .HasForeignKey<Mjeku>(d => d.UserId);
+        // One-to-many relationship between Mjeku and Termini
+        modelBuilder.Entity<Mjeku>()
+            .HasMany(m => m.Terminet)
+            .WithOne(t => t.Mjeku)
+            .HasForeignKey(t => t.DoktorId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // One-to-one relationship between Patient and User
-            modelBuilder.Entity<Pacienti>()
-                .HasOne(p => p.User)
-                .WithOne()
-                .HasForeignKey<Pacienti>(p => p.UserId);
+        // One-to-many relationship between Pacienti and Historiku
+        modelBuilder.Entity<Pacienti>()
+            .HasMany(p => p.Historiks)
+            .WithOne(h => h.Pacienti)
+            .HasForeignKey(h => h.PacientId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // Many-to-many relationship between Doctor and Appointments
-            modelBuilder.Entity<Termini>()
-                .HasOne(a => a.Mjeku)
-                .WithMany(d => d.Terminet)
-                .HasForeignKey(a => a.DoktorId);
+        // One-to-many relationship between Mjeku and Historiku
+        modelBuilder.Entity<Mjeku>()
+            .HasMany(m => m.Historiqet)
+            .WithOne(h => h.Mjeku)
+            .HasForeignKey(h => h.MjekuId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // Many-to-many relationship between Patient and Appointments
-            modelBuilder.Entity<Termini>()
-                .HasOne(a => a.Pacienti)
-                .WithMany(p => p.Terminet)
-                .HasForeignKey(a => a.PacientId)
-                .OnDelete(DeleteBehavior.Restrict);
+        // One-to-many relationship between Sherbimi and Fatura
+        modelBuilder.Entity<Sherbimi>()
+            .HasMany(s => s.Faturat)
+            .WithOne(f => f.Sherbimi)
+            .HasForeignKey(f => f.SherbimiId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // Many-to-many relationship between Doctor and MedicalRecords
-            modelBuilder.Entity<Historiku>()
-                .HasOne(mr => mr.Mjeku)
-                .WithMany(d => d.Historiks)
-                .HasForeignKey(mr => mr.MjekuId);
+        // One-to-many relationship between Pacienti and Fatura
+        modelBuilder.Entity<Pacienti>()
+            .HasMany(p => p.Faturat)
+            .WithOne(f => f.Pacienti)
+            .HasForeignKey(f => f.PacientId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // Many-to-many relationship between Patient and MedicalRecords
-            modelBuilder.Entity<Historiku>()
-                .HasOne(mr => mr.Pacienti)
-                .WithMany(p => p.Historiks)
-                .HasForeignKey(mr => mr.PacientId)
-                .OnDelete(DeleteBehavior.Restrict);
+        // One-to-many relationship between Dhoma and DhomaPacientit
+        modelBuilder.Entity<Dhoma>()
+            .HasMany(d => d.DhomaPacienteve)
+            .WithOne(dp => dp.Dhoma)
+            .HasForeignKey(dp => dp.DhomaId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-
-            // One-to-one relationship between User and JWT (for refresh tokens)
-            modelBuilder.Entity<JWT>()
-                .HasOne(j => j.User)
-                .WithOne()
-                .HasForeignKey<JWT>(j => j.UserId);
-
-            // Specify precision and scale for the Cmimi property in Sherbimi
-            modelBuilder.Entity<Sherbimi>()
-                .Property(s => s.Cmimi)
-                .HasColumnType("decimal(18, 2)"); // Adjust precision and scale as needed
-
-            // Specify precision and scale for the Shuma property in Fatura
-            modelBuilder.Entity<Fatura>()
-                .Property(f => f.Shuma)
-                .HasColumnType("decimal(18, 2)"); // Adjust precision and scale as needed
-        }
-
-        private void SeedRoles(ModelBuilder builder) {
-
-            builder.Entity<IdentityRole>().HasData(
-                    new IdentityRole() { Name = "Admin" , ConcurrencyStamp="1", NormalizedName="Admin"},
-                    new IdentityRole() { Name = "User", ConcurrencyStamp="2", NormalizedName="User" },
-                    new IdentityRole() { Name = "Doctor", ConcurrencyStamp="3", NormalizedName="Doctor" }
-
-
-
-
-                );
-        }
+        // One-to-many relationship between Pacienti and DhomaPacientit
+        modelBuilder.Entity<Pacienti>()
+            .HasMany(p => p.DhomaPacienteve)
+            .WithOne(dp => dp.Pacienti)
+            .HasForeignKey(dp => dp.PacientId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

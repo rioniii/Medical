@@ -37,7 +37,7 @@ namespace ReactApp1.Server.Controllers
             var fatura = await _context.Faturat
                 .Include(f => f.Pacienti)
                 .Include(f => f.Sherbimi)
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(f => f.Id.Equals(id));
 
             if (fatura == null)
             {
@@ -51,7 +51,7 @@ namespace ReactApp1.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFatura(int id, Fatura fatura)
         {
-            if (id != fatura.Id)
+            if (!(id.Equals(fatura.Id)))
             {
                 return BadRequest();
             }
@@ -105,7 +105,7 @@ namespace ReactApp1.Server.Controllers
 
         private bool FaturaExists(int id)
         {
-            return _context.Faturat.Any(e => e.Id == id);
+            return _context.Faturat.Any(e => e.Id.Equals(id));
         }
     }
 }

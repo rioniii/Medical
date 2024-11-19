@@ -40,7 +40,7 @@ namespace ReactApp1.Server.Controllers
                 .Include(p => p.User)           // Include related User data
                 .Include(p => p.Terminet)       // Include related Termini (Appointments)
                 .Include(p => p.Historiks)      // Include related Historiks (History)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id.Equals(id));
 
             if (pacienti == null)
             {
@@ -54,7 +54,7 @@ namespace ReactApp1.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPacienti(int id, Pacienti pacienti)
         {
-            if (id != pacienti.Id)
+            if (!(id.Equals(pacienti.Id)))
             {
                 return BadRequest();
             }
@@ -115,7 +115,7 @@ namespace ReactApp1.Server.Controllers
 
         private bool PacientiExists(int id)
         {
-            return _context.Pacientet.Any(e => e.Id == id);
+            return _context.Pacientet.Any(e => e.Id.Equals(id));
         }
     }
 }

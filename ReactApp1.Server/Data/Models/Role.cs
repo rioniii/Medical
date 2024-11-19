@@ -2,8 +2,8 @@
 {
     public class Role
     {
-        public int Id { get; set; }
-        public string Name { get; set; } // Doktor, Pacient, Admin
+        public string Id { get; set; }
+        public string Name { get; set; } 
         public ICollection<User> Users { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace ReactApp1.Server.Controllers
             var dhomaPacientit = await _context.DhomaPacienteve
                 .Include(dp => dp.Pacienti)
                 .Include(dp => dp.Dhoma)
-                .FirstOrDefaultAsync(dp => dp.Id == id);
+                .FirstOrDefaultAsync(dp => dp.Id.Equals(id));
 
             if (dhomaPacientit == null)
             {
@@ -51,7 +51,7 @@ namespace ReactApp1.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDhomaPacientit(int id, DhomaPacientit dhomaPacientit)
         {
-            if (id != dhomaPacientit.Id)
+            if (!(id.Equals(dhomaPacientit.Id)))
             {
                 return BadRequest();
             }
@@ -106,7 +106,7 @@ namespace ReactApp1.Server.Controllers
 
         private bool DhomaPacientitExists(int id)
         {
-            return _context.DhomaPacienteve.Any(e => e.Id == id);
+            return _context.DhomaPacienteve.Any(e => e.Id.Equals(id));
         }
     }
 }

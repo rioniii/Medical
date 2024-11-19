@@ -2,14 +2,14 @@
 {
     public class Dhoma
     {
-       
-            public int Id { get; set; }
-            public string NrDhomes { get; set; }
-            public string Lloji_Dhomes { get; set; } // e.g., "ICU", "General", "Private"
-            public int Kapaciteti { get; set; }
-            public bool Available { get; set; }
 
-            public List<DhomaPacientit> DhomaPacienteve { get; set; }
-     
+        public string Id { get; set; }
+        public string NrDhomes { get; set; }
+        public string Lloji_Dhomes { get; set; }
+        public int Kapaciteti { get; set; }
+        public bool Available { get; set; }
+
+        public List<DhomaPacientit> DhomaPacienteve { get; set; }
+
     }
 }

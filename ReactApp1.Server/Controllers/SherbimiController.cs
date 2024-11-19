@@ -34,7 +34,7 @@ namespace ReactApp1.Server.Controllers
         {
             var sherbimi = await _context.Sherbimet
                 .Include(s => s.Faturat)  // Include related invoices (Faturat)
-                .FirstOrDefaultAsync(s => s.Id == id);
+                .FirstOrDefaultAsync(s => s.Id.Equals(id));
 
             if (sherbimi == null)
             {
@@ -48,7 +48,7 @@ namespace ReactApp1.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSherbimi(int id, Sherbimi sherbimi)
         {
-            if (id != sherbimi.Id)
+            if (!(id.Equals(sherbimi.Id)))
             {
                 return BadRequest();
             }
@@ -102,7 +102,7 @@ namespace ReactApp1.Server.Controllers
 
         private bool SherbimiExists(int id)
         {
-            return _context.Sherbimet.Any(e => e.Id == id);
+            return _context.Sherbimet.Any(e => e.Id.Equals(id));
         }
     }
 }

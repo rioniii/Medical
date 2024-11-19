@@ -1,14 +1,14 @@
-﻿namespace ReactApp1.Server.Data.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+[Owned]
+public class RefreshToken
 {
-    public class RefreshToken
-    {
-        public required string Token { get; set; }
+    public string Token { get; set; }
+    public DateTime Expires { get; set; }
+    public bool IsExpired => DateTime.UtcNow >= Expires;
+    public DateTime Created { get; set; }
+    public DateTime? Revoked { get; set; }
+    public bool IsActive => Revoked == null && !IsExpired;
 
-        public DateTime Created { get; set; } = DateTime.Now;
 
-        public DateTime Expires { get; set; }
-
-        public virtual User User { get; set; }
-
-    }
 }

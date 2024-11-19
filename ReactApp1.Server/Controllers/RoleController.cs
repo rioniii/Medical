@@ -34,7 +34,7 @@ namespace ReactApp1.Server.Controllers
         {
             var role = await _context.Roles
                 .Include(r => r.Users)  // Include associated Users
-                .FirstOrDefaultAsync(r => r.Id == id);
+                .FirstOrDefaultAsync(r => r.Id.Equals(id));
 
             if (role == null)
             {
@@ -48,7 +48,7 @@ namespace ReactApp1.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRole(int id, Role role)
         {
-            if (id != role.Id)
+            if (!(id.Equals(role.Id)))
             {
                 return BadRequest();
             }
@@ -102,7 +102,7 @@ namespace ReactApp1.Server.Controllers
 
         private bool RoleExists(int id)
         {
-            return _context.Roles.Any(e => e.Id == id);
+            return _context.Roles.Any(e => e.Id.Equals(id));
         }
     }
 }

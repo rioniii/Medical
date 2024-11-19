@@ -26,7 +26,7 @@ namespace ReactApp1.Server.Controllers
             return await _context.Mjeket
                 .Include(m => m.User)           // Include related User data
                 .Include(m => m.Terminet)       // Include related Termini (Appointments)
-                .Include(m => m.Historiks)      // Include related Historiks (History)
+                .Include(m => m.Historiqet)      // Include related Historiks (History)
                 .ToListAsync();
         }
 
@@ -37,8 +37,8 @@ namespace ReactApp1.Server.Controllers
             var mjeku = await _context.Mjeket
                 .Include(m => m.User)           // Include related User data
                 .Include(m => m.Terminet)       // Include related Termini (Appointments)
-                .Include(m => m.Historiks)      // Include related Historiks (History)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(m => m.Historiqet)      // Include related Historiks (History)
+                .FirstOrDefaultAsync(m => m.Id.Equals(id));
 
             if (mjeku == null)
             {
@@ -52,7 +52,7 @@ namespace ReactApp1.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMjeku(int id, Mjeku mjeku)
         {
-            if (id != mjeku.Id)
+            if (!(id.Equals(mjeku.Id)))
             {
                 return BadRequest();
             }
@@ -113,7 +113,7 @@ namespace ReactApp1.Server.Controllers
 
         private bool MjekuExists(int id)
         {
-            return _context.Mjeket.Any(e => e.Id == id);
+            return _context.Mjeket.Any(e => e.Id.Equals(id));
         }
     }
 }

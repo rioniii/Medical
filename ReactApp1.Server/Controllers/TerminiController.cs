@@ -35,7 +35,7 @@ namespace ReactApp1.Server.Controllers
             var termini = await _context.Terminet
                 .Include(t => t.Mjeku)
                 .Include(t => t.Pacienti)
-                .FirstOrDefaultAsync(t => t.Id == id);
+                .FirstOrDefaultAsync(t => t.Id.Equals(id));
 
             if (termini == null)
             {
@@ -49,7 +49,7 @@ namespace ReactApp1.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTermini(int id, Termini termini)
         {
-            if (id != termini.Id)
+            if (!(id.Equals(termini.Id)))
             {
                 return BadRequest();
             }
@@ -103,7 +103,7 @@ namespace ReactApp1.Server.Controllers
 
         private bool TerminiExists(int id)
         {
-            return _context.Terminet.Any(e => e.Id == id);
+            return _context.Terminet.Any(e => e.Id.Equals(id));
         }
     }
 }

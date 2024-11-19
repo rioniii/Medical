@@ -30,7 +30,7 @@ namespace ReactApp1.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Dhoma>> GetDhoma(int id)
         {
-            var dhoma = await _context.Dhomat.Include(d => d.DhomaPacienteve).FirstOrDefaultAsync(d => d.Id == id);
+            var dhoma = await _context.Dhomat.Include(d => d.DhomaPacienteve).FirstOrDefaultAsync(d => d.Id.Equals(id));
 
             if (dhoma == null)
             {
@@ -45,7 +45,7 @@ namespace ReactApp1.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDhoma(int id, Dhoma dhoma)
         {
-            if (id != dhoma.Id)
+            if (!(id.Equals(dhoma.Id)))
             {
                 return BadRequest();
             }
@@ -100,7 +100,7 @@ namespace ReactApp1.Server.Controllers
 
         private bool DhomaExists(int id)
         {
-            return _context.Dhomat.Any(e => e.Id == id);
+            return _context.Dhomat.Any(e => e.Id.Equals(id));
         }
     }
 }

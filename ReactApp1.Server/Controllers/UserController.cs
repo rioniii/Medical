@@ -1,108 +1,94 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ReactApp1.Server.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ReactApp1.Server;
 using ReactApp1.Server.Data.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace ReactApp1.Server.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class UserController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    private readonly IUserService _userService;
+
+    public UserController(IUserService userService)
     {
-        private readonly ApplicationDbContext _context;
+        _userService = userService;
 
-        public UserController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        // GET: api/User
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
-        {
-            return await _context.Users
-                .Include(u => u.Role)  // Includes related Role data
-                .ToListAsync();
-        }
-
-        // GET: api/User/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(string id)
-        {
-            var user = await _context.Users
-                .Include(u => u.Role)  // Includes related Role data
-                .FirstOrDefaultAsync(u => u.Id == id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return user;
-        }
-
-        // PUT: api/User/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(string id, User user)
-        {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/User
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
-        }
-
-        // DELETE: api/User/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UserExists(string id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
     }
+
+    [HttpPost("register")]
+    public async Task<ActionResult> RegisterAsync(RegisterViewModel model)
+    {
+
+        var result = await _userService.RegisterAsync(model);
+        return Ok(result);
+    }
+    private void SetRefreshTokenInCookie(string refreshToken)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = DateTime.UtcNow.AddDays(10),
+        };
+        Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+    }
+
+    [HttpPost("token")]
+    public async Task<IActionResult> GetTokenAsync(TokenRequestModel model)
+    {
+        var result = await _userService.GetTokenAsync(model);
+        SetRefreshTokenInCookie(result.RefreshToken);
+        return Ok(result);
+    }
+
+
+    [HttpPost]
+    [Authorize(Roles = "Administrator")]
+    public async Task<IActionResult> PostSecuredData()
+    {
+        return Ok("This Secured Data is available only for Authenticated Users.");
+    }
+
+    [HttpPost("addrole")]
+    public async Task<IActionResult> AddRoleAsync(AddRoleModel model)
+    {
+        var result = await _userService.AddRoleAsync(model);
+        return Ok(result);
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        var refreshToken = Request.Cookies["refreshToken"];
+        var response = await _userService.RefreshTokenAsync(refreshToken);
+        if (!string.IsNullOrEmpty(response.RefreshToken))
+            SetRefreshTokenInCookie(response.RefreshToken);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpPost("tokens/{id}")]
+    public IActionResult GetRefreshTokens(string id)
+    {
+        var user = _userService.GetById(id);
+        return Ok(user.RefreshTokens);
+    }
+
+    [HttpPost("revoke-token")]
+    public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model)
+    {
+        // accept token from request body or cookie
+        var token = model.Token ?? Request.Cookies["refreshToken"];
+
+        if (string.IsNullOrEmpty(token))
+            return BadRequest(new { message = "Token is required" });
+
+        var response = _userService.RevokeToken(token);
+
+        if (!response)
+            return NotFound(new { message = "Token not found" });
+
+        return Ok(new { message = "Token revoked" });
+    }
+
+
 }

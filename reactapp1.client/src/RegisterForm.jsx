@@ -14,7 +14,9 @@ function Register() {
         }
     }, []);
 
+    const [username, setUsername] = useState('');
     const [fullName, setFullName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,7 +25,9 @@ function Register() {
     const [passwordMatchError, setPasswordMatchError] = useState('');
     const [emailTakenError, setEmailTakenError] = useState('');
 
+    const handleUsernameChange = (event) => setUsername(event.target.value);
     const handleFullNameChange = (event) => setFullName(event.target.value);
+    const handleLastNameChange = (event) => setLastName(event.target.value);
     const handleEmailChange = (event) => setEmail(event.target.value);
     const handlePasswordChange = (event) => setPassword(event.target.value);
     const handleConfirmPasswordChange = (event) => setConfirmPassword(event.target.value);
@@ -37,22 +41,26 @@ function Register() {
         setEmailTakenError('');
         setErrorMessage('');
 
+        // Check if passwords match
         if (password !== confirmPassword) {
             setPasswordMatchError('Passwords do not match');
             return;
         }
 
         const userData = {
-            role: 'User', // Set a default role here
-            email: email,
-            password: password,
-            confirmPassword: confirmPassword,
-            fullName: fullName,
-            dateOfBirth: dateOfBirth,
+            Username: username,
+            FirstName: fullName,  // Full name as FirstName
+            LastName: lastName,   // Last name as LastName
+            Email: email,
+            Password: password,
+            ConfirmPassword: confirmPassword,
+            DateOfBirth: dateOfBirth,
+            Role: 'User',  // Default role
         };
 
         try {
-            const response = await fetch(`https://localhost:7107/api/Auth/Register`, {
+            // API call to backend for registration
+            const response = await fetch('https://localhost:7107/api/Auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,6 +72,7 @@ function Register() {
                 const errorData = await response.json();
                 console.error('Registration failed:', errorData);
 
+                // Check specific error messages
                 if (errorData.title === 'Email already taken') {
                     setEmailTakenError('Email is already taken!');
                 } else {
@@ -73,13 +82,14 @@ function Register() {
             }
 
             console.log('Registration successful');
-            document.location = "/login"; // Redirect to login on successful registration
+            document.location = "/login"; // Redirect to login page
 
         } catch (error) {
             console.error('Registration failed:', error);
             setErrorMessage('Registration failed. Please try again.');
         }
     };
+
     return (
         <div className="register-form-container" style={{
             backgroundImage: `url(${contactImage})`,
@@ -88,31 +98,38 @@ function Register() {
             backgroundPosition: 'center',
             minHeight: '100vh',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
         }}>
-           
             <div style={{
                 flex: 1,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '10px' // Reduced padding
+                padding: '10px',
             }}>
                 <MDBCard className='p-3' style={{
-                    maxWidth: '400px', // Reduced max width
+                    maxWidth: '400px',
                     width: '100%',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     borderRadius: '10px',
-                    boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)'
+                    boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
                 }}>
                     <MDBCardBody className='px-4 py-3'>
                         <h2 className="text-uppercase text-center mb-2" style={{ fontSize: '1.3rem' }}>Create an account</h2>
                         <form onSubmit={handleRegister}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                               
                                 <MDBInput
-                                    placeholder='Your Name'
+                                    placeholder='Username'
                                     id='form1'
+                                    type='text'
+                                    value={username}
+                                    onChange={handleUsernameChange}
+                                    required
+                                    style={{ fontSize: '0.9rem' }}
+                                />
+                                <MDBInput
+                                    placeholder='Full Name'
+                                    id='form2'
                                     type='text'
                                     value={fullName}
                                     onChange={handleFullNameChange}
@@ -120,8 +137,17 @@ function Register() {
                                     style={{ fontSize: '0.9rem' }}
                                 />
                                 <MDBInput
+                                    placeholder='Last Name'
+                                    id='form3'
+                                    type='text'
+                                    value={lastName}
+                                    onChange={handleLastNameChange}
+                                    required
+                                    style={{ fontSize: '0.9rem' }}
+                                />
+                                <MDBInput
                                     placeholder='Your Email'
-                                    id='form2'
+                                    id='form4'
                                     type='email'
                                     value={email}
                                     onChange={handleEmailChange}
@@ -130,7 +156,7 @@ function Register() {
                                 />
                                 <MDBInput
                                     placeholder='Password'
-                                    id='form3'
+                                    id='form5'
                                     type='password'
                                     value={password}
                                     onChange={handlePasswordChange}
@@ -139,7 +165,7 @@ function Register() {
                                 />
                                 <MDBInput
                                     placeholder='Repeat your password'
-                                    id='form4'
+                                    id='form6'
                                     type='password'
                                     value={confirmPassword}
                                     onChange={handleConfirmPasswordChange}
@@ -148,7 +174,7 @@ function Register() {
                                 />
                                 <MDBInput
                                     placeholder='Date of Birth'
-                                    id='form5'
+                                    id='form7'
                                     type='date'
                                     value={dateOfBirth}
                                     onChange={handleDateOfBirthChange}
@@ -165,10 +191,10 @@ function Register() {
                                     size='lg'
                                     type='submit'
                                     style={{
-                                        width: '120px', // Reduced width
-                                        height: '40px', // Reduced height
+                                        width: '120px',
+                                        height: '40px',
                                         alignSelf: 'center',
-                                        fontSize: '0.9rem', // Smaller font size
+                                        fontSize: '0.9rem',
                                     }}
                                 >Register</MDBBtn>
                             </div>
