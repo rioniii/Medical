@@ -82,7 +82,7 @@ function Register() {
             }
 
             console.log('Registration successful');
-            document.location = "/login"; // Redirect to login page
+            //document.location = "/login"; // Redirect to login page
 
         } catch (error) {
             console.error('Registration failed:', error);

@@ -14,8 +14,5 @@
         public List<Fatura> Faturat { get; set; }
         public List<DhomaPacientit> DhomaPacienteve { get; set; }
 
-
-
-
     }
 }

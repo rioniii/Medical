@@ -16,7 +16,7 @@ const LoginForm = () => {
         const userData = { email, password };
 
         try {
-            const response = await fetch('https://localhost:7107/api/Auth/Login', {
+            const response = await fetch('https://localhost:7107/api/User/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userData),
@@ -42,8 +42,9 @@ const LoginForm = () => {
 
             // Redirect based on user roles
             const roles = data.roles || [];
-            const redirectPath = roles.includes('Doctor') ? './PatientCRUD' : '/';
-            navigate(redirectPath);
+            // Check if the role includes 'Doctor', then redirect to PatientCRUD
+            const redirectPath = roles.includes('Doctor') ? '/' : '/';
+            navigate(redirectPath); // Use navigate to redirect
         } catch (error) {
             console.error('Login error:', error);
             setErrorMessage('An error occurred. Please try again later.');
@@ -143,7 +144,7 @@ const LoginForm = () => {
                         </NavLink>
 
                         <NavLink
-                            to="/Register"
+                            to="/RegisterForm"
                             className="text-center d-block mt-2"
                             style={{ color: 'blue', fontSize: '1rem' }}
                         >
@@ -157,4 +158,3 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-     

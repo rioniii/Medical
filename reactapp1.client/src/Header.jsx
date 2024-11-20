@@ -9,24 +9,22 @@ import './Header.css';
 
 const Header = () => {
     const [isDoctor, setIsDoctor] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
     const token = localStorage.getItem('token');
-    const userRoles = JSON.parse(localStorage.getItem('userRoles')) || [];
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Check if user has 'Doctor' role
+        const userRoles = JSON.parse(localStorage.getItem('userRoles')) || [];
         setIsDoctor(userRoles.includes('Doctor'));
-    }, [userRoles]);
+        setIsAdmin(userRoles.includes('Administrator'));
+    }, [token]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userRoles');
-        navigate('/LoginForm');
-    };
-
-    const handleDashboardClick = () => {
-        // Redirect to PatientCRUD page if user is a doctor
-        navigate('/PatientCRUD');
+        setIsDoctor(false);
+        setIsAdmin(false);
+        navigate('/'); // Redirect to home page after logout
     };
 
     return (
@@ -40,6 +38,17 @@ const Header = () => {
                             <Nav.Link as={NavLink} to="/" className="nav-item">Home</Nav.Link>
                             <Nav.Link as={NavLink} to="/AboutUs" className="nav-item">About</Nav.Link>
                             <Nav.Link as={NavLink} to="/Contact" className="nav-item">Contact</Nav.Link>
+
+                            {/* Only show Admin Dashboard link if the user is an Admin */}
+                            {isAdmin && (
+                                <Nav.Link as={NavLink} to="/AdminDashboard" className="nav-item">Admin Dashboard</Nav.Link>
+                            )}
+
+                            {/* Only show Doctor Dashboard link if the user is a Doctor */}
+                            {isDoctor && (
+                                <Nav.Link as={NavLink} to="/PatientCRUD" className="nav-item">Doctor Dashboard</Nav.Link>
+                            )}
+
                             {token ? (
                                 <Button variant="danger" onClick={handleLogout}>Log Out</Button>
                             ) : (
@@ -49,15 +58,6 @@ const Header = () => {
                                 </>
                             )}
                         </Nav>
-                        {isDoctor && (
-                            <Button
-                                variant="info"
-                                onClick={handleDashboardClick} // Redirect on click
-                                className="ms-auto"
-                            >
-                                Dashboard
-                            </Button>
-                        )}
                         <Button variant="success" className="ms-2">Make an Appointment</Button>
                     </Navbar.Collapse>
                 </Container>

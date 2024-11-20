@@ -7,7 +7,7 @@ import Ballina from './Ballina';
 import PatientCRUD from './Dashboard/Components/PatientCRUD';
 import RepartCrud from './Dashboard/Components/RepartCrud';
 import MjekuCRUD from './Dashboard/Components/MjekuCRUD';
-import { Route, Routes, HashRouter } from 'react-router-dom';
+import { Route, Routes, HashRouter, Navigate } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
@@ -42,6 +42,24 @@ class ErrorBoundary extends Component {
     }
 }
 
+// ProtectedRoute Component
+const ProtectedRoute = ({ children, roles }) => {
+    const token = localStorage.getItem('token');
+    const userRoles = JSON.parse(localStorage.getItem('userRoles')) || [];
+
+    // If no token, redirect to login page
+    if (!token) {
+        return <Navigate to="/LoginForm" />;
+    }
+
+    // If user does not have the required roles, redirect to home page
+    if (roles && !roles.some(role => userRoles.includes(role))) {
+        return <Navigate to="/" />;
+    }
+
+    return children; // If authenticated, render the children
+};
+
 class App extends Component {
     render() {
         return (
@@ -60,9 +78,24 @@ class App extends Component {
                         <Route path="/LoginForm" element={<ErrorBoundary><LoginForm /></ErrorBoundary>} />
                         <Route path="/AboutUs" element={<ErrorBoundary><AboutUs /></ErrorBoundary>} />
                         <Route path="/Contact" element={<ErrorBoundary><Contact /></ErrorBoundary>} />
-                        <Route path="/PatientCRUD" element={<ErrorBoundary><PatientCRUD /></ErrorBoundary>} />
-                        <Route path="/RepartCrud" element={<ErrorBoundary><RepartCrud /></ErrorBoundary>} />
-                        <Route path="/MjekuCRUD" element={<ErrorBoundary><MjekuCRUD /></ErrorBoundary>} />
+
+                        {/* Protected Routes */}
+                        <Route path="/PatientCRUD" element={
+                            <ProtectedRoute roles={['Doctor']}>
+                                <ErrorBoundary><PatientCRUD /></ErrorBoundary>
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/RepartCrud" element={
+                            <ProtectedRoute roles={['Administrator']}>
+                                <ErrorBoundary><RepartCrud /></ErrorBoundary>
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/MjekuCRUD" element={
+                            <ProtectedRoute roles={['Doctor']}>
+                                <ErrorBoundary><MjekuCRUD /></ErrorBoundary>
+                            </ProtectedRoute>
+                        } />
+
                     </Routes>
                     <Footer />
                 </HashRouter>
