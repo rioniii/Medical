@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
 using ReactApp1.Server.Data.Models;
+using ReactApp1.Server.DTOs;
+using ReactApp1.Server.Migrations;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,33 +47,23 @@ namespace ReactApp1.Server.Controllers
         }
 
         // PUT: api/Sherbimi/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSherbimi(int id, Sherbimi sherbimi)
+        [HttpPost("Shto-Sherbimin")]
+        public async Task<IActionResult> PutSherbimi(SherbimiDTO request)
         {
-            if (!(id.Equals(sherbimi.Id)))
+            var sherbimi = new Sherbimi
             {
-                return BadRequest();
-            }
+                Id = request.Id,
+                Emri_Sherbimit = request.Emri_Sherbimit,
+                Pershkrimi = request.Pershkrimi,
+                Cmimi = request.Cmimi
+            };
 
-            _context.Entry(sherbimi).State = EntityState.Modified;
+            _context.Sherbimet.Add(sherbimi);
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SherbimiExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            return Ok(new { Message = "Sherbimi added successfully!", Id= sherbimi.Id });
 
-            return NoContent();
+
         }
 
         // POST: api/Sherbimi

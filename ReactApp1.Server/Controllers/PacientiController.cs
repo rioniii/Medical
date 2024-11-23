@@ -6,10 +6,11 @@ using ReactApp1.Server.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ReactApp1.Server.DTOs;
+using ReactApp1.Server.Migrations;
 
 namespace ReactApp1.Server.Controllers
 {
-    //[Authorize]    
     [Route("api/[controller]")]
     [ApiController]
     public class PacientiController : ControllerBase
@@ -21,25 +22,32 @@ namespace ReactApp1.Server.Controllers
             _context = context;
         }
 
-        // GET: api/Pacienti
+
+
+
         [HttpGet]
+        [Authorize(Roles ="Doctor")]
         public async Task<ActionResult<IEnumerable<Pacienti>>> GetPacientet()
         {
             return await _context.Pacientet
-                .Include(p => p.User)           // Include related User data
-                .Include(p => p.Terminet)       // Include related Termini (Appointments)
-                .Include(p => p.Historiks)      // Include related Historiks (History)
+                .Include(p => p.User)          
+                .Include(p => p.Terminet)       
+                .Include(p => p.Historiks)     
                 .ToListAsync();
         }
 
-        // GET: api/Pacienti/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Pacienti>> GetPacienti(int id)
+
+
+
+
+        [HttpGet("Get-Specific-Patient")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<ActionResult<Pacienti>> GetPacienti(string id)
         {
             var pacienti = await _context.Pacientet
-                .Include(p => p.User)           // Include related User data
-                .Include(p => p.Terminet)       // Include related Termini (Appointments)
-                .Include(p => p.Historiks)      // Include related Historiks (History)
+                .Include(p => p.User)          
+                .Include(p => p.Terminet)      
+                .Include(p => p.Historiks)     
                 .FirstOrDefaultAsync(p => p.Id.Equals(id));
 
             if (pacienti == null)
@@ -47,19 +55,29 @@ namespace ReactApp1.Server.Controllers
                 return NotFound();
             }
 
-            return pacienti;
+            return Ok(pacienti);
         }
 
-        // PUT: api/Pacienti/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPacienti(int id, Pacienti pacienti)
+
+
+        [HttpPost("Update-Pacienti")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> PutPacienti(string id, PacientDTO request)
         {
-            if (!(id.Equals(pacienti.Id)))
+            if (id != request.Id)
             {
-                return BadRequest();
+                return BadRequest("The ID in the URL does not match the ID in the request body.");
             }
 
-            _context.Entry(pacienti).State = EntityState.Modified;
+            var existingPacienti = await _context.Pacientet.FindAsync(id);
+            if (existingPacienti == null)
+            {
+                return NotFound($"No patient found with ID: {id}");
+            }
+
+            existingPacienti.Name = request.Name;
+            existingPacienti.Surname = request.Surname;
+            existingPacienti.Ditelindja = request.Ditelindja;
 
             try
             {
@@ -69,53 +87,81 @@ namespace ReactApp1.Server.Controllers
             {
                 if (!PacientiExists(id))
                 {
-                    return NotFound();
+                    return NotFound($"No patient found with ID: {id}");
                 }
                 else
                 {
-                    throw;
+                    throw; 
                 }
             }
 
-            return NoContent();
+            return Ok("User updated succesfully");
         }
 
-        // POST: api/Pacienti
-        [HttpPost]
-        public async Task<ActionResult<Pacienti>> PostPacienti(Pacienti pacienti)
+        private bool PacientiExists(string id)
         {
-            // Make sure to add foreign key relations (User)
-            var user = await _context.Users.FindAsync(pacienti.UserId);
-            if (user == null)
-            {
-                return BadRequest("Invalid UserId provided.");
-            }
+            throw new NotImplementedException();
+        }
+
+        [HttpPost("Add-Patient")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<ActionResult<Pacienti>> PostPacienti(PacientDTO request)
+        {
+            try
+            { 
+                var pacienti = new Pacienti
+                {
+                   Id = request.Id,
+                   Name = request.Name,
+                   Surname = request.Surname,
+                   Ditelindja = request.Ditelindja
+                };
 
             _context.Pacientet.Add(pacienti);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPacienti", new { id = pacienti.Id }, pacienti);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        // DELETE: api/Pacienti/5
+
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePacienti(int id)
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> DeletePacienti(string id)
         {
-            var pacienti = await _context.Pacientet.FindAsync(id);
+            var pacienti = await _context.Pacientet
+            .Include(p => p.Terminet)  
+            .Include(p => p.Historiks) 
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+
             if (pacienti == null)
             {
-                return NotFound();
+                return NotFound("Pacienti with the specified ID was not found.");
             }
 
-            _context.Pacientet.Remove(pacienti);
-            await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
+            if (pacienti.Terminet.Any() || pacienti.Historiks.Any())
+            {
+                return BadRequest("Cannot delete this pacienti as they have associated appointments or history.");
+            }
 
-        private bool PacientiExists(int id)
-        {
-            return _context.Pacientet.Any(e => e.Id.Equals(id));
+            try
+            {
+                _context.Pacientet.Remove(pacienti);
+                await _context.SaveChangesAsync();
+
+                return Ok($"Pacienti was successfully deleted. UserId: {pacienti.Id}, Name: {pacienti.Name}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

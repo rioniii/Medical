@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
 using ReactApp1.Server.Data.Models;
+using ReactApp1.Server.DTOs;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -115,5 +118,143 @@ namespace ReactApp1.Server.Controllers
         {
             return _context.Mjeket.Any(e => e.Id.Equals(id));
         }
+
+
+        [HttpPost("Regjistro-Pacientin")]
+        [Authorize(Roles="Doctor")]
+        public async Task<IActionResult> RegisterSimplePatient([FromBody] PacientDTO dto)
+        {
+            var pacienti = new Pacienti
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Surname = dto.Surname,
+                Ditelindja = dto.Ditelindja
+            };
+
+            _context.Pacientet.Add(pacienti);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Patient registered successfully!", PatientId = pacienti.Id });
+        }
+
+
+
+        [HttpGet("Get-Pacientat")]
+        [Authorize(Roles="Doctor")]
+        public async Task<IActionResult> GetPatients()
+        {
+            var patients = await _context.Pacientet
+                .Select(p => new
+                {
+                    Id = p.Id,
+                    FullName = $"{p.Name} {p.Surname}"  
+                })
+                .ToListAsync();
+
+            return Ok(patients);
+        }
+
+
+
+
+        
+        [HttpPost("Shto-Detajet-Pacientit")]
+        [Authorize(Roles="Doctor")]
+        public async Task<IActionResult> AddPatientDetails([FromBody] PatientDetailsDTO request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+                      var pacienti = await _context.Pacientet
+              .Include(p => p.Terminet)
+              .Include(p => p.Historiks)
+              .Include(p => p.DhomaPacienteve)
+              .FirstOrDefaultAsync(p => p.Id == request.Patient.Id); 
+
+
+            if (pacienti == null)
+            {
+                return NotFound(new { Message = "Patient not found." });
+            }
+
+
+            foreach (var historiku in request.Historiku)
+            {
+                var historikuEntity = new Historiku
+                {
+                    Id = historiku.Id,
+                    MjekuId = historiku.MjekuId,
+                    PacientId = pacienti.Id,
+                    Data = historiku.Data,
+                    Anamneza_Statusi = historiku.Anamneza_Statusi,
+                    Ekzaminimi = historiku.Ekzaminimi,
+                    Diagnoza = historiku.Diagnoza
+                };
+                _context.Historiks.Add(historikuEntity);
+            }
+
+            if (request.DhomaPacienteve != null)
+            {
+                foreach (var dhoma in request.DhomaPacienteve)
+                {
+                    var dhomaPacientiEntity = new DhomaPacientit
+                    {
+                        Id = dhoma.Id,
+                        CheckInDate = dhoma.CheckInDate,
+                        CheckOutDate = dhoma.CheckOutDate,
+                        PacientId = pacienti.Id
+                    };
+                    _context.DhomaPacienteve.Add(dhomaPacientiEntity); 
+                }
+            }
+
+
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Patient details updated successfully!", PatientId = pacienti.Id });
+        }
+
+
+        
+       [HttpPost("Shto-Faturen")]
+       [Authorize(Roles="Doctor")]
+       public async Task<IActionResult> AddInvoice([FromBody] FaturaDTO request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+        
+            var pacienti = await _context.Pacientet
+                .FirstOrDefaultAsync(p => p.Id == request.PacientId);
+        
+            if (pacienti == null)
+            {
+                return NotFound(new { Message = "Patient not found." });
+            }
+
+            var fatura = new Fatura
+            {
+                Id = request.Id,
+                SherbimiId = request.SherbimiId,
+                Shuma = request.Shuma,
+                Data = request.Data,
+                Paguar = request.Paguar,
+                PacientId = pacienti.Id
+            };
+        
+            _context.Faturat.Add(fatura);
+            await _context.SaveChangesAsync();
+        
+            return Ok(new { Message = "Invoice added successfully!", InvoiceId = fatura.Id });
+        }
+        
+
+
+
     }
 }
