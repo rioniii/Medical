@@ -1,134 +1,66 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import {
-    BsCart3,
-    BsGrid1X2Fill,
-    BsFillArchiveFill,
-    BsFillGrid3X3GapFill,
-    BsPeopleFill,
-    BsListCheck,
-    BsMenuButtonWideFill,
-    BsFillGearFill,
-    BsBookFill,
-} from "react-icons/bs";
+import { Nav } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTachometerAlt, faUser, faCalendar, faReceipt, faBriefcaseMedical, faCommentDots } from "@fortawesome/free-solid-svg-icons";
+import { NavLink, useNavigate } from 'react-router-dom';
 
-function Sidebar({ openSidebarToggle, OpenSidebar, handleCustomersClick, handleLibriClick, handleAutoriClick, handleStafiClick, handleQytetiClick, handleZhanriClick, handleShtepiaClick, handleExchangeListClick, handleExchangeApproveClick, handleExchangeFormClick }) {
+
+
+const Sidebar = () => {
     return (
-        <aside
-            id="sidebar"
-            className={openSidebarToggle ? "sidebar-responsive" : ""}
-        >
-            <div className="sidebar-title">
-                <div className="sidebar-brand">
-                    <BsCart3 className="icon_header" /> SHOP
+        <div style={{ display: "flex", height: "100vh" }}>
+            <div
+                style={{
+                    width: "250px",
+                    backgroundColor: "#f8f9fa",
+                    padding: "20px",
+                    boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
+                }}
+            >
+                <div className="text-center mb-4">
+                    <img
+                        src="https://marketplace.canva.com/EAE8K0GX7fY/1/0/1600w/canva-minimalist-hospital-and-medical-health-logo-0zwcZG1ITOE.jpg" // Replace with your logo URL
+                        alt="Logo"
+                        style={{ width: "80px" }}
+                    />
+                    <h4>EyeCare</h4>
+                    <small>www.medical.ks</small>
                 </div>
-                <span className="icon close_icon" onClick={OpenSidebar}>
-                    x
-                </span>
+                <Nav className="flex-column">
+
+                    <Nav.Link href="/dashboard" className="d-flex align-items-center">
+                        <FontAwesomeIcon icon={faTachometerAlt} className="me-2" />
+                        Dashboard
+                    </Nav.Link>
+
+
+                    <Nav.Link as={NavLink} to="/Pacientet" className="d-flex align-items-center">
+                        <FontAwesomeIcon icon={faUser} className="me-2" />
+                        Patients
+                    </Nav.Link>
+
+                    <Nav.Link href="/appointments" className="d-flex align-items-center">
+                        <FontAwesomeIcon icon={faCalendar} className="me-2" />
+                        Appointments
+                    </Nav.Link>
+
+                    <Nav.Link href="/payments" className="d-flex align-items-center">
+                        <FontAwesomeIcon icon={faReceipt} className="me-2" />
+                        Payments
+                    </Nav.Link>
+                    <Nav.Link href="/services" className="d-flex align-items-center">
+                        <FontAwesomeIcon icon={faBriefcaseMedical} className="me-2" />
+                        Services
+                    </Nav.Link>
+                    <Nav.Link href="/chats" className="d-flex align-items-center">
+                        <FontAwesomeIcon icon={faCommentDots} className="me-2" />
+                        Chats
+                    </Nav.Link>
+                </Nav>
             </div>
-
-            <ul className="sidebar-list">
-                <li className="sidebar-list-item">
-                    <a href="">
-                        <BsGrid1X2Fill className="icon" /> Dashboard
-                    </a>
-                </li>
-                <li className="sidebar-list-item">
-                    <Link
-                        to="/libri"
-                        className="sidebar-link"
-                        onClick={handleLibriClick}
-                    >
-                        <BsBookFill className="icon" /> Books
-                    </Link>
-                </li>
-                <li className="sidebar-list-item">
-                    <Link
-                        to="/autori"
-                        className="sidebar-link"
-                        onClick={handleAutoriClick}
-                    >
-                        <BsBookFill className="icon" /> Autori
-                    </Link>
-                </li>
-                <li className="sidebar-list-item">
-                    <Link
-                        to="/klienti"
-                        className="sidebar-link"
-                        onClick={handleCustomersClick}
-                    >
-                        <BsPeopleFill className="icon" /> Customers
-                    </Link>
-                </li>
-                <li className="sidebar-list-item">
-                    <Link
-                        to="/staf"
-                        className="sidebar-link"
-                        onClick={handleStafiClick}
-                    >
-                        <BsBookFill className="icon" /> stafi
-                    </Link>
-                </li>
-                <li className="sidebar-list-item">
-                    <Link
-                        to="/qyteti"
-                        className="sidebar-link"
-                        onClick={handleQytetiClick}
-                    >
-                        <BsBookFill className="icon" /> Qyteti
-                    </Link>
-                </li>
-                <li className="sidebar-list-item">
-                    <Link
-                        to="/zhanri"
-                        className="sidebar-link"
-                        onClick={handleZhanriClick}
-                    >
-                        <BsBookFill className="icon" /> Zhanri
-                    </Link>
-                </li>
-                <li className="sidebar-list-item">
-                    <Link
-                        to="/ShtepiaBotuese"
-                        className="sidebar-link"
-                        onClick={handleShtepiaClick}
-                    >
-                        <BsBookFill className="icon" /> Shtepia Botuese
-                    </Link>
-                </li>
-                <li className="sidebar-list-item">
-                    <Link
-                        to="/ExchangeList"
-                        className="sidebar-link"
-                        onClick={handleExchangeListClick}
-                    >
-                        <BsBookFill className="icon" /> Exchange List
-                    </Link>
-                </li>
-
-                <li className="sidebar-list-item">
-                    <Link
-                        to="/PendingApproval"
-                        className="sidebar-link"
-                        onClick={handleExchangeListClick}
-                    >
-                        <BsBookFill className="icon" /> Not Approvad after 24 Hours
-                    </Link>
-                </li>
-
-                <li className="sidebar-list-item">
-                    <Link
-                        to="/ExchangeApprove"
-                        className="sidebar-link"
-                        onClick={handleExchangeApproveClick}
-                    >
-                        <BsBookFill className="icon" /> Exchange Approve
-                    </Link>
-                </li>
-
-            </ul>
-        </aside>
+        </div>
     );
-}
+};
 
 export default Sidebar;

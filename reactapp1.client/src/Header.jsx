@@ -46,7 +46,7 @@ const Header = () => {
 
                             {/* Only show Doctor Dashboard link if the user is a Doctor */}
                             {isDoctor && (
-                                <Nav.Link as={NavLink} to="/PatientCRUD" className="nav-item">Doctor Dashboard</Nav.Link>
+                                <Nav.Link as={NavLink} to="/Dashboard" className="nav-item">Doctor Dashboard</Nav.Link>
                             )}
 
                             {token ? (

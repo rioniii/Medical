@@ -8,28 +8,36 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import { Form } from "react-bootstrap";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import Dashboard from "./Dashboard.jsx";
+import Sidebar from "./Sidebar.jsx";
+import { Nav } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTachometerAlt, faUser, faCalendar, faReceipt, faBriefcaseMedical, faCommentDots } from "@fortawesome/free-solid-svg-icons";
+import { NavLink, useNavigate } from 'react-router-dom';
 
-const PatientCRUD = () => {
+
+
+const Pacientet = () => {
     const [show, setShow] = useState(false);
-    const handleClose = () => {
-        setShow(false);
-        clearForm(); // Clear form fields on close
-    };
-    const handleShow = () => setShow(true);
-
     const [Id, setId] = useState("");
     const [Name, setName] = useState("");
     const [Surname, setSurname] = useState("");
     const [Ditelindja, setDitelindja] = useState("");
     const [data, setData] = useState([]);
-    const navigate = useNavigate(); // For navigation
+    const navigate = useNavigate();
+
+    const handleClose = () => {
+        setShow(false);
+        clearForm();
+    };
+
+    const handleShow = () => setShow(true);
 
     useEffect(() => {
-        // Check if token exists in localStorage, if not redirect to login page
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-            navigate('/login'); // Redirect to login page if no token
+            navigate("/login");
         } else {
             getData();
         }
@@ -41,25 +49,16 @@ const PatientCRUD = () => {
 
     const getData = async () => {
         const token = localStorage.getItem("token");
-
         try {
-            // Fetch patient data from API using the token for authorization
-            axios
-                .get("https://localhost:7107/api/Pacienti", {
-                    headers: {
-                        Authorization: `Bearer ${token}`, // Use the token stored in localStorage
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then((response) => {
-                    setData(response.data); // Update state with the fetched data
-                })
-                .catch((error) => {
-                    console.error("Error fetching data:", error.response ? error.response.data : error.message);
-                });
-
+            const response = await axios.get("https://localhost:7107/api/Pacienti", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            setData(response.data);
         } catch (error) {
-            console.error("Error in getData:", error);
+            console.error("Error fetching data:", error.response?.data || error.message);
         }
     };
 
@@ -70,14 +69,8 @@ const PatientCRUD = () => {
         setDitelindja("");
     };
 
-    const handleAddPatient = () => {
-        const payload = {
-            Id,
-            Name,
-            Surname,
-            Ditelindja,
-        };
-
+    const handleAddPatient = async () => {
+        const payload = { Id, Name, Surname, Ditelindja };
         const token = localStorage.getItem("token");
 
         if (!token) {
@@ -85,42 +78,28 @@ const PatientCRUD = () => {
             return;
         }
 
-        axios
-            .post(
-                "https://localhost:7107/api/Pacienti/Add-Patient",
-                payload,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            )
-            .then(() => {
-                getData();
-                clearForm(); // Clear form fields after adding
-            })
-            .catch((error) => {
-                console.error("Error adding patient:", error.response ? error.response.data : error.message);
-                alert("There was an error adding the patient. Please try again.");
+        try {
+            await axios.post("https://localhost:7107/api/Pacienti/Add-Patient", payload, {
+                headers: { Authorization: `Bearer ${token}` },
             });
+            getData();
+            clearForm();
+        } catch (error) {
+            console.error("Error adding patient:", error.response?.data || error.message);
+            alert("There was an error adding the patient. Please try again.");
+        }
     };
 
     const handleEdit = (patient) => {
         setId(patient.id);
         setName(patient.name);
         setSurname(patient.surname);
-        setDitelindja(formatDate(patient.ditelindja)); // Format date for input
+        setDitelindja(formatDate(patient.ditelindja));
         handleShow();
     };
 
     const handleUpdatePatient = async () => {
-        const updatedPatient = {
-            Id,
-            Name,
-            Surname,
-            Ditelindja,
-        };
-
+        const updatedPatient = { Id, Name, Surname, Ditelindja };
         const token = localStorage.getItem("token");
 
         if (!token) {
@@ -143,7 +122,7 @@ const PatientCRUD = () => {
 
             if (response.ok) {
                 handleClose();
-                getData(); // Refresh data after updating
+                getData();
             } else {
                 console.error("Failed to update patient:", response.statusText);
             }
@@ -152,7 +131,7 @@ const PatientCRUD = () => {
         }
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this patient?")) {
             const token = localStorage.getItem("token");
 
@@ -161,35 +140,28 @@ const PatientCRUD = () => {
                 return;
             }
 
-            axios
-                .delete(`https://localhost:7107/api/Pacienti/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then(() => {
-                    alert("Patient deleted successfully!");
-                    getData();
-                })
-                .catch((error) => {
-                    console.error("Error deleting patient:", error);
+            try {
+                await axios.delete(`https://localhost:7107/api/Pacienti/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
                 });
+                alert("Patient deleted successfully!");
+                getData();
+            } catch (error) {
+                console.error("Error deleting patient:", error);
+            }
         }
     };
 
     return (
         <>
-            <Navigation />
-            <br />
-            <div>
+
+            <Container>
+                <br />
                 <h2 className="dashboard-title">Dashboard</h2>
                 <h6 className="dashboard-title" style={{ color: "grey" }}>
                     Welcome to Dashboard Doctor
                 </h6>
-            </div>
-            <br />
-
-            <Container className="edit-form">
+                <br />
                 <Row>
                     <Col xs={12} md={6}>
                         <h3>Add New Patient</h3>
@@ -233,15 +205,11 @@ const PatientCRUD = () => {
                             <Button variant="primary" onClick={handleAddPatient}>
                                 Add Patient
                             </Button>
-                            <div>
-                                <p></p>
-                            </div>
                         </Form>
                     </Col>
-
                     <Col xs={12} md={6}>
-                        <h3>Manage Patients</h3>
-                        <Table responsive="md">
+                        <h3>Patient List</h3>
+                        <Table striped bordered hover>
                             <thead>
                                 <tr>
                                     <th>Id</th>
@@ -261,13 +229,16 @@ const PatientCRUD = () => {
                                             <td>{formatDate(item.ditelindja)}</td>
                                             <td>
                                                 <Button
-                                                    onClick={() => handleEdit(item)}
                                                     variant="warning"
                                                     className="me-2"
+                                                    onClick={() => handleEdit(item)}
                                                 >
                                                     Edit
                                                 </Button>
-                                                <Button onClick={() => handleDelete(item.id)} variant="danger">
+                                                <Button
+                                                    variant="danger"
+                                                    onClick={() => handleDelete(item.id)}
+                                                >
                                                     Delete
                                                 </Button>
                                             </td>
@@ -285,8 +256,6 @@ const PatientCRUD = () => {
                     </Col>
                 </Row>
             </Container>
-
-            {/* Modal for editing patient */}
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Patient</Modal.Title>
@@ -339,4 +308,6 @@ const PatientCRUD = () => {
     );
 };
 
-export default PatientCRUD;
+export default Pacientet;
+
+

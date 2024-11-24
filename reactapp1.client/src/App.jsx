@@ -4,9 +4,10 @@ import Footer from "./Footer";
 import Card from "./Card";
 import IntervalSlider from './IntervalSlider';
 import Ballina from './Ballina';
-import PatientCRUD from './Dashboard/Components/PatientCRUD';
+import Dashboard from './Dashboard/Components/Dashboard';
 import RepartCrud from './Dashboard/Components/RepartCrud';
 import MjekuCRUD from './Dashboard/Components/MjekuCRUD';
+import Pacientet from './Dashboard/Components/Pacientet';
 import { Route, Routes, HashRouter, Navigate } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
@@ -80,14 +81,20 @@ class App extends Component {
                         <Route path="/Contact" element={<ErrorBoundary><Contact /></ErrorBoundary>} />
 
                         {/* Protected Routes */}
-                        <Route path="/PatientCRUD" element={
+                        <Route path="/Dashboard" element={
                             <ProtectedRoute roles={['Doctor']}>
-                                <ErrorBoundary><PatientCRUD /></ErrorBoundary>
+                                <ErrorBoundary><Dashboard /></ErrorBoundary>
                             </ProtectedRoute>
                         } />
+                        
                         <Route path="/RepartCrud" element={
                             <ProtectedRoute roles={['Administrator']}>
                                 <ErrorBoundary><RepartCrud /></ErrorBoundary>
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/Pacientet" element={
+                            <ProtectedRoute roles={['Doctor']}>
+                                <ErrorBoundary><Pacientet /></ErrorBoundary>
                             </ProtectedRoute>
                         } />
                         <Route path="/MjekuCRUD" element={

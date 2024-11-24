@@ -41,9 +41,7 @@ const LoginForm = () => {
 
             setSuccessMessage(data.message || 'Login successful!');
 
-            // Redirect based on user roles
             const roles = data.roles || [];
-            // Check if the role includes 'Doctor', then redirect to PatientCRUD
             const redirectPath = roles.includes('Doctor') ? '/' : '/';
             navigate(redirectPath); // Use navigate to redirect
         } catch (error) {
