@@ -252,8 +252,29 @@ namespace ReactApp1.Server.Controllers
         
             return Ok(new { Message = "Invoice added successfully!", InvoiceId = fatura.Id });
         }
-        
 
+        [HttpGet("CountAllPatients")]
+        [Authorize(Roles = "Doctor")] // Uncomment to restrict access to doctors
+        public async Task<IActionResult> CountPatients()
+        {
+            try
+            {
+                // Count the total number of patients in the database
+                var totalPatientCount = await _context.Pacientet.CountAsync();
+
+                // Return the total count in the response
+                return Ok(new { TotalPatientCount = totalPatientCount });
+            }
+            catch (Exception ex)
+            {
+                // Handle any unexpected errors and provide a detailed response
+                return StatusCode(500, new
+                {
+                    Message = "An error occurred while counting all patients.",
+                    Error = ex.Message
+                });
+            }
+        }
 
 
     }

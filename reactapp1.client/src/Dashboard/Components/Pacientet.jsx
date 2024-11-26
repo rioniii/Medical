@@ -15,6 +15,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTachometerAlt, faUser, faCalendar, faReceipt, faBriefcaseMedical, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { NavLink, useNavigate } from 'react-router-dom';
+import Card from 'react-bootstrap/Card';
 
 
 
@@ -26,6 +27,10 @@ const Pacientet = () => {
     const [Ditelindja, setDitelindja] = useState("");
     const [data, setData] = useState([]);
     const navigate = useNavigate();
+    //const [doctorId, setDoctorId] = useState(""); // To input the doctor ID
+    //const [patientCount, setPatientCount] = useState(null); // To store the patient count
+    //const [error, setError] = useState(null); // To handle errors
+
 
     const handleClose = () => {
         setShow(false);
@@ -152,15 +157,108 @@ const Pacientet = () => {
         }
     };
 
+   /* const Pacientet = () => {
+        // State to hold the total patient count
+        const [nrPacienteve, setnrPacienteve] = useState(0);
+
+        // Fetch total patient count from the backend
+        const fetchPatientCount = async () => {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                alert("User not authenticated. Please log in.");
+                return;
+            }
+
+            try {
+                const response = await axios.get("https://localhost:7107/api/Pacienti/CountAllPatients", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                // Update the state with the fetched total patient count
+                setnrPacienteve(response.data.TotalPatientCount);
+            } catch (error) {
+                console.error("Error fetching total patient count:", error.response?.data || error.message);
+                alert("An error occurred while fetching the total patient count.");
+            }
+        };
+
+        // Call fetchPatientCount when the component loads
+        useEffect(() => {
+            fetchPatientCount();
+        }, []);*/
+
+
     return (
         <>
 
+            <div style={{ display: 'flex', minHeight: '100vh' }}>
+                <Sidebar />
+
+
+
+                <div style={{ flex: 1, padding: '20px' }}>
+
             <Container>
                 <br />
-                <h2 className="dashboard-title">Dashboard</h2>
-                <h6 className="dashboard-title" style={{ color: "grey" }}>
-                    Welcome to Dashboard Doctor
-                </h6>
+                        <h4 className="dashboard-title">Patients</h4>
+                        <div style={{ display: 'flex' }} >
+                        <Card border="dark" style={{ width: '15rem',height:'10rem' }}>
+                                <Card.Body>
+                                    <Card.Title>
+                                       {/* <button
+                                            onClick={fetchPatientCount}
+                                            style={{
+                                                padding: "10px 15px",
+                                                backgroundColor: "#007bff",
+                                                color: "#fff",
+                                                border: "none",
+                                                borderRadius: "4px",
+                                                cursor: "pointer",
+                                            }}
+                                        >
+                                            Fetch Patient Count
+                                        </button>
+
+                                        {patientCount !== null && (
+                                            <div style={{ marginTop: "20px", color: "#28a745" }}>
+                                                <h4>Number of Patients: {patientCount}</h4>
+                                            </div>
+                                        )}
+
+                                        {error && (
+                                            <div style={{ marginTop: "20px", color: "#dc3545" }}>
+                                                <h4>Error: {error}</h4>
+                                            </div>
+                                        )}*/}
+                                    </Card.Title>
+                                <Card.Text>
+                                       
+                                </Card.Text>
+
+                            </Card.Body>
+                        </Card>
+                        <br />
+
+                            <Card border="dark" style={{width: '15rem', height: '10rem' }}>
+                            <Card.Body>
+                                <Card.Text>
+                                        Monthly Patients
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                        <br />
+
+                            <Card border="dark" style={{ width: '15rem', height: '10rem'  }}>
+                            <Card.Body>
+                                <Card.Text>
+                                    Yearly Patients
+                                </Card.Text>
+                            </Card.Body>
+                            </Card>
+                        </div>
+                        <br />
+
                 <br />
                 <Row>
                     <Col xs={12} md={6}>
@@ -303,9 +401,15 @@ const Pacientet = () => {
                         </Button>
                     </Form>
                 </Modal.Body>
-            </Modal>
+                    </Modal>
+                </div>
+            </div>
         </>
     );
+};
+
+const style = {
+    color: '#f8f9fa'
 };
 
 export default Pacientet;

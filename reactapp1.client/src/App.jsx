@@ -12,6 +12,7 @@ import { Route, Routes, HashRouter, Navigate } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
 import i2 from './assets/i2.jpg';
 import i3 from './assets/i3.jpg';
+import Sidebar from "./Dashboard/Components/Sidebar";
 import Header from './Header';
 
 // Lazy loading components
@@ -64,7 +65,7 @@ const ProtectedRoute = ({ children, roles }) => {
 class App extends Component {
     render() {
         return (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<div className="text-center mt-5"><div className="spinner-border text-primary"></div></div>}>
                 <HashRouter>
                     <Header />
                     <Routes>
@@ -83,7 +84,16 @@ class App extends Component {
                         {/* Protected Routes */}
                         <Route path="/Dashboard" element={
                             <ProtectedRoute roles={['Doctor']}>
-                                <ErrorBoundary><Dashboard /></ErrorBoundary>
+                                <ProtectedRoute>
+                                    <ErrorBoundary><Dashboard /></ErrorBoundary>
+                                </ProtectedRoute>
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/Pacientet" element={
+                            <ProtectedRoute roles={['Doctor']}>
+                                <ProtectedRoute>
+                                    <ErrorBoundary><Pacientet /></ErrorBoundary>
+                                </ProtectedRoute>
                             </ProtectedRoute>
                         } />
                         
@@ -92,11 +102,7 @@ class App extends Component {
                                 <ErrorBoundary><RepartCrud /></ErrorBoundary>
                             </ProtectedRoute>
                         } />
-                        <Route path="/Pacientet" element={
-                            <ProtectedRoute roles={['Doctor']}>
-                                <ErrorBoundary><Pacientet /></ErrorBoundary>
-                            </ProtectedRoute>
-                        } />
+                       
                         <Route path="/MjekuCRUD" element={
                             <ProtectedRoute roles={['Doctor']}>
                                 <ErrorBoundary><MjekuCRUD /></ErrorBoundary>

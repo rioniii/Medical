@@ -1,0 +1,20 @@
+/* Sidebar link styles */
+.sidebar-link {
+    text-decoration: none;
+    color: #6db7ab;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+    /* Hover effect */
+    .sidebar-link:hover {
+        background-color: #e6f7f4; /* Light cyan background on hover */
+        color: #00796b; /* Dark cyan text color on hover */
+    }
+
+
+
