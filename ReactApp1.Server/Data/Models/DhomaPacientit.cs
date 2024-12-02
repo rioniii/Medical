@@ -1,7 +1,10 @@
-﻿namespace ReactApp1.Server.Data.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ReactApp1.Server.Data.Models
 {
     public class DhomaPacientit
     {
+        [Key]
         public string Id { get; set; }
 
         // Foreign key for Patient

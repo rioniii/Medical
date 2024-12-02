@@ -31,8 +31,6 @@ namespace ReactApp1.Server.Controllers
         {
             return await _context.Pacientet
                 .Include(p => p.User)          
-                .Include(p => p.Terminet)       
-                .Include(p => p.Historiks)     
                 .ToListAsync();
         }
 

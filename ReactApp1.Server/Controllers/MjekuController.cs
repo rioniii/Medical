@@ -24,41 +24,65 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/Mjeku
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Mjeku>>> GetMjeket()
+        public async Task<ActionResult<IEnumerable<MjekuDTO>>> GetMjeket()
         {
-            return await _context.Mjeket
+            var mjeket = await _context.Mjeket
                 .Include(m => m.User)           // Include related User data
-                .Include(m => m.Terminet)       // Include related Termini (Appointments)
-                .Include(m => m.Historiqet)      // Include related Historiks (History)
+                .Select(m => new MjekuDTO
+                {
+                    Id = m.Id,
+                    Specializimi = m.Specializimi,
+                    NumriLicences = m.NumriLicences,
+                })
                 .ToListAsync();
+
+            return Ok(mjeket);
         }
 
-        // GET: api/Mjeku/5
+        // GET: api/Mjeket/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Mjeku>> GetMjeku(int id)
+        public async Task<ActionResult<MjekuDTO>> GetMjeku(string id)
         {
             var mjeku = await _context.Mjeket
-                .Include(m => m.User)           // Include related User data
-                .Include(m => m.Terminet)       // Include related Termini (Appointments)
-                .Include(m => m.Historiqet)      // Include related Historiks (History)
-                .FirstOrDefaultAsync(m => m.Id.Equals(id));
+                .Include(m => m.User)
+                .FirstOrDefaultAsync(m => m.Id.ToString() == id);
 
             if (mjeku == null)
             {
                 return NotFound();
             }
 
-            return mjeku;
+            var mjekuDto = new MjekuDTO
+            {
+                Id = mjeku.Id,
+                Specializimi = mjeku.Specializimi,
+                NumriLicences = mjeku.NumriLicences,
+            };
+
+            return Ok(mjekuDto);
         }
 
-        // PUT: api/Mjeku/5
+        // PUT: api/Mjeket/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMjeku(int id, Mjeku mjeku)
+        public async Task<IActionResult> PutMjeku(string id, MjekuDTO mjekuDto)
         {
-            if (!(id.Equals(mjeku.Id)))
+
+            
+
+            if (id != mjekuDto.Id)
             {
                 return BadRequest();
             }
+
+            var mjeku = await _context.Mjeket.FindAsync(id);
+            if (mjeku == null)
+            {
+                return NotFound();
+            }
+
+            mjeku.Id = mjekuDto.Id;
+            mjeku.Specializimi = mjekuDto.Specializimi;
+            mjeku.NumriLicences = mjekuDto.NumriLicences;
 
             _context.Entry(mjeku).State = EntityState.Modified;
 
@@ -68,7 +92,7 @@ namespace ReactApp1.Server.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MjekuExists(id))
+                if (!MjekuExists(int.Parse(id)))
                 {
                     return NotFound();
                 }
@@ -81,26 +105,28 @@ namespace ReactApp1.Server.Controllers
             return NoContent();
         }
 
-        // POST: api/Mjeku
+        // POST: api/Mjeket
         [HttpPost]
-        public async Task<ActionResult<Mjeku>> PostMjeku(Mjeku mjeku)
+        public async Task<ActionResult<MjekuDTO>> PostMjeku(MjekuDTO mjekuDto)
         {
-            // Make sure to add foreign key relations (User)
-            var user = await _context.Users.FindAsync(mjeku.UserId);
-            if (user == null)
+
+            var mjeku = new Mjeku
             {
-                return BadRequest("Invalid UserId provided.");
-            }
+                Id = mjekuDto.Id,
+                Specializimi = mjekuDto.Specializimi,
+                NumriLicences = mjekuDto.NumriLicences,
+            };
 
             _context.Mjeket.Add(mjeku);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMjeku", new { id = mjeku.Id }, mjeku);
+
+            return CreatedAtAction(nameof(GetMjeku), new { id = mjeku.Id }, mjekuDto);
         }
 
-        // DELETE: api/Mjeku/5
+        // DELETE: api/Mjeket/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMjeku(int id)
+        public async Task<IActionResult> DeleteMjeku(string id)
         {
             var mjeku = await _context.Mjeket.FindAsync(id);
             if (mjeku == null)
@@ -254,20 +280,16 @@ namespace ReactApp1.Server.Controllers
         }
 
         [HttpGet("CountAllPatients")]
-        [Authorize(Roles = "Doctor")] // Uncomment to restrict access to doctors
+        [Authorize(Roles = "Doctor")] 
         public async Task<IActionResult> CountPatients()
         {
             try
             {
-                // Count the total number of patients in the database
                 var totalPatientCount = await _context.Pacientet.CountAsync();
-
-                // Return the total count in the response
                 return Ok(new { TotalPatientCount = totalPatientCount });
             }
             catch (Exception ex)
             {
-                // Handle any unexpected errors and provide a detailed response
                 return StatusCode(500, new
                 {
                     Message = "An error occurred while counting all patients.",

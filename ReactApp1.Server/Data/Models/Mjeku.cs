@@ -8,7 +8,7 @@
         public string NumriLicences { get; set; }
 
         // Foreign key from User
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         public User User { get; set; } 
 
 

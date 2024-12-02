@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
 using ReactApp1.Server.Data.Models;
+using ReactApp1.Server.DTOs; // Ensure this namespace is added
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,14 +22,26 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/Dhoma
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Dhoma>>> GetDhoma()
+        public async Task<ActionResult<IEnumerable<DhomaDTO>>> GetDhoma()
         {
-            return await _context.Dhomat.Include(d => d.DhomaPacienteve).ToListAsync();
+            var dhomat = await _context.Dhomat.Include(d => d.DhomaPacienteve).ToListAsync();
+
+            // Map to DhomaDTO
+            var dhomaDTOs = dhomat.Select(d => new DhomaDTO
+            {
+                Id = d.Id.ToString(),
+                NrDhomes = d.NrDhomes,
+                Lloji_Dhomes = d.Lloji_Dhomes,
+                Kapaciteti = d.Kapaciteti,
+                Available = d.Available
+            }).ToList();
+
+            return dhomaDTOs;
         }
 
         // GET: api/Dhoma/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Dhoma>> GetDhoma(int id)
+        public async Task<ActionResult<DhomaDTO>> GetDhoma(string id)
         {
             var dhoma = await _context.Dhomat.Include(d => d.DhomaPacienteve).FirstOrDefaultAsync(d => d.Id.Equals(id));
 
@@ -37,18 +50,39 @@ namespace ReactApp1.Server.Controllers
                 return NotFound();
             }
 
-            return dhoma;
+            // Map to DhomaDTO
+            var dhomaDTO = new DhomaDTO
+            {
+                Id = dhoma.Id,
+                NrDhomes = dhoma.NrDhomes,
+                Lloji_Dhomes = dhoma.Lloji_Dhomes,
+                Kapaciteti = dhoma.Kapaciteti,
+                Available = dhoma.Available
+            };
+
+            return dhomaDTO;
         }
 
         // PUT: api/Dhoma/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDhoma(int id, Dhoma dhoma)
+        public async Task<IActionResult> PutDhoma(string id, DhomaDTO dhomaDTO)
         {
-            if (!(id.Equals(dhoma.Id)))
+            if (!(id.Equals(dhomaDTO.Id)))
             {
                 return BadRequest();
             }
+
+            // Map DhomaDTO to Dhoma entity
+            var dhoma = await _context.Dhomat.FindAsync(id);
+            if (dhoma == null)
+            {
+                return NotFound();
+            }
+            dhoma.Id = dhomaDTO.Id;
+            dhoma.NrDhomes = dhomaDTO.NrDhomes;
+            dhoma.Lloji_Dhomes = dhomaDTO.Lloji_Dhomes;
+            dhoma.Kapaciteti = dhomaDTO.Kapaciteti;
+            dhoma.Available = dhomaDTO.Available;
 
             _context.Entry(dhoma).State = EntityState.Modified;
 
@@ -72,19 +106,31 @@ namespace ReactApp1.Server.Controllers
         }
 
         // POST: api/Dhoma
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Dhoma>> PostDhoma(Dhoma dhoma)
+        public async Task<ActionResult<DhomaDTO>> PostDhoma(DhomaDTO dhomaDTO)
         {
+            // Map DhomaDTO to Dhoma entity
+            var dhoma = new Dhoma
+            {
+                Id = dhomaDTO.Id,
+                NrDhomes = dhomaDTO.NrDhomes,
+                Lloji_Dhomes = dhomaDTO.Lloji_Dhomes,
+                Kapaciteti = dhomaDTO.Kapaciteti,
+                Available = dhomaDTO.Available
+            };
+
             _context.Dhomat.Add(dhoma);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDhoma", new { id = dhoma.Id }, dhoma);
+            // Map the saved Dhoma entity back to DhomaDTO
+            dhomaDTO.Id = dhoma.Id;
+
+            return CreatedAtAction("GetDhoma", new { id = dhoma.Id }, dhomaDTO);
         }
 
         // DELETE: api/Dhoma/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDhoma(int id)
+        public async Task<IActionResult> DeleteDhoma(string id)
         {
             var dhoma = await _context.Dhomat.FindAsync(id);
             if (dhoma == null)
@@ -98,7 +144,7 @@ namespace ReactApp1.Server.Controllers
             return NoContent();
         }
 
-        private bool DhomaExists(int id)
+        private bool DhomaExists(string id)
         {
             return _context.Dhomat.Any(e => e.Id.Equals(id));
         }

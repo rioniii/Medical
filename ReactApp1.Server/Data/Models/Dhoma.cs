@@ -1,8 +1,10 @@
-﻿namespace ReactApp1.Server.Data.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ReactApp1.Server.Data.Models
 {
     public class Dhoma
     {
-
+        [Key]
         public string Id { get; set; }
         public string NrDhomes { get; set; }
         public string Lloji_Dhomes { get; set; }

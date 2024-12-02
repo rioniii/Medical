@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data.Models;
+using ReactApp1.Server.DTOs;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,43 +20,74 @@ namespace ReactApp1.Server.Controllers
         }
 
         // GET: api/Fatura
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Fatura>>> GetFaturas()
         {
-            return await _context.Faturat
-                .Include(f => f.Pacienti) // Including related Pacienti
-                .Include(f => f.Sherbimi) // Including related Sherbimi
+            var faturas = await _context.Faturat
+                .Include(f => f.Pacienti)  // Include related Pacienti
                 .ToListAsync();
+
+            return Ok(faturas);
         }
 
-        // GET: api/Fatura/5
+        // GET: api/Fatura/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Fatura>> GetFatura(int id)
+        public async Task<ActionResult<Fatura>> GetFatura(string id)
         {
             var fatura = await _context.Faturat
                 .Include(f => f.Pacienti)
-                .Include(f => f.Sherbimi)
-                .FirstOrDefaultAsync(f => f.Id.Equals(id));
+                .FirstOrDefaultAsync(f => f.Id == id);
 
             if (fatura == null)
             {
                 return NotFound();
             }
 
-            return fatura;
+            return Ok(fatura);
         }
 
-        // PUT: api/Fatura/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutFatura(int id, Fatura fatura)
+        // POST: api/Fatura
+        [HttpPost]
+        public async Task<ActionResult<Fatura>> PostFatura(FaturaDTO request)
         {
-            if (!(id.Equals(fatura.Id)))
+            var fatura = new Fatura
             {
-                return BadRequest();
+                Id = request.Id,
+                PacientId = request.PacientId,
+                SherbimiId = request.SherbimiId,
+                Shuma = request.Shuma,
+                Data = request.Data,
+                Paguar = request.Paguar ?? false
+            };
+
+            _context.Faturat.Add(fatura);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetFatura), new { id = fatura.Id }, fatura);
+        }
+
+        // PUT: api/Fatura/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutFatura(string id, FaturaDTO request)
+        {
+            if (id != request.Id)
+            {
+                return BadRequest("ID mismatch between route and request body.");
             }
 
-            _context.Entry(fatura).State = EntityState.Modified;
+            var existingFatura = await _context.Faturat.FindAsync(id);
+            if (existingFatura == null)
+            {
+                return NotFound();
+            }
+            existingFatura.Id = request.Id;
+            existingFatura.PacientId = request.PacientId;
+            existingFatura.SherbimiId = request.SherbimiId;
+            existingFatura.Shuma = request.Shuma;
+            existingFatura.Data = request.Data;
+            existingFatura.Paguar = request.Paguar ?? false;
+
+            _context.Entry(existingFatura).State = EntityState.Modified;
 
             try
             {
@@ -77,19 +108,9 @@ namespace ReactApp1.Server.Controllers
             return NoContent();
         }
 
-        // POST: api/Fatura
-        [HttpPost]
-        public async Task<ActionResult<Fatura>> PostFatura(Fatura fatura)
-        {
-            _context.Faturat.Add(fatura);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetFatura), new { id = fatura.Id }, fatura);
-        }
-
-        // DELETE: api/Fatura/5
+        // DELETE: api/Fatura/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFatura(int id)
+        public async Task<IActionResult> DeleteFatura(string id)
         {
             var fatura = await _context.Faturat.FindAsync(id);
             if (fatura == null)
@@ -103,9 +124,9 @@ namespace ReactApp1.Server.Controllers
             return NoContent();
         }
 
-        private bool FaturaExists(int id)
+        private bool FaturaExists(string id)
         {
-            return _context.Faturat.Any(e => e.Id.Equals(id));
+            return _context.Faturat.Any(e => e.Id == id);
         }
     }
 }

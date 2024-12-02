@@ -21,34 +21,35 @@ namespace ReactApp1.Server.Controllers
             _context = context;
         }
 
-        // GET: api/Sherbimi
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Sherbimi>>> GetSherbimet()
         {
-            return await _context.Sherbimet
-                .Include(s => s.Faturat)  // Include related invoices (Faturat)
+            var sherbimet = await _context.Sherbimet
+                .Include(s => s.Faturat) // Include related invoices (Faturat)
                 .ToListAsync();
+
+            return Ok(sherbimet);
         }
 
         // GET: api/Sherbimi/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Sherbimi>> GetSherbimi(int id)
+        public async Task<ActionResult<Sherbimi>> GetSherbimi(string id)
         {
             var sherbimi = await _context.Sherbimet
-                .Include(s => s.Faturat)  // Include related invoices (Faturat)
-                .FirstOrDefaultAsync(s => s.Id.Equals(id));
+                .Include(s => s.Faturat) // Include related invoices (Faturat)
+                .FirstOrDefaultAsync(s => s.Id == id);
 
             if (sherbimi == null)
             {
                 return NotFound();
             }
 
-            return sherbimi;
+            return Ok(sherbimi);
         }
 
-        // PUT: api/Sherbimi/5
-        [HttpPost("Shto-Sherbimin")]
-        public async Task<IActionResult> PutSherbimi(SherbimiDTO request)
+        // POST: api/Sherbimi
+        [HttpPost]
+        public async Task<ActionResult<Sherbimi>> PostSherbimi(SherbimiDTO request)
         {
             var sherbimi = new Sherbimi
             {
@@ -61,24 +62,52 @@ namespace ReactApp1.Server.Controllers
             _context.Sherbimet.Add(sherbimi);
             await _context.SaveChangesAsync();
 
-            return Ok(new { Message = "Sherbimi added successfully!", Id= sherbimi.Id });
-
-
+            return CreatedAtAction(nameof(GetSherbimi), new { id = sherbimi.Id }, sherbimi);
         }
 
-        // POST: api/Sherbimi
-        [HttpPost]
-        public async Task<ActionResult<Sherbimi>> PostSherbimi(Sherbimi sherbimi)
+        // PUT: api/Sherbimi/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutSherbimi(string id, SherbimiDTO request)
         {
-            _context.Sherbimet.Add(sherbimi);
-            await _context.SaveChangesAsync();
+            if (id != request.Id)
+            {
+                return BadRequest("ID mismatch between route and request body.");
+            }
 
-            return CreatedAtAction("GetSherbimi", new { id = sherbimi.Id }, sherbimi);
+            var existingSherbimi = await _context.Sherbimet.FindAsync(id);
+            if (existingSherbimi == null)
+            {
+                return NotFound();
+            }
+            existingSherbimi.Id = request.Id;
+            existingSherbimi.Emri_Sherbimit = request.Emri_Sherbimit;
+            existingSherbimi.Pershkrimi = request.Pershkrimi;
+            existingSherbimi.Cmimi = request.Cmimi;
+
+            _context.Entry(existingSherbimi).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!SherbimiExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // DELETE: api/Sherbimi/5
+        // DELETE: api/Sherbimi/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSherbimi(int id)
+        public async Task<IActionResult> DeleteSherbimi(string id)
         {
             var sherbimi = await _context.Sherbimet.FindAsync(id);
             if (sherbimi == null)
@@ -92,9 +121,9 @@ namespace ReactApp1.Server.Controllers
             return NoContent();
         }
 
-        private bool SherbimiExists(int id)
+        private bool SherbimiExists(string id)
         {
-            return _context.Sherbimet.Any(e => e.Id.Equals(id));
+            return _context.Sherbimet.Any(e => e.Id == id);
         }
     }
 }

@@ -7,8 +7,9 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ReactApp1.Server.Data.Models;
-using System.Threading.Tasks;
 using ReactApp1.Server.Services;
+using System.Threading.Tasks;
+using System;
 
 public class Program
 {
@@ -19,7 +20,7 @@ public class Program
         _configuration = configuration;
     }
 
-    public async static Task Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -54,54 +55,50 @@ public class Program
 
     public void ConfigureServices(IServiceCollection services)
     {
-        // Configuration from AppSettings
-        services.Configure<JWT>(_configuration.GetSection("JWT"));
+        // Configure JWT from appsettings.json
+        var jwtSettings = _configuration.GetSection("JWT");
+        var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
-        // User Manager Service
+        services.Configure<JWT>(jwtSettings);
+
+        // Identity setup
         services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        // Scoped services
-        services.AddScoped<IUserService, UserService>();
-
-        // Add DB Context with MSSQL
+        // Database context
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
                 _configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
         // JWT Authentication
-        var jwtSettings = _configuration.GetSection("JWT");
-        var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
-
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-        .AddJwtBearer(o =>
+        .AddJwtBearer(options =>
         {
-            o.RequireHttpsMetadata = false;
-            o.SaveToken = false;
-            o.TokenValidationParameters = new TokenValidationParameters
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero,
                 ValidIssuer = jwtSettings["Issuer"],
                 ValidAudience = jwtSettings["Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(key)
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
             };
         });
 
-        // Authorization policy
+        // Authorization
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("DoctorPolicy", policy =>
-                policy.RequireRole("Doctor"));
+            options.AddPolicy("DoctorPolicy", policy => policy.RequireRole("Doctor"));
         });
 
         // CORS Policy
@@ -116,6 +113,9 @@ public class Program
             });
         });
 
+        // Register services
+        services.AddScoped<IUserService, UserService>();
+
         // Swagger setup
         services.AddSwaggerGen(option =>
         {
@@ -124,18 +124,15 @@ public class Program
                 Title = "Medical API",
                 Version = "v1"
             });
-
-            // Add JWT Authorization to Swagger
             option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
-                Description = "Please enter a valid token",
+                Description = "Please enter a valid JWT token",
                 Name = "Authorization",
                 Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                Scheme = "Bearer"
+                Scheme = "Bearer",
+                BearerFormat = "JWT"
             });
-
             option.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -153,11 +150,11 @@ public class Program
         });
 
         services.AddControllersWithViews();
+        services.AddEndpointsApiExplorer(); // for automatic endpoint generation in Swagger
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        // Environment-based settings
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -172,15 +169,17 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-        app.UseRouting();
-        app.UseCors("AllowSpecificOrigin");
-        app.UseAuthentication(); // JWT token verification
-        app.UseAuthorization();  // Role-based authorization
 
-        // Endpoint mapping for controllers
+        app.UseRouting();
+
+        app.UseCors("AllowSpecificOrigin"); // Always place CORS before Authentication/Authorization
+
+        app.UseAuthentication(); // Authenticate JWT tokens
+        app.UseAuthorization();  // Authorize based on user roles
+
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapControllers();
+            endpoints.MapControllers(); // Map API controllers
         });
     }
 }
