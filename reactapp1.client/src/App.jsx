@@ -6,7 +6,6 @@ import IntervalSlider from './IntervalSlider';
 import Ballina from './Ballina';
 import Dashboard from './Dashboard/Components/Dashboard';
 import RepartCrud from './Dashboard/Components/RepartCrud';
-import MjekuCRUD from './Dashboard/Components/MjekuCRUD';
 import Pacientet from './Dashboard/Components/Pacientet';
 import { Route, Routes, HashRouter, Navigate } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
@@ -16,6 +15,13 @@ import Sidebar from "./Dashboard/Components/Sidebar";
 import Header from './Header';
 import DashboardStats from './Dashboard/Components/DashboardStats';
 import Appointments from './Dashboard/Components/Appointments';
+import Payments from './Dashboard/Components/Payments';
+import Services from './Dashboard/Components/Services';
+import Records from './Dashboard/Components/Records';
+import Room from './Dashboard/Components/Room';
+import Invoice from './Dashboard/Components/Invoice';
+import DashboardAdmin from './Dashboard/Components/DashboardAdmin';
+
 
 // Lazy loading components
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
@@ -115,16 +121,50 @@ class App extends Component {
                             </ProtectedRoute>
 
                         } />
-                        
-                        <Route path="/RepartCrud" element={
-                            <ProtectedRoute roles={['Administrator']}>
-                                <ErrorBoundary><RepartCrud /></ErrorBoundary>
-                            </ProtectedRoute>
-                        } />
-                       
-                        <Route path="/MjekuCRUD" element={
+                        <Route path="/Payments" element={
                             <ProtectedRoute roles={['Doctor']}>
-                                <ErrorBoundary><MjekuCRUD /></ErrorBoundary>
+                                <ProtectedRoute>
+                                    <ErrorBoundary><Payments /></ErrorBoundary>
+                                </ProtectedRoute>
+                            </ProtectedRoute>
+
+                        } /> <Route path="/Services" element={
+                            <ProtectedRoute roles={['Doctor']}>
+                                <ProtectedRoute>
+                                    <ErrorBoundary><Services /></ErrorBoundary>
+                                </ProtectedRoute>
+                            </ProtectedRoute>
+
+                        } />
+                        <Route path="/Records" element={
+                            <ProtectedRoute roles={['Doctor']}>
+                                <ProtectedRoute>
+                                    <ErrorBoundary><Records /></ErrorBoundary>
+                                </ProtectedRoute>
+                            </ProtectedRoute>
+
+                        } />
+                        <Route path="/Room" element={
+                            <ProtectedRoute roles={['Doctor']}>
+                                <ProtectedRoute>
+                                    <ErrorBoundary><Room /></ErrorBoundary>
+                                </ProtectedRoute>
+                            </ProtectedRoute>
+
+                        } />
+                        <Route path="/Invoice" element={
+                            <ProtectedRoute roles={['Doctor']}>
+                                <ProtectedRoute>
+                                    <ErrorBoundary><Invoice /></ErrorBoundary>
+                                </ProtectedRoute>
+                            </ProtectedRoute>
+
+                        } /> 
+
+                       
+                        <Route path="/AdminDashboard" element={
+                            <ProtectedRoute roles={['Administrator']}>
+                                <ErrorBoundary><DashboardAdmin /></ErrorBoundary>
                             </ProtectedRoute>
                         } />
 

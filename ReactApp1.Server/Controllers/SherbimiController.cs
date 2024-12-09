@@ -25,7 +25,6 @@ namespace ReactApp1.Server.Controllers
         public async Task<ActionResult<IEnumerable<Sherbimi>>> GetSherbimet()
         {
             var sherbimet = await _context.Sherbimet
-                .Include(s => s.Faturat) // Include related invoices (Faturat)
                 .ToListAsync();
 
             return Ok(sherbimet);
@@ -36,7 +35,6 @@ namespace ReactApp1.Server.Controllers
         public async Task<ActionResult<Sherbimi>> GetSherbimi(string id)
         {
             var sherbimi = await _context.Sherbimet
-                .Include(s => s.Faturat) // Include related invoices (Faturat)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (sherbimi == null)

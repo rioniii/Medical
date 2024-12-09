@@ -155,7 +155,7 @@ const Pacientet = () => {
     return (
         <>
             <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f5f6f7' }}>
-                <Sidebar />
+                <Sidebar userType="doctor" />
                 <div style={{ flex: 1, padding: '20px' }}>
                     <Container>
                         <h4 className="dashboard-title">Patients</h4>

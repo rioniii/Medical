@@ -4,15 +4,15 @@ import Widget from './Widget';
 import MainPageStats from './MainPageStats';
 import EarningReports from './EarningReports';
 
-const Dashboard = () => {
+const DashboardAdmin = () => {
     return (
         <div className="d-flex" style={{ backgroundColor: '#f5f6f7' }} >
 
 
-            <Sidebar userType="doctor" />
+            <Sidebar userType="admin" />
 
-
-            <div style={{ paddingTop:'45px' }}>
+         
+            <div style={{ paddingTop: '45px' }}>
                 <MainPageStats></MainPageStats>
             </div>
 
@@ -24,4 +24,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default DashboardAdmin;

@@ -175,7 +175,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Dhomat");
+                    b.ToTable("Dhomat", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.DhomaPacientit", b =>
@@ -203,7 +203,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("PacientId");
 
-                    b.ToTable("DhomaPacienteve");
+                    b.ToTable("DhomaPacienteve", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Fatura", b =>
@@ -234,7 +234,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("SherbimiId");
 
-                    b.ToTable("Faturat");
+                    b.ToTable("Faturat", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Historiku", b =>
@@ -274,7 +274,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("PacientId");
 
-                    b.ToTable("Historiks");
+                    b.ToTable("Historiks", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Mjeku", b =>
@@ -297,7 +297,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Mjeket");
+                    b.ToTable("Mjeket", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Pacienti", b =>
@@ -323,7 +323,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Pacientet");
+                    b.ToTable("Pacientet", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Role", b =>
@@ -337,7 +337,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Sherbimi", b =>
@@ -358,7 +358,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sherbimet");
+                    b.ToTable("Sherbimet", (string)null);
                 });
 
             modelBuilder.Entity("ReactApp1.Server.Data.Models.Termini", b =>
@@ -387,7 +387,7 @@ namespace ReactApp1.Server.Migrations
 
                     b.HasIndex("PacientId");
 
-                    b.ToTable("Terminet");
+                    b.ToTable("Terminet", (string)null);
                 });
 
             modelBuilder.Entity("User", b =>
@@ -619,7 +619,7 @@ namespace ReactApp1.Server.Migrations
                         .WithMany("Users")
                         .HasForeignKey("RoleId");
 
-                    b.OwnsMany("RefreshToken", "RefreshTokens", b1 =>
+                    b.OwnsMany("User.RefreshTokens#RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<string>("UserId")
                                 .HasColumnType("nvarchar(450)");
@@ -645,7 +645,7 @@ namespace ReactApp1.Server.Migrations
 
                             b1.HasKey("UserId", "Id");
 
-                            b1.ToTable("RefreshToken");
+                            b1.ToTable("RefreshToken", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");

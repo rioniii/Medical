@@ -82,7 +82,7 @@ namespace ReactApp1.Server.Controllers
                 return NotFound();
             }
             termini.Id = terminiDto.Id;
-            termini.DoktorId = terminiDto.DoktorId;
+            //termini.DoktorId = terminiDto.DoktorId;
             termini.PacientId = terminiDto.PacientId;
             termini.DataTerminit = terminiDto.DataTerminit;
             termini.Statusi = terminiDto.Statusi;
@@ -145,10 +145,11 @@ namespace ReactApp1.Server.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles ="Doctor")]
-        [HttpGet("ShowAppointments-OfDoctor/{doctorId}")]
-        public async Task<ActionResult<IEnumerable<TerminiDTO>>> GetTermineByDoctor(string doctorId)
+
+        [HttpGet("ShowAppointments-OfDoctor/")]
+        public async Task<ActionResult<IEnumerable<TerminiDTO>>> GetTermineByDoctor()
         {
+            string doctorId = "1D";
             var termine = await _context.Terminet
                 .Include(t => t.Pacienti) // Include the patient entity
                 .Where(t => t.DoktorId == doctorId) // Filter by doctor ID
