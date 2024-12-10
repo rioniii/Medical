@@ -80,8 +80,7 @@ class App extends Component {
                         <Route path="/" element={
                             <div>
                                 <Ballina />
-                                <IntervalSlider images={[i4, i3, i2]} interval={3000} />
-                                <Card />
+                                {/*<Card />*/}
 
                             </div>
                         } />
@@ -89,6 +88,7 @@ class App extends Component {
                         <Route path="/LoginForm" element={<ErrorBoundary><LoginForm /></ErrorBoundary>} />
                         <Route path="/AboutUs" element={<ErrorBoundary><AboutUs /></ErrorBoundary>} />
                         <Route path="/Contact" element={<ErrorBoundary><Contact /></ErrorBoundary>} />
+
 
                         {/* Protected Routes */}
                         <Route path="/Dashboard" element={

@@ -1,0 +1,100 @@
+/* Main Container */
+.healthy-life-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    padding: 2rem 5%;
+    background-color: #f7fdfc;
+    flex-wrap: wrap;
+}
+
+/* Image Section */
+.image-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.image-wrapper {
+    width: 100%;
+    height: 300px; /* Fixed height for consistency */
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Text Section */
+.text-section {
+    flex: 1;
+    text-align: left;
+    max-width: 500px;
+}
+
+.main-heading {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #7f8c8d;
+    margin-bottom: 1.5rem;
+}
+
+.description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}
+
+/* Icon Section */
+.icons-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.icon-wrapper {
+    width: 60px;
+    height: 60px;
+    background-color: #2ecc71;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .healthy-life-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .text-section {
+        text-align: center;
+    }
+
+    .icons-container {
+        justify-content: center;
+    }
+}
+    
