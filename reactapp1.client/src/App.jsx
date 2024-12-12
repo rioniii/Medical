@@ -21,7 +21,8 @@ import Records from './Dashboard/Components/Records';
 import Room from './Dashboard/Components/Room';
 import Invoice from './Dashboard/Components/Invoice';
 import DashboardAdmin from './Dashboard/Components/DashboardAdmin';
-
+import ManageUsers from './Dashboard/Components/ManageUsers';
+import Announcements from './Dashboard/Components/Announcements';
 
 // Lazy loading components
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
@@ -161,12 +162,24 @@ class App extends Component {
 
                         } /> 
 
-                       
                         <Route path="/AdminDashboard" element={
                             <ProtectedRoute roles={['Administrator']}>
                                 <ErrorBoundary><DashboardAdmin /></ErrorBoundary>
                             </ProtectedRoute>
                         } />
+
+                        <Route path="/ManageUsers" element={
+                            <ProtectedRoute roles={['Administrator']}>
+                                <ErrorBoundary><ManageUsers /></ErrorBoundary>
+                            </ProtectedRoute>
+                        } />
+
+                        <Route path="/Announcements" element={
+                            <ProtectedRoute roles={['Administrator']}>
+                                <ErrorBoundary><Announcements /></ErrorBoundary>
+                            </ProtectedRoute>
+                        } />
+
 
                     </Routes>
                     <Footer />
