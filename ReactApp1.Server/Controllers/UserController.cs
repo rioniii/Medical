@@ -90,5 +90,27 @@ public class UserController : ControllerBase
         return Ok(new { message = "Token revoked" });
     }
 
+    // Method to view all users
+    [HttpGet]
+    //[Authorize(Roles = "Administrator")] // Only accessible by users with "Administrator" role
+    public async Task<ActionResult<IEnumerable<User>>> GetAllUsersAsync()
+    {
+        try
+        {
+            // Fetch all users from the service
+            var users = await _userService.GetAllUsersAsync();
+
+            if (users == null)
+            {
+                return NotFound("No users found.");
+            }
+
+            return Ok(users);  // Return the list of users
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
 
 }
