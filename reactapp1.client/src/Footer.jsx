@@ -18,7 +18,7 @@ function Footer() {
                         <h3>Social Media</h3>
                         <ul className="list-unstyled three-column">
                             <li><a href="#">Home</a></li>
-                            <li><a href="#">Services</a></li>
+                            <li><a href="#">Records</a></li>
                             <li><a href="#">About</a></li>
                             <li><a href="#">Code</a></li>
                             <li><a href="#">Design</a></li>

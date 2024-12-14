@@ -5,7 +5,6 @@ import Card from "./Card";
 import IntervalSlider from './IntervalSlider';
 import Ballina from './Ballina';
 import Dashboard from './Dashboard/Components/Dashboard';
-import RepartCrud from './Dashboard/Components/RepartCrud';
 import Pacientet from './Dashboard/Components/Pacientet';
 import { Route, Routes, HashRouter, Navigate } from 'react-router-dom';
 import i4 from './assets/i4.jpg';
@@ -128,10 +127,10 @@ class App extends Component {
                                 </ProtectedRoute>
                             </ProtectedRoute>
 
-                        } /> <Route path="/Services" element={
+                        } /> <Route path="/Records" element={
                             <ProtectedRoute roles={['Doctor']}>
                                 <ProtectedRoute>
-                                    <ErrorBoundary><Services /></ErrorBoundary>
+                                    <ErrorBoundary><Records /></ErrorBoundary>
                                 </ProtectedRoute>
                             </ProtectedRoute>
 

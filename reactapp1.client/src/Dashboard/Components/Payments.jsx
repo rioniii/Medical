@@ -17,10 +17,16 @@ import {
     IconButton,
     Grid,
     Paper,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Checkbox,
+    FormControlLabel,
 } from "@mui/material";
-import { FilterList, MoreVert, CalendarToday, Payment, Timeline } from "@mui/icons-material";
+import { FilterList, Add, Edit, Delete } from "@mui/icons-material";
 import moment from "moment";
-import Sidebar from "./Sidebar"; // Sidebar included
+import Sidebar from "./Sidebar";
 
 const Payments = () => {
     const [payments, setPayments] = useState([]);
@@ -28,6 +34,19 @@ const Payments = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [dateRangeFilter, setDateRangeFilter] = useState("");
+    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openEditDialog, setOpenEditDialog] = useState(false);
+
+    const [fatureForm, setFatureForm] = useState({
+        id: "",
+        pacientId: "",
+        sherbimiId: "",
+        shuma: "",
+        data: moment().format("YYYY-MM-DD"),
+        paguar: false,
+    });
+
+    const [isEditMode, setIsEditMode] = useState(false);
 
     useEffect(() => {
         fetchPayments();
@@ -41,10 +60,6 @@ const Payments = () => {
         } catch (error) {
             console.error("Error fetching payments:", error);
         }
-    };
-
-    const formatAmount = (amount) => {
-        return amount.toFixed(2);
     };
 
     const handleFilter = () => {
@@ -62,155 +77,304 @@ const Payments = () => {
         setFilteredPayments(filtered);
     };
 
+    const handleAddFature = async () => {
+        try {
+            await axios.post("https://localhost:7107/api/Fatura", fatureForm);
+            fetchPayments();
+            setOpenAddDialog(false);
+            resetForm();
+        } catch (error) {
+            console.error("Error adding Fature:", error);
+        }
+    };
+
+    const handleEditFature = async () => {
+        try {
+            await axios.put(`https://localhost:7107/api/Fatura/${fatureForm.id}`, fatureForm);
+            fetchPayments();
+            setOpenEditDialog(false);
+            resetForm();
+        } catch (error) {
+            console.error("Error updating Fature:", error);
+        }
+    };
+
+    const handleDeleteFature = async (id) => {
+        try {
+            await axios.delete(`https://localhost:7107/api/Fatura/${id}`);
+            fetchPayments();
+        } catch (error) {
+            console.error("Error deleting Fature:", error);
+        }
+    };
+
+    const openEditDialogHandler = (payment) => {
+        setFatureForm(payment);
+        setIsEditMode(true);
+        setOpenEditDialog(true);
+    };
+
+    const resetForm = () => {
+        setFatureForm({
+            id: "",
+            pacientId: "",
+            sherbimiId: "",
+            shuma: "",
+            data: moment().format("YYYY-MM-DD"),
+            paguar: false,
+        });
+    };
+
     return (
-        <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
+        <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f0f9f4" }}>
             <Sidebar userType="doctor" />
             <Box sx={{ flex: 1, padding: 4 }}>
                 <Typography variant="h4" fontWeight="bold" gutterBottom>
                     Payments
                 </Typography>
 
-                {/* Stats Section */}
-                <Grid container spacing={2} mb={4}>
-                    <Grid item xs={12} sm={4}>
-                        <Paper
-                            elevation={3}
-                            sx={{
-                                padding: 3,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Box>
-                                <Typography variant="subtitle1" color="textSecondary">
-                                    Today Payments
-                                </Typography>
-                                <Typography variant="h4" fontWeight="bold">
-                                    442,236
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                    Transactions today
-                                </Typography>
-                            </Box>
-                            <CalendarToday fontSize="large" color="primary" />
-                        </Paper>
-                    </Grid>
-
-                    <Grid item xs={12} sm={4}>
-                        <Paper
-                            elevation={3}
-                            sx={{
-                                padding: 3,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Box>
-                                <Typography variant="subtitle1" color="textSecondary">
-                                    Monthly Payments
-                                </Typography>
-                                <Typography variant="h4" fontWeight="bold">
-                                    1,242,500
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                    Transactions this month
-                                </Typography>
-                            </Box>
-                            <Payment fontSize="large" color="secondary" />
-                        </Paper>
-                    </Grid>
-
-                    <Grid item xs={12} sm={4}>
-                        <Paper
-                            elevation={3}
-                            sx={{
-                                padding: 3,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Box>
-                                <Typography variant="subtitle1" color="textSecondary">
-                                    Yearly Payments
-                                </Typography>
-                                <Typography variant="h4" fontWeight="bold">
-                                    34,570,000
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                    Transactions this year
-                                </Typography>
-                            </Box>
-                            <Timeline fontSize="large" color="success" />
-                        </Paper>
-                    </Grid>
-                </Grid>
-
-                {/* Filters */}
-                <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-                    <TextField
-                        label="Search 'Patients'"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        fullWidth
-                    />
-                    <FormControl fullWidth>
-                        <InputLabel>Status</InputLabel>
-                        <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                            <MenuItem value="">All Status</MenuItem>
-                            <MenuItem value="Paid">Paid</MenuItem>
-                            <MenuItem value="Pending">Pending</MenuItem>
-                            <MenuItem value="Cancelled">Cancelled</MenuItem>
-                        </Select>
-                    </FormControl>
-                    <TextField
-                        type="date"
-                        label="Date"
-                        InputLabelProps={{ shrink: true }}
-                        value={dateRangeFilter}
-                        onChange={(e) => setDateRangeFilter(e.target.value)}
-                        fullWidth
-                    />
-                    <Button variant="contained" onClick={handleFilter} startIcon={<FilterList />}>
-                        Filter
+                {/* Add Fature Button */}
+                <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 3 }}>
+                    <Button
+                        variant="contained"
+                        color="success"
+                        startIcon={<Add />}
+                        onClick={() => {
+                            resetForm();
+                            setOpenAddDialog(true);
+                        }}
+                        sx={{
+                            textTransform: "none",
+                            fontWeight: "bold",
+                            borderRadius: 2,
+                            backgroundColor: "#2e7d32",
+                            "&:hover": {
+                                backgroundColor: "#1b5e20",
+                            },
+                        }}
+                    >
+                        Add Fature
                     </Button>
                 </Box>
 
+                {/* Filters */}
+                <Paper
+                    elevation={3}
+                    sx={{
+                        padding: 3,
+                        mb: 4,
+                        borderRadius: 2,
+                        backgroundColor: "#ffffff",
+                    }}
+                >
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12} sm={6} md={4}>
+                            <TextField
+                                label="Search Patients"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                fullWidth
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <FormControl fullWidth>
+                                <InputLabel>Status</InputLabel>
+                                <Select
+                                    value={statusFilter}
+                                    onChange={(e) => setStatusFilter(e.target.value)}
+                                    variant="outlined"
+                                >
+                                    <MenuItem value="">All Status</MenuItem>
+                                    <MenuItem value="Paid">Paid</MenuItem>
+                                    <MenuItem value="Pending">Pending</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <TextField
+                                type="date"
+                                label="Date"
+                                InputLabelProps={{ shrink: true }}
+                                value={dateRangeFilter}
+                                onChange={(e) => setDateRangeFilter(e.target.value)}
+                                fullWidth
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={2}>
+                            <Button
+                                variant="contained"
+                                onClick={handleFilter}
+                                startIcon={<FilterList />}
+                                fullWidth
+                                sx={{
+                                    textTransform: "none",
+                                    backgroundColor: "#2e7d32",
+                                    "&:hover": {
+                                        backgroundColor: "#1b5e20",
+                                    },
+                                }}
+                            >
+                                Filter
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Paper>
+
                 {/* Payments Table */}
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Patient</TableCell>
-                            <TableCell>Date</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Amount</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {filteredPayments.map((payment) => (
-                            <TableRow key={payment.id}>
-                                <TableCell>{payment.pacientId}</TableCell>
-                                <TableCell>{moment(payment.data).format("MMM DD, YYYY")}</TableCell>
-                                <TableCell>
-                                    {payment.paguar ? (
-                                        <Typography color="green">Paid</Typography>
-                                    ) : (
-                                        <Typography color="orange">Pending</Typography>
-                                    )}
-                                </TableCell>
-                                <TableCell>{formatAmount(payment.shuma)}</TableCell>
-                                <TableCell>
-                                    <IconButton>
-                                        <MoreVert />
-                                    </IconButton>
-                                </TableCell>
+                <Paper elevation={3} sx={{ borderRadius: 3, overflow: "hidden" }}>
+                    <Table>
+                        <TableHead>
+                            <TableRow
+                                sx={{
+                                    backgroundColor: "#2e7d32",
+                                    "& th": { color: "#ffffff", fontWeight: "bold" },
+                                }}
+                            >
+                                <TableCell>Fature ID</TableCell>
+                                <TableCell>Patient</TableCell>
+                                <TableCell>Service</TableCell>
+                                <TableCell>Date</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Amount</TableCell>
+                                <TableCell>Actions</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHead>
+                        <TableBody>
+                            {filteredPayments.map((payment) => (
+                                <TableRow
+                                    key={payment.id}
+                                    sx={{
+                                        "&:hover": {
+                                            backgroundColor: "#e8f5e9",
+                                        },
+                                    }}
+                                >
+                                    <TableCell>{payment.id}</TableCell>
+                                    <TableCell>{payment.pacientId}</TableCell>
+                                    <TableCell>{payment.sherbimiId}</TableCell>
+                                    <TableCell>
+                                        {moment(payment.data).format("MMM DD, YYYY")}
+                                    </TableCell>
+                                    <TableCell>
+                                        {payment.paguar ? (
+                                            <Typography color="green">Paid</Typography>
+                                        ) : (
+                                            <Typography color="orange">Pending</Typography>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>${payment.shuma.toFixed(2)}</TableCell>
+                                    <TableCell>
+                                        <IconButton
+                                            color="success"
+                                            onClick={() => openEditDialogHandler(payment)}
+                                        >
+                                            <Edit />
+                                        </IconButton>
+                                        <IconButton
+                                            color="error"
+                                            onClick={() => handleDeleteFature(payment.id)}
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </Paper>
+
+                {/* Add/Edit Dialog */}
+                <Dialog
+                    open={openAddDialog || openEditDialog}
+                    onClose={() => {
+                        setOpenAddDialog(false);
+                        setOpenEditDialog(false);
+                    }}
+                >
+                    <DialogTitle>
+                        {isEditMode ? "Edit Fature" : "Add New Fature"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            label="Fature ID"
+                            value={fatureForm.id}
+                            onChange={(e) =>
+                                setFatureForm({ ...fatureForm, id: e.target.value })
+                            }
+                            fullWidth
+                            disabled={isEditMode}
+                            margin="normal"
+                        />
+                        <TextField
+                            label="Patient ID"
+                            value={fatureForm.pacientId}
+                            onChange={(e) =>
+                                setFatureForm({ ...fatureForm, pacientId: e.target.value })
+                            }
+                            fullWidth
+                            margin="normal"
+                        />
+                        <TextField
+                            label="Service ID"
+                            value={fatureForm.sherbimiId}
+                            onChange={(e) =>
+                                setFatureForm({ ...fatureForm, sherbimiId: e.target.value })
+                            }
+                            fullWidth
+                            margin="normal"
+                        />
+                        <TextField
+                            type="number"
+                            label="Amount"
+                            value={fatureForm.shuma}
+                            onChange={(e) =>
+                                setFatureForm({ ...fatureForm, shuma: e.target.value })
+                            }
+                            fullWidth
+                            margin="normal"
+                        />
+                        <TextField
+                            type="date"
+                            label="Date"
+                            value={fatureForm.data}
+                            onChange={(e) =>
+                                setFatureForm({ ...fatureForm, data: e.target.value })
+                            }
+                            fullWidth
+                            margin="normal"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={fatureForm.paguar}
+                                    onChange={(e) =>
+                                        setFatureForm({ ...fatureForm, paguar: e.target.checked })
+                                    }
+                                />
+                            }
+                            label="Paid"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={() => {
+                                setOpenAddDialog(false);
+                                setOpenEditDialog(false);
+                            }}
+                            color="secondary"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={isEditMode ? handleEditFature : handleAddFature}
+                            color="success"
+                        >
+                            {isEditMode ? "Update" : "Add"}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Box>
         </Box>
     );

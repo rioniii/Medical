@@ -1,10 +1,10 @@
-import React from "react";
+/*import React from "react";
 import "./HealthyLifeSection.css";
 
 const HealthyLifeSection = () => {
     return (
         <div className="healthy-life-container">
-            {/* Left Image Section */}
+            {*//* Left Image Section *//*}
             <div className="image-section">
                 <div className="image-wrapper">
                     <img
@@ -22,7 +22,7 @@ const HealthyLifeSection = () => {
                 </div>
             </div>
 
-            {/* Right Text Section */}
+            {*//* Right Text Section *//*}
             <div className="text-section">
                 <h1 className="main-heading">Create A Healthy Life You Love!</h1>
                 <p className="subtitle">Almost before we knew it, we had left the ground.</p>
@@ -45,3 +45,4 @@ const HealthyLifeSection = () => {
 };
 
 export default HealthyLifeSection;
+*/

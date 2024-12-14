@@ -55,8 +55,8 @@ const Sidebar = () => {
                 </li>
                 
                 <li>
-                    <Link to="/Services" className="sidebar-link">
-                        <FaClinicMedical className="sidebar-icon" /> Services
+                    <Link to="/Records" className="sidebar-link">
+                        <FaClinicMedical className="sidebar-icon" /> Records
                     </Link>
                 </li>
                 <li>
@@ -100,7 +100,7 @@ const Sidebar = ({ userType }) => {
             { path: "/ManageUsers", icon: <FaUsers />, label: "Manage Users" },
             { path: "/Doctors", icon: <FaBullhorn />, label: "Announcements" },
             { path: "/Payments", icon: <FaMoneyCheckAlt />, label: "Payments" },
-            { path: "/Services", icon: <FaClinicMedical />, label: "Services" },
+            { path: "/Records", icon: <FaClinicMedical />, label: "Records" },
             { path: "/Settings", icon: <FaCog />, label: "Settings" },
         ]
         : [
@@ -110,7 +110,7 @@ const Sidebar = ({ userType }) => {
             { path: "/Records", icon: <FaFileAlt />, label: "Medical Records" },
             { path: "/Room", icon: <FaBed />, label: "Room" },
             { path: "/Payments", icon: <FaMoneyCheckAlt />, label: "Payments" },
-            { path: "/Services", icon: <FaClinicMedical />, label: "Services" },
+            { path: "/Records", icon: <FaClinicMedical />, label: "Records" },
             { path: "/Invoice", icon: <FaFileInvoiceDollar />, label: "Invoice" },
         ];
 
