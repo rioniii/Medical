@@ -73,12 +73,12 @@ const LoginForm = () => {
             >
                 <MDBCard
                     style={{
-                        width: '70rem',  // Increase the width of the card
+                        minWidth:'26rem',  // Increase the width of the card
                         borderRadius: '15px',
                         boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
                     }}
                 >
-                    <MDBCardBody className="px-5 py-4">
+                    <MDBCardBody className="px-5 py-4" >
                         <h2 className="text-uppercase text-center mb-3">Log In</h2>
                         <form onSubmit={handleLogin}>
                             <MDBInput

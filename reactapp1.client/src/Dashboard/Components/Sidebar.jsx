@@ -32,7 +32,6 @@ const Sidebar = ({ userType }) => {
             { path: "/Dashboard", icon: <FaHome />, label: "Dashboard" },
             { path: "/Pacientet", icon: <FaUserAlt />, label: "Patients" },
             { path: "/Appointments", icon: <FaCalendarAlt />, label: "Appointments" },
-            { path: "/Records", icon: <FaFileAlt />, label: "Medical Records" },
             { path: "/Room", icon: <FaBed />, label: "Room" },
             { path: "/Payments", icon: <FaMoneyCheckAlt />, label: "Payments" },
             { path: "/Records", icon: <FaClinicMedical />, label: "Records" },
