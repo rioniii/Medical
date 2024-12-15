@@ -152,6 +152,11 @@ const Invoice = () => {
         doc.save(`Invoice_${invoiceDetails.patient.name}_${invoiceDetails.patient.surname}.pdf`);
     };
 
+    const validateEmail = (email) => {
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return regex.test(email);
+    };
+
     const handleSendEmail = async (recipientEmail, invoiceDetails) => {
         // Extract diagnosis and conclusion from historiku or records
         const diagnoza = invoiceDetails.historiku[0]?.diagnoza || "N/A";
@@ -197,8 +202,11 @@ const Invoice = () => {
                 console.log("Email sent successfully!");
             })
             .catch((error) => {
-                console.error("Error sending email:", error);
-                toast.error("Could not send email. Please try again later.");
+                if (!(validateEmail(recipientEmail))) {
+                    alert("Please provide a valid email", error);
+                }
+               
+
             });
 
 

@@ -11,7 +11,7 @@ import { faYoutube, faFacebook, faTwitter, faInstagram } from "@fortawesome/free
 function Footer() {
     return (
         <footer>
-            <div className="container">
+            <div className="container" style={{ backgroundColor: '#242424' }}>
                 <div className="row">
 
                     <div className="col-lg-4 col-md-6">

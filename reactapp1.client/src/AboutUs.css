@@ -1,12 +1,12 @@
 /* About Us Styles */
-.aboutus-container {
+/*.aboutus-container {
     color: #fff;
     font-family: 'Arial', sans-serif;
     line-height: 1.8;
-}
+}*/
 
 /* Hero Section */
-.aboutus-hero {
+/*.aboutus-hero {
     position: relative;
     text-align: center;
     background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('./assets/background.jpg') no-repeat center center/cover;
@@ -35,16 +35,16 @@
     max-height: 400px;
     margin-top: 20px;
     border-radius: 10px;
-}
+}*/
 
 /* Content Section */
-.aboutus-content {
+/*.aboutus-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 40px 20px;
-    background-color: #111; /* Matches Ballina */
-}
+    background-color: #111;*/ /* Matches Ballina */
+/*}
 
 .content-block {
     max-width: 800px;
@@ -89,10 +89,10 @@
     height: auto;
     border-radius: 10px;
     margin: 20px 0;
-}
+}*/
 
 /* CTA Section */
-.aboutus-cta {
+/*.aboutus-cta {
     text-align: center;
     padding: 40px 20px;
     background-color: #0894d1;
@@ -132,4 +132,89 @@
     .aboutus-content h2 {
         font-size: 1.5rem;
     }
+}*/
+
+
+.about-us {
+    font-family: Arial, sans-serif;
+    background-color: mintcream;
+    color: #568203;
 }
+
+.about-header {
+    background-color: #5ab650;
+    color: white;
+    text-align: center;
+    padding: 2px;
+}
+
+    .about-header h1 {
+        margin: 0;
+        font-size: 3em;
+    }
+
+    .about-header p {
+        font-size: 1.2em;
+        margin-top: 10px;
+    }
+
+.mission-vision {
+    padding: 40px 0;
+}
+
+    .mission-vision h2 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+    }
+
+    .mission-vision p {
+        font-size: 1.1em;
+        line-height: 1.5;
+    }
+
+.values {
+    background-color: mintcream;
+    padding: 20px 0;
+}
+
+    .values h2 {
+        font-size: 2.5em;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .values .col-md-4 {
+        margin-bottom: 20px;
+    }
+
+.our-team {
+    padding: 40px 0;
+    background-color: mintcream;
+}
+
+    .our-team .team-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+.facilities {
+    padding: 40px 0;
+}
+
+    .facilities img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+.footer {
+    background-color: #333;
+    color: white;
+    padding: 20px 0;
+}
+
+    .footer p {
+        margin: 0;
+        font-size: 1.1em;
+    }

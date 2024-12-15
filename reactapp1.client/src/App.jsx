@@ -22,6 +22,7 @@ import Invoice from './Dashboard/Components/Invoice';
 import DashboardAdmin from './Dashboard/Components/DashboardAdmin';
 import ManageUsers from './Dashboard/Components/ManageUsers';
 import Announcements from './Dashboard/Components/Announcements';
+import OurDoctors from './OurDoctors';
 
 // Lazy loading components
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
@@ -87,6 +88,7 @@ class App extends Component {
                         <Route path="/RegisterForm" element={<ErrorBoundary><RegisterForm /></ErrorBoundary>} />
                         <Route path="/LoginForm" element={<ErrorBoundary><LoginForm /></ErrorBoundary>} />
                         <Route path="/AboutUs" element={<ErrorBoundary><AboutUs /></ErrorBoundary>} />
+                        <Route path="/OurDoctors" element={<ErrorBoundary><OurDoctors /></ErrorBoundary>} />
                         <Route path="/Contact" element={<ErrorBoundary><Contact /></ErrorBoundary>} />
 
 
@@ -152,6 +154,15 @@ class App extends Component {
                             </ProtectedRoute>
 
                         } />
+                        <Route path="/Services" element={
+                            <ProtectedRoute roles={['Doctor']}>
+                                <ProtectedRoute>
+                                    <ErrorBoundary><Services /></ErrorBoundary>
+                                </ProtectedRoute>
+                            </ProtectedRoute>
+
+                        } /> 
+
                         <Route path="/Invoice" element={
                             <ProtectedRoute roles={['Doctor']}>
                                 <ProtectedRoute>
@@ -179,6 +190,7 @@ class App extends Component {
                             </ProtectedRoute>
                         } />
 
+                       
 
                     </Routes>
                     <Footer />

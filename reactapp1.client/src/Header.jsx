@@ -37,6 +37,7 @@ const Header = () => {
                         <Nav className="me-auto">
                             <Nav.Link as={NavLink} to="/" className="nav-item">Home</Nav.Link>
                             <Nav.Link as={NavLink} to="/AboutUs" className="nav-item">About</Nav.Link>
+                            <Nav.Link as={NavLink} to="/OurDoctors" className="nav-item">Our Doctors</Nav.Link>
                             <Nav.Link as={NavLink} to="/Contact" className="nav-item">Contact</Nav.Link>
 
                             {/* Only show Admin Dashboard link if the user is an Admin */}
