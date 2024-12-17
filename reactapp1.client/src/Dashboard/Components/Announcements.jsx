@@ -59,7 +59,7 @@ const AddAnnouncementForm = ({ onAddAnnouncement }) => {
             <Sidebar userType="admin" />  {/* Sidebar for Admin */}
 
             <form onSubmit={handleSubmit} className="form">
-                <h2>Add New Announcement</h2>
+                <h3>Add New Announcement</h3>
                 <div className="form-group">
                     <label>Title:</label>
                     <input
@@ -133,7 +133,6 @@ const AnnouncementList = () => {
 
     return (
         <div className="main-container">
-            <h2>Announcements</h2>
             <AddAnnouncementForm onAddAnnouncement={addAnnouncement} />
             <div className="cards-container">
                 {announcements.length > 0 ? (

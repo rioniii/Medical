@@ -99,7 +99,7 @@ const Sidebar = ({ userType }) => {
             { path: "/AdminDashboard", icon: <FaHome />, label: "Dashboard" },
             { path: "/ManageUsers", icon: <FaUsers />, label: "Manage Users" },
             { path: "/Announcements", icon: <FaBullhorn />, label: "Announcements" },
-            { path: "/Payments", icon: <FaMoneyCheckAlt />, label: "Payments" },
+            { path: "/PaymentAdmin", icon: <FaMoneyCheckAlt />, label: "Payments" },
             { path: "/Services", icon: <FaClinicMedical />, label: "Services" },
             { path: "/Settings", icon: <FaCog />, label: "Settings" },
         ]
