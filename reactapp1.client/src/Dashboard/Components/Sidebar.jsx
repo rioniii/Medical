@@ -25,7 +25,7 @@ const Sidebar = ({ userType }) => {
             { path: "/ManageUsers", icon: <FaUsers />, label: "Manage Users" },
             { path: "/Announcements", icon: <FaBullhorn />, label: "Announcements" },
             { path: "/PaymentAdmin", icon: <FaMoneyCheckAlt />, label: "Payments" },
-            { path: "/Services", icon: <FaClinicMedical />, label: "Services" },
+            { path: "/Doctors", icon: <FaClinicMedical />, label: "Doctors" },
             { path: "/Settings", icon: <FaCog />, label: "Settings" },
         ]
         : [
