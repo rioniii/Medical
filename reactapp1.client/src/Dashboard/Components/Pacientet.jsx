@@ -17,6 +17,7 @@ import { faTachometerAlt, faUser, faCalendar, faReceipt, faBriefcaseMedical, faC
 import { NavLink, useNavigate } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import DashboardStats from "./DashboardStats.jsx";
+import Invoice from './Invoice.jsx';
 
 const Pacientet = () => {
     const [show, setShow] = useState(false);
@@ -151,7 +152,9 @@ const Pacientet = () => {
             }
         }
     };
-
+    const goToInvoice = () => {
+        navigate('/Invoice');
+    }
     return (
         <>
             <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f5f6f7' }}>
@@ -200,7 +203,7 @@ const Pacientet = () => {
                                             onChange={(e) => setDitelindja(e.target.value)}
                                         />
                                     </Form.Group>
-                                    <Button variant="primary" onClick={handleAddPatient}>
+                                    <Button variant="success" onClick={handleAddPatient}>
                                         Add Patient
                                     </Button>
                                 </Form>
@@ -251,6 +254,7 @@ const Pacientet = () => {
                                         )}
                                     </tbody>
                                 </Table>
+                                <Button variant="outline-success" onClick={goToInvoice} >Go to Patients Invoices</Button>
                             </Col>
                         </Row>
                     </Container>

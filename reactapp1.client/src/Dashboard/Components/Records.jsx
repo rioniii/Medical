@@ -18,10 +18,10 @@ import { FaConciergeBell } from "react-icons/fa"; // Concierge Bell icon
 import { Delete, Edit } from "@mui/icons-material";
 import Sidebar from "./Sidebar"; // Sidebar included
 
-
-const Services = () => {
+const Records = () => {
     const [historiku, setHistoriku] = useState([]);
     const [newEntry, setNewEntry] = useState({
+        Id: "",
         MjekuId: "",
         PacientId: "",
         TerminiId: "", // Added TerminiId field
@@ -32,6 +32,9 @@ const Services = () => {
         Terapia: "",
         Perfundimi: "",
     });
+
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
 
     // Fetch the historical data
     useEffect(() => {
@@ -65,37 +68,41 @@ const Services = () => {
 
     // handleAdd function
     const handleAdd = async () => {
+        if (!newEntry.MjekuId || !newEntry.PacientId || !newEntry.TerminiId || !newEntry.Data) {
+            setMessage("All fields are required.");
+            return;
+        }
+
+        setLoading(true);
         try {
-            const formattedDate = formatDate(newEntry.data);  // Use formatDate to format the date
+            const formattedDate = formatDate(newEntry.Data);  // Use formatDate to format the date
 
             const newData = {
-                id: newEntry.id || "",
-                mjekuId: newEntry.mjekuId || "",
-                pacientId: newEntry.pacientId || "",
+                Id: newEntry.Id,
+                mjekuId: newEntry.MjekuId,
+                pacientId: newEntry.PacientId,
+                terminiId: newEntry.TerminiId,
                 data: formattedDate,  // Use formatted date
-                anamneza_Statusi: newEntry.anamneza_Statusi || "",
-                ekzaminimi: newEntry.ekzaminimi || "",
-                diagnoza: newEntry.diagnoza || "",
-                terapia: newEntry.terapia || "",
-                perfundimi: newEntry.perfundimi || "",
+                anamneza_Statusi: newEntry.Anamneza_Statusi || "",
+                ekzaminimi: newEntry.Ekzaminimi || "",
+                diagnoza: newEntry.Diagnoza || "",
+                terapia: newEntry.Terapia || "",
+                perfundimi: newEntry.Perfundimi || "",
             };
 
-            const response = await axios.post("https://localhost:7107/api/Historiku", newData);
+            console.log("Request Data:", newData); // Log the request data
 
+            const response = await axios.post("https://localhost:7107/api/Historiku", newData);
+            setMessage("Entry added successfully!");
             fetchHistoriku();
-            setNewEntry({});  // Clear form after successful submission
+            setNewEntry({}); // Clear form after successful submission
         } catch (error) {
-            console.error("Error adding entry:", error);
-            if (error.response && error.response.data) {
-                console.error("Validation errors: ", error.response.data.errors);
-            }
+            console.error("Error adding entry:", error.response?.data || error.message);
+            setMessage("Error adding entry. Please check the fields and try again.");
+        } finally {
+            setLoading(false);
         }
     };
-
-
-
-
-
 
     // Handle deleting an entry
     const handleDelete = async (id) => {
@@ -107,21 +114,57 @@ const Services = () => {
         }
     };
 
-    // Handle editing an entry
     const handleEdit = (id) => {
         const entryToEdit = historiku.find((entry) => entry.id === id);
         setNewEntry(entryToEdit); // Populate the form with the data to edit
     };
 
+    // Handle updating an existing entry
+    const handleUpdate = async () => {
+        if (!newEntry.MjekuId || !newEntry.PacientId || !newEntry.TerminiId || !newEntry.Data) {
+            setMessage("All fields are required.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const formattedDate = formatDate(newEntry.Data); // Use formatDate to format the date
+
+            const updatedData = {
+                Id: newEntry.Id,
+                mjekuId: newEntry.MjekuId,
+                pacientId: newEntry.PacientId,
+                terminiId: newEntry.TerminiId,
+                data: formattedDate, // Use formatted date
+                anamneza_Statusi: newEntry.Anamneza_Statusi || "",
+                ekzaminimi: newEntry.Ekzaminimi || "",
+                diagnoza: newEntry.Diagnoza || "",
+                terapia: newEntry.Terapia || "",
+                perfundimi: newEntry.Perfundimi || "",
+            };
+
+            console.log("Updated Request Data:", updatedData); // Log the request data
+
+            const response = await axios.put(`https://localhost:7107/api/Historiku/${newEntry.Id}`, updatedData);
+            setMessage("Entry updated successfully!");
+            fetchHistoriku();
+            setNewEntry({}); // Clear form after successful submission
+        } catch (error) {
+            console.error("Error updating entry:", error.response?.data || error.message);
+            setMessage("Error updating entry. Please check the fields and try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
-
             <Sidebar userType="doctor" />
-
 
             <Box sx={{ flex: 1, padding: 4 }}>
                 <Typography variant="h4" fontWeight="bold" gutterBottom>
-                    Patient History 
+                    Patient History
                 </Typography>
 
                 {/* Add New Entry Form */}
@@ -129,6 +172,16 @@ const Services = () => {
                     <Typography variant="h6" gutterBottom>
                         Add New Entry
                     </Typography>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="ID"
+                            name="Id"
+                            value={newEntry.PacientId || ""}
+                            onChange={handleChange}
+                            fullWidth
+                        />
+                    </Grid>
+                    <br></br>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -213,10 +266,16 @@ const Services = () => {
                                 fullWidth
                             />
                         </Grid>
-                    </Grid><br></br>
-                    <Button variant="contained" color="primary" onClick={handleAdd}>
-                        Add Entry
+                    </Grid><br />
+                    <Button
+                        variant="contained"
+                        color="success"
+                        onClick={handleAdd}
+                        disabled={loading}
+                    >
+                        {loading ? "Adding..." : "Add Entry"}
                     </Button>
+                    {message && <Typography color="error">{message}</Typography>}
                 </Paper>
 
                 {/* History Table */}
@@ -224,9 +283,10 @@ const Services = () => {
                     <Table>
                         <TableHead>
                             <TableRow>
+                                <TableCell>Id</TableCell>
                                 <TableCell>Mjeku ID</TableCell>
                                 <TableCell>Pacient ID</TableCell>
-                                <TableCell>Termini ID</TableCell> {/* Display Termini ID */}
+                                <TableCell>Termini ID</TableCell>
                                 <TableCell>Date</TableCell>
                                 <TableCell>Anamneza Status</TableCell>
                                 <TableCell>Examination</TableCell>
@@ -239,21 +299,22 @@ const Services = () => {
                         <TableBody>
                             {historiku.map((entry) => (
                                 <TableRow key={entry.id}>
+                                    <TableCell>{entry.Id}</TableCell>
                                     <TableCell>{entry.mjekuId}</TableCell>
                                     <TableCell>{entry.pacientId}</TableCell>
-                                    <TableCell>{entry.terminiId}</TableCell> {/* Display Termini ID */}
-                                    <TableCell>{new Date(entry.data).toLocaleDateString()}</TableCell>
+                                    <TableCell>{entry.terminiId}</TableCell>
+                                    <TableCell>{entry.data}</TableCell>
                                     <TableCell>{entry.anamneza_Statusi}</TableCell>
                                     <TableCell>{entry.ekzaminimi}</TableCell>
                                     <TableCell>{entry.diagnoza}</TableCell>
                                     <TableCell>{entry.terapia}</TableCell>
                                     <TableCell>{entry.perfundimi}</TableCell>
                                     <TableCell>
-                                        <IconButton onClick={() => handleEdit(entry.id)} color="primary">
+                                        <IconButton style={{ color: 'blue' }} onClick={() => handleEdit(entry.id)} > 
                                             <Edit />
                                         </IconButton>
-                                        <IconButton onClick={() => handleDelete(entry.id)} color="error">
-                                            <Delete />
+                                        <IconButton style={{ color:'red' }} onClick={() => handleDelete(entry.id)}>
+                                            <Delete  />
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
@@ -266,4 +327,4 @@ const Services = () => {
     );
 };
 
-export default Services;
+export default Records;

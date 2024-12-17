@@ -77,6 +77,13 @@ const Appointments = () => {
 
     const handleEventClick = (appointment) => {
         setSelectedAppointment(appointment);
+        setNewAppointment({
+            pacientId: appointment.pacientId,
+            name: appointment.title.split(" ")[0],  // First name
+            surname: appointment.title.split(" ")[1] || "",  // Last name
+            dataTerminit: moment(appointment.start).format("YYYY-MM-DDTHH:mm:ss"),
+            statusi: appointment.status,
+        });
         setModalOpen(true);
     };
 
@@ -97,12 +104,12 @@ const Appointments = () => {
         try {
             const updatedData = {
                 id: selectedAppointment.id,
-                pacientId: selectedAppointment.pacientId,
-                dataTerminit: moment(selectedAppointment.start).format("YYYY-MM-DDTHH:mm:ss"),
-                statusi: selectedAppointment.status,
-                name: selectedAppointment.title.split(" ")[0], // First name
-                surname: selectedAppointment.title.split(" ")[1] || "", // Last name
-                doktorId: doctorId // Explicitly set the Doctor ID as "1D"
+                pacientId: newAppointment.pacientId,
+                dataTerminit: moment(newAppointment.dataTerminit).format("YYYY-MM-DDTHH:mm:ss"),
+                statusi: newAppointment.statusi,
+                name: newAppointment.name,
+                surname: newAppointment.surname,
+                doktorId: doctorId,
             };
 
             await axios.put(`https://localhost:7107/api/Termini/${selectedAppointment.id}`, updatedData);
@@ -149,8 +156,6 @@ const Appointments = () => {
         }
     };
 
-
-
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f5f6f7" }}>
             <Sidebar userType="doctor" />
@@ -176,7 +181,7 @@ const Appointments = () => {
                     <DialogContent>
                         <TextField
                             label="Patient Name"
-                            value={selectedAppointment ? selectedAppointment.title : newAppointment.name}
+                            value={newAppointment.name}
                             onChange={(e) =>
                                 setNewAppointment({ ...newAppointment, name: e.target.value })
                             }
@@ -186,7 +191,7 @@ const Appointments = () => {
                         />
                         <TextField
                             label="Patient Surname"
-                            value={selectedAppointment ? selectedAppointment.surname : newAppointment.surname}
+                            value={newAppointment.surname}
                             onChange={(e) =>
                                 setNewAppointment({ ...newAppointment, surname: e.target.value })
                             }
@@ -196,7 +201,7 @@ const Appointments = () => {
                         />
                         <TextField
                             label="Patient ID"
-                            value={selectedAppointment ? selectedAppointment.pacientId : newAppointment.pacientId}
+                            value={newAppointment.pacientId}
                             onChange={(e) =>
                                 setNewAppointment({ ...newAppointment, pacientId: e.target.value })
                             }
@@ -206,7 +211,7 @@ const Appointments = () => {
                         <TextField
                             label="Appointment Date"
                             type="datetime-local"
-                            value={selectedAppointment ? moment(selectedAppointment.start).format("YYYY-MM-DDTHH:mm") : newAppointment.dataTerminit}
+                            value={newAppointment.dataTerminit}
                             onChange={(e) =>
                                 setNewAppointment({ ...newAppointment, dataTerminit: e.target.value })
                             }
@@ -235,8 +240,10 @@ const Appointments = () => {
                             >
                                 <MenuItem value="">Status..</MenuItem>
                                 <MenuItem value="Pending">Pending</MenuItem>
-                                <MenuItem value="Approved">Approved</MenuItem>
+                                <MenuItem value="Scheduled">Scheduled</MenuItem>
                                 <MenuItem value="Cancelled">Cancelled</MenuItem>
+                                <MenuItem value="Finished">Finished</MenuItem>
+
                             </Select>
                         </FormControl>
                     </DialogContent>
@@ -280,8 +287,8 @@ const Appointments = () => {
                         position: "fixed",
                         bottom: 16,
                         right: 16,
-                        backgroundColor: "#1976d2",
-                        color: "#fff",
+                        backgroundColor: "#4caf50",
+                        color: "white",
                     }}
                     onClick={() => setModalOpen(true)}
                 >

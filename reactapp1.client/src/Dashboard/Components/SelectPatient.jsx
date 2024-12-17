@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+/*import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Invoice from './Invoice'; // The Invoice component you previously created
 
 const SelectPatient = () => {
     const [patients, setPatients] = useState([]);
-    const [selectedPatientId, setSelectedPatientId] = useState(null);
+    const [selectedId, setSelectedId] = useState(null);
 
     useEffect(() => {
         // Fetch the list of patients from the API
@@ -20,8 +20,8 @@ const SelectPatient = () => {
         fetchPatients();
     }, []);
 
-    const handleSelectPatient = (patientId) => {
-        setSelectedPatientId(patientId);
+    const handleSelectPatient = (Id) => {
+        setSelectedId(Id);
     };
 
     return (
@@ -39,10 +39,10 @@ const SelectPatient = () => {
                 ))}
             </div>
 
-            {selectedPatientId && (
+            {selectedId && (
                 <div className="mt-5">
                     <h3>Invoice for Selected Patient</h3>
-                    <Invoice patientId={selectedPatientId} />
+                    <Invoice Id={selectedId} />
                 </div>
             )}
         </div>
@@ -50,3 +50,4 @@ const SelectPatient = () => {
 };
 
 export default SelectPatient;
+*/

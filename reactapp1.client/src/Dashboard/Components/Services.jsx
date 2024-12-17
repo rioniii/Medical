@@ -20,8 +20,8 @@ import {
 import { Edit, Delete } from "@mui/icons-material";
 import Sidebar from "./Sidebar";  // Assuming you have a Sidebar component
 
-const Services = () => {
-    const [services, setServices] = useState([]);
+const Records = () => {
+    const [Records, setRecords] = useState([]);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [editingService, setEditingService] = useState(null);
@@ -31,15 +31,15 @@ const Services = () => {
     const [newPrice, setNewPrice] = useState("");
 
     useEffect(() => {
-        fetchServices();
+        fetchRecords();
     }, []);
 
-    const fetchServices = async () => {
+    const fetchRecords = async () => {
         try {
             const response = await axios.get("https://localhost:7107/api/Sherbimi"); // Adjust the endpoint accordingly
-            setServices(response.data);
+            setRecords(response.data);
         } catch (error) {
-            console.error("Error fetching services:", error);
+            console.error("Error fetching Records:", error);
         }
     };
 
@@ -55,7 +55,7 @@ const Services = () => {
     const handleDelete = async (serviceId) => {
         try {
             await axios.delete(`https://localhost:7107/api/Sherbimi/${serviceId}`); // Adjust the endpoint
-            setServices(services.filter((service) => service.id !== serviceId));
+            setRecords(Records.filter((service) => service.id !== serviceId));
         } catch (error) {
             console.error("Error deleting service:", error);
         }
@@ -74,7 +74,7 @@ const Services = () => {
                 `https://localhost:7107/api/Sherbimi/${editingService.id}`,
                 updatedService
             );
-            setServices(services.map((service) =>
+            setRecords(Records.map((service) =>
                 service.id === editingService.id ? updatedService : service
             ));
             setOpenEditDialog(false);
@@ -93,7 +93,7 @@ const Services = () => {
 
         try {
             const response = await axios.post("https://localhost:7107/api/Sherbimi", newService); // Adjust the endpoint
-            setServices([...services, response.data]);
+            setRecords([...Records, response.data]);
             setOpenAddDialog(false);
 
             // Reset the fields after adding a service
@@ -114,7 +114,7 @@ const Services = () => {
 
                 <Box sx={{ padding: 4, backgroundColor: "#f4f6f8", minHeight: "100vh", width: "100%" }}>
                     <Typography variant="h4" fontWeight="bold" gutterBottom>
-                        Available Services
+                        Available Records
                     </Typography>
 
                     <Button
@@ -137,7 +137,7 @@ const Services = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {services.map((service) => (
+                                {Records.map((service) => (
                                     <TableRow key={service.id} sx={{ "&:nth-of-type(odd)": { backgroundColor: "#f9f9f9" } }}>
                                         <TableCell>{service.emri_Sherbimit}</TableCell>
                                         <TableCell>{service.pershkrimi}</TableCell>
@@ -250,4 +250,4 @@ const Services = () => {
     );
 };
 
-export default Services;
+export default Records;
