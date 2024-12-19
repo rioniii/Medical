@@ -25,14 +25,6 @@ function Register() {
     const [passwordMatchError, setPasswordMatchError] = useState('');
     const [emailTakenError, setEmailTakenError] = useState('');
 
-    const handleUsernameChange = (event) => setUsername(event.target.value);
-    const handleFullNameChange = (event) => setFullName(event.target.value);
-    const handleLastNameChange = (event) => setLastName(event.target.value);
-    const handleEmailChange = (event) => setEmail(event.target.value);
-    const handlePasswordChange = (event) => setPassword(event.target.value);
-    const handleConfirmPasswordChange = (event) => setConfirmPassword(event.target.value);
-    const handleDateOfBirthChange = (event) => setDateOfBirth(event.target.value);
-
     const handleRegister = async (event) => {
         event.preventDefault();
 
@@ -41,9 +33,16 @@ function Register() {
         setEmailTakenError('');
         setErrorMessage('');
 
+        // Check password strength
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{6,}$/;
+        if (!passwordRegex.test(password)) {
+            setPasswordMatchError('Password must be at least 6 characters long, contain one uppercase letter, and one special character.');
+            return;
+        }
+
         // Check if passwords match
         if (password !== confirmPassword) {
-            setPasswordMatchError('Passwords do not match');
+            setPasswordMatchError('Passwords do not match.');
             return;
         }
 
@@ -123,7 +122,7 @@ function Register() {
                                     id='form1'
                                     type='text'
                                     value={username}
-                                    onChange={handleUsernameChange}
+                                    onChange={(e) => setUsername(e.target.value)}
                                     required
                                     style={{ fontSize: '0.9rem' }}
                                 />
@@ -132,7 +131,7 @@ function Register() {
                                     id='form2'
                                     type='text'
                                     value={fullName}
-                                    onChange={handleFullNameChange}
+                                    onChange={(e) => setFullName(e.target.value)}
                                     required
                                     style={{ fontSize: '0.9rem' }}
                                 />
@@ -141,7 +140,7 @@ function Register() {
                                     id='form3'
                                     type='text'
                                     value={lastName}
-                                    onChange={handleLastNameChange}
+                                    onChange={(e) => setLastName(e.target.value)}
                                     required
                                     style={{ fontSize: '0.9rem' }}
                                 />
@@ -150,7 +149,7 @@ function Register() {
                                     id='form4'
                                     type='email'
                                     value={email}
-                                    onChange={handleEmailChange}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     required
                                     style={{ fontSize: '0.9rem' }}
                                 />
@@ -159,7 +158,7 @@ function Register() {
                                     id='form5'
                                     type='password'
                                     value={password}
-                                    onChange={handlePasswordChange}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     required
                                     style={{ fontSize: '0.9rem' }}
                                 />
@@ -168,7 +167,7 @@ function Register() {
                                     id='form6'
                                     type='password'
                                     value={confirmPassword}
-                                    onChange={handleConfirmPasswordChange}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
                                     required
                                     style={{ fontSize: '0.9rem' }}
                                 />
@@ -177,7 +176,7 @@ function Register() {
                                     id='form7'
                                     type='date'
                                     value={dateOfBirth}
-                                    onChange={handleDateOfBirthChange}
+                                    onChange={(e) => setDateOfBirth(e.target.value)}
                                     required
                                     style={{ fontSize: '0.9rem' }}
                                 />

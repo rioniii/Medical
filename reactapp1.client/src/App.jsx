@@ -25,6 +25,7 @@ import Announcements from './Dashboard/Components/Announcements';
 import OurDoctors from './OurDoctors';
 import PaymentAdmin from './Dashboard/Components/PaymentAdmin';
 import Doctors from './Dashboard/Components/Doctors';
+import Settings from './Dashboard/Components/Settings';
 
 // Lazy loading components
 const RegisterForm = React.lazy(() => import("./RegisterForm"));
@@ -201,7 +202,12 @@ class App extends Component {
                                 <ErrorBoundary><Doctors /></ErrorBoundary>
                             </ProtectedRoute>
                         } />
-                       
+                        <Route path="/Settings" element={
+                            <ProtectedRoute roles={['Administrator']}>
+                                <ErrorBoundary><Settings /></ErrorBoundary>
+                            </ProtectedRoute>
+                        } />
+
 
                     </Routes>
                     <Footer />
