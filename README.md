@@ -2,7 +2,7 @@
 
 **Ky projekt është punuar për projektin në Lab Kurs 1.**
 
-**TechStore** është një lloj e-Commerce, një Dyqan Online për pajisje Teknologjike.
+**Medical** është një sistem per menaxhimin e puneve te perditshme te stafit te spitalit.
 
 ---
 
@@ -23,7 +23,7 @@ Ky projekt është i punuar në:
 ---
 
 ## Profesorët
-- **Lavdim Menxhiqi** - can. PhD.
+- **Blerim Zylfiu** - can. PhD.
 ##
 Homepage 
 
