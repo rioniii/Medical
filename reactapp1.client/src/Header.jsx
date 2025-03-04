@@ -59,7 +59,7 @@ const Header = () => {
                                 </>
                             )}
                         </Nav>
-                        <Button variant="success" className="ms-2">Make an Appointment</Button>
+                        <Button variant="success" className="ms-2">We take care of your health</Button>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

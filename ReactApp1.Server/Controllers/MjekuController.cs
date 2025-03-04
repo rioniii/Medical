@@ -24,7 +24,7 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/Mjeku
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MjekuDTO>>> GetMjeket()
+        public async Task<ActionResult<IEnumerable<MjekuDTO>>> GetAllMjeket()
         {
             var mjeket = await _context.Mjeket
                 .Include(m => m.User)           // Include related User data
