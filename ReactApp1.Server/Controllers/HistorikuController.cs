@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
 using ReactApp1.Server.Data.Models;
 using ReactApp1.Server.DTOs;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,146 +14,171 @@ namespace ReactApp1.Server.Controllers
     public class HistorikuController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<HistorikuController> _logger;
 
-        public HistorikuController(ApplicationDbContext context)
+        public HistorikuController(ApplicationDbContext context, ILogger<HistorikuController> logger)
         {
             _context = context;
+            _logger = logger;
         }
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<HistorikuDTO>>> GetHistoriku()
-        {
-            var historiks = await _context.Historiks
-                .Include(h => h.Mjeku)  
-                .Include(h => h.Pacienti) 
-                .Select(h => new HistorikuDTO
-                {
-                    Id = h.Id,
-                    MjekuId = h.Mjeku.Id,
-                    PacientId = h.Pacienti.Id,
-                    Data = h.Data,
-                    Anamneza_Statusi = h.Anamneza_Statusi,
-                    Ekzaminimi = h.Ekzaminimi,
-                    Diagnoza = h.Diagnoza,
-                    Terapia = h.Terapia,
-                    Perfundimi = h.Perfundimi
-                })
-                .ToListAsync();
 
-            return Ok(historiks);
+        // GET: api/Historiku
+        [HttpGet]
+        public async Task<IActionResult> GetHistoriku()
+        {
+            try
+            {
+                var historikuList = await _context.Historiks
+                    .Include(h => h.Mjeku)
+                    .Include(h => h.Pacienti)
+                    .ToListAsync();
+
+                return Ok(historikuList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching Historiku data");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         // GET: api/Historiku/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<HistorikuDTO>> GetHistoriku(string id)
+        public async Task<IActionResult> GetHistoriku(string id)
         {
-            var historiku = await _context.Historiks
-                .Include(h => h.Mjeku)
-                .Include(h => h.Pacienti)
-                .Where(h => h.Id == id)
-                .Select(h => new HistorikuDTO
-                {
-                    Id = h.Id,
-                    MjekuId = h.Mjeku.Id,
-                    PacientId = h.Pacienti.Id,
-                    Data = h.Data,
-                    Anamneza_Statusi = h.Anamneza_Statusi,
-                    Ekzaminimi = h.Ekzaminimi,
-                    Diagnoza = h.Diagnoza,
-                    Terapia = h.Terapia,
-                    Perfundimi = h.Perfundimi
-                })
-                .FirstOrDefaultAsync();
-
-            if (historiku == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(historiku);
-        }
-
-        // PUT: api/Historiku/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutHistoriku(string id, HistorikuDTO historikuDto)
-        {
-            if (id != historikuDto.Id)
-            {
-                return BadRequest();
-            }
-
-            var existingHistoriku = await _context.Historiks.FindAsync(id);
-            if (existingHistoriku == null)
-            {
-                return NotFound();
-            }
-            existingHistoriku.Id = historikuDto.Id;
-            existingHistoriku.MjekuId = historikuDto.MjekuId;
-            existingHistoriku.PacientId = historikuDto.PacientId;
-            existingHistoriku.Data = historikuDto.Data;
-            existingHistoriku.Anamneza_Statusi = historikuDto.Anamneza_Statusi;
-            existingHistoriku.Ekzaminimi = historikuDto.Ekzaminimi;
-            existingHistoriku.Diagnoza = historikuDto.Diagnoza;
-            existingHistoriku.Terapia = historikuDto.Terapia;
-            existingHistoriku.Perfundimi = historikuDto.Perfundimi;
-
-            _context.Entry(existingHistoriku).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!HistorikuExists(id))
+                var historiku = await _context.Historiks
+                    .Include(h => h.Mjeku)
+                    .Include(h => h.Pacienti)
+                    .FirstOrDefaultAsync(h => h.Id == id);
+
+                if (historiku == null)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                return Ok(historiku);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching Historiku data");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         // POST: api/Historiku
         [HttpPost]
-        public async Task<ActionResult<Historiku>> PostHistoriku(HistorikuDTO historikuDto)
+        public async Task<IActionResult> PostHistoriku(HistorikuDTO historikuDTO)
         {
-            var historiku = new Historiku
+            try
             {
-                Id = historikuDto.Id,
-                MjekuId = historikuDto.MjekuId,
-                PacientId = historikuDto.PacientId,
-                Data = historikuDto.Data,
-                Anamneza_Statusi = historikuDto.Anamneza_Statusi,
-                Ekzaminimi = historikuDto.Ekzaminimi,
-                Diagnoza = historikuDto.Diagnoza,
-                Terapia = historikuDto.Terapia,
-                Perfundimi = historikuDto.Perfundimi
-            };
+                // Validation checks for MjekuId and PacientId
+                if (string.IsNullOrEmpty(historikuDTO.MjekuId) || string.IsNullOrEmpty(historikuDTO.PacientId))
+                {
+                    return BadRequest("MjekuId and PacientId cannot be null or empty.");
+                }
 
-            _context.Historiks.Add(historiku);
-            await _context.SaveChangesAsync();
+                // Check if the Mjeku (Doctor) exists in the Mjeket table
+                var mjekuExists = await _context.Mjeket.AnyAsync(m => m.Id == historikuDTO.MjekuId);
 
-            return CreatedAtAction(nameof(GetHistoriku), new { id = historiku.Id }, historiku);
+                // Check if the Pacienti (Patient) exists in the Pacientet table
+                var pacientExists = await _context.Pacientet.AnyAsync(p => p.Id == historikuDTO.PacientId);
+
+                if (!mjekuExists || !pacientExists)
+                {
+                    return BadRequest("Mjeku or Pacient does not exist.");
+                }
+
+                // Create a new Historiku entity and map the data from HistorikuDTO
+                var historiku = new Historiku
+                {
+                    Id = Guid.NewGuid().ToString(),  // Generate new GUID for the Id
+                    MjekuId = historikuDTO.MjekuId,
+                    PacientId = historikuDTO.PacientId,
+                    Data = historikuDTO.Data,
+                    Anamneza_Statusi = historikuDTO.Anamneza_Statusi,
+                    Ekzaminimi = historikuDTO.Ekzaminimi,
+                    Diagnoza = historikuDTO.Diagnoza,
+                    Terapia = historikuDTO.Terapia,
+                    Perfundimi = historikuDTO.Perfundimi
+                };
+
+                // Add the new Historiku entity to the database
+                _context.Historiks.Add(historiku);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetHistoriku), new { id = historiku.Id }, historiku);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding Historiku");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        // PUT: api/Historiku/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutHistoriku(string id, HistorikuDTO historikuDTO)
+        {
+            try
+            {
+                if (id != historikuDTO.Id)
+                {
+                    return BadRequest("ID mismatch");
+                }
+
+                var historiku = await _context.Historiks.FindAsync(id);
+
+                if (historiku == null)
+                {
+                    return NotFound();
+                }
+
+                // Map updated fields from HistorikuDTO
+                historiku.MjekuId = historikuDTO.MjekuId;
+                historiku.PacientId = historikuDTO.PacientId;
+                historiku.Data = historikuDTO.Data;
+                historiku.Anamneza_Statusi = historikuDTO.Anamneza_Statusi;
+                historiku.Ekzaminimi = historikuDTO.Ekzaminimi;
+                historiku.Diagnoza = historikuDTO.Diagnoza;
+                historiku.Terapia = historikuDTO.Terapia;
+                historiku.Perfundimi = historikuDTO.Perfundimi;
+
+                _context.Entry(historiku).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating Historiku");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         // DELETE: api/Historiku/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteHistoriku(string id)
         {
-            var historiku = await _context.Historiks.FindAsync(id);
-            if (historiku == null)
+            try
             {
-                return NotFound();
+                var historiku = await _context.Historiks.FindAsync(id);
+                if (historiku == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Historiks.Remove(historiku);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
-
-            _context.Historiks.Remove(historiku);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while deleting Historiku");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         private bool HistorikuExists(string id)

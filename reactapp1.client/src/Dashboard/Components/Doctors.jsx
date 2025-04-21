@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Form, Modal } from "react-bootstrap";
-import Sidebar from "./Sidebar"; // Importo Sidebar-in
+import { Table, Form, Modal } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Sidebar from "./Sidebar";
+import { IconButton } from "@mui/material";
+import { Edit, Delete } from "@mui/icons-material";
 
 const Doctors = () => {
     const [mjeket, setMjeket] = useState([]);
@@ -82,26 +85,26 @@ const Doctors = () => {
                                 <td>{mjeku.specializimi}</td>
                                 <td>{mjeku.numriLicences}</td>
                                 <td>
-                                    <Button
-                                        variant="warning"
-                                        className="me-2"
+                                    <IconButton
+                                        color="primary"
                                         onClick={() => openModal(mjeku)}
+                                        sx={{ mr: 1 }}
                                     >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="danger"
+                                        <Edit />
+                                    </IconButton>
+                                    <IconButton
+                                        color="error"
                                         onClick={() => deleteMjeku(mjeku.id)}
                                     >
-                                        Delete
-                                    </Button>
+                                        <Delete />
+                                    </IconButton>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </Table>
 
-                {/* Modal për Create/Update */}
+                {/* Modal for Create/Update */}
                 <Modal show={showModal} onHide={() => setShowModal(false)}>
                     <Modal.Header closeButton>
                         <Modal.Title>{isEdit ? "Update Doctor" : "Add New Doctor"}</Modal.Title>

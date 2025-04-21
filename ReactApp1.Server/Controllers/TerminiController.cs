@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data.Models;
 using ReactApp1.Server.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,15 +18,16 @@ namespace ReactApp1.Server.Controllers
         public TerminiController(ApplicationDbContext context)
         {
             _context = context;
+
+
+
         }
 
         // GET: api/Termini
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TerminiDTO>>> GetTerminet()
         {
-            var terminet = await _context.Terminet
-                .Include(t => t.Mjeku)
-                .Include(t => t.Pacienti)
+            return await _context.Terminet
                 .Select(t => new TerminiDTO
                 {
                     Id = t.Id,
@@ -36,25 +37,20 @@ namespace ReactApp1.Server.Controllers
                     Statusi = t.Statusi
                 })
                 .ToListAsync();
-
-            return Ok(terminet);
         }
 
         // GET: api/Termini/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TerminiDTO>> GetTermini(string id)
         {
-            var termini = await _context.Terminet
-                .Include(t => t.Mjeku)
-                .Include(t => t.Pacienti)
-                .FirstOrDefaultAsync(t => t.Id.ToString() == id);
+            var termini = await _context.Terminet.FindAsync(id);
 
             if (termini == null)
             {
                 return NotFound();
             }
 
-            var terminiDto = new TerminiDTO
+            return new TerminiDTO
             {
                 Id = termini.Id,
                 DoktorId = termini.DoktorId,
@@ -62,71 +58,75 @@ namespace ReactApp1.Server.Controllers
                 DataTerminit = termini.DataTerminit,
                 Statusi = termini.Statusi
             };
-
-            return Ok(terminiDto);
         }
 
-        // PUT: api/Termini/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTermini(string id, TerminiDTO terminiDto)
+        // GET: api/Termini/byPacient/{pacientId}
+        [HttpGet("byPacient/{pacientId}")]
+        public async Task<ActionResult<IEnumerable<TerminiDTO>>> GetTerminetByPacient(string pacientId)
         {
-            if (id != terminiDto.Id)
-            {
-                return BadRequest();
-            }
-
-            var termini = await _context.Terminet.FindAsync(id);
-
-            if (termini == null)
-            {
-                return NotFound();
-            }
-            termini.Id = terminiDto.Id;
-            //termini.DoktorId = terminiDto.DoktorId;
-            termini.PacientId = terminiDto.PacientId;
-            termini.DataTerminit = terminiDto.DataTerminit;
-            termini.Statusi = terminiDto.Statusi;
-
-            _context.Entry(termini).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TerminiExists(id))
+            return await _context.Terminet
+                .Where(t => t.PacientId == pacientId)
+                .Select(t => new TerminiDTO
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                    Id = t.Id,
+                    DoktorId = t.DoktorId,
+                    PacientId = t.PacientId,
+                    DataTerminit = t.DataTerminit,
+                    Statusi = t.Statusi
+                })
+                .ToListAsync();
+        }
 
-            return NoContent();
+        // GET: api/Termini/byDoctor/{doctorId}
+        [HttpGet("byDoctor/{doctorId}")]
+        public async Task<ActionResult<IEnumerable<TerminiDTO>>> GetTerminetByDoctor(string doctorId)
+        {
+            return await _context.Terminet
+                .Where(t => t.DoktorId == doctorId)
+                .Select(t => new TerminiDTO
+                {
+                    Id = t.Id,
+                    DoktorId = t.DoktorId,
+                    PacientId = t.PacientId,
+                    DataTerminit = t.DataTerminit,
+                    Statusi = t.Statusi
+                })
+                .ToListAsync();
         }
 
         // POST: api/Termini
         [HttpPost]
-        public async Task<ActionResult<TerminiDTO>> PostTermini(TerminiDTO terminiDto)
+        public async Task<ActionResult<TerminiDTO>> PostTermini([FromBody] TerminiDTO terminiDto)
         {
-            var termini = new Termini
+            try
             {
-                Id = terminiDto.Id,
-                DoktorId = terminiDto.DoktorId,
-                PacientId = terminiDto.PacientId,
-                DataTerminit = terminiDto.DataTerminit,
-                Statusi = terminiDto.Statusi
-            };
+                if (string.IsNullOrEmpty(terminiDto.PacientId))
+                    return BadRequest("Pacienti është i detyrueshëm");
 
-            _context.Terminet.Add(termini);
-            await _context.SaveChangesAsync();
+                if (terminiDto.DataTerminit == default)
+                    return BadRequest("Data e terminit është e detyrueshme");
 
-            terminiDto.Id = termini.Id.ToString();
+                // Log the PacientId to the console
+                Console.WriteLine($"Adding appointment for PacientId: {terminiDto.PacientId}");
 
-            return CreatedAtAction(nameof(GetTermini), new { id = termini.Id }, terminiDto);
+                var termini = new Termini
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    DoktorId = terminiDto.DoktorId,
+                    PacientId = terminiDto.PacientId,
+                    DataTerminit = terminiDto.DataTerminit,
+                    Statusi = terminiDto.Statusi ?? "I planifikuar"
+                };
+
+                _context.Terminet.Add(termini);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetTermini), new { id = termini.Id }, terminiDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Gabim në server: {ex.Message}");
+            }
         }
 
         // DELETE: api/Termini/5
@@ -145,39 +145,51 @@ namespace ReactApp1.Server.Controllers
             return NoContent();
         }
 
-
-        [HttpGet("ShowAppointments-OfDoctor/")]
-        public async Task<ActionResult<IEnumerable<TerminiDTO>>> GetTermineByDoctor()
-        {
-            string doctorId = "1D";
-            var termine = await _context.Terminet
-                .Include(t => t.Pacienti) // Include the patient entity
-                .Where(t => t.DoktorId == doctorId) // Filter by doctor ID
-                .Select(t => new TerminiDTO
-                {
-                    Id = t.Id,
-                    PacientId = t.PacientId,
-                    Name = t.Pacienti.Name,       
-                    Surname = t.Pacienti.Surname,  
-                    DoktorId = t.DoktorId,
-                    DataTerminit = t.DataTerminit,
-                    Statusi = t.Statusi
-                })
-                .ToListAsync();
-
-            if (termine == null || !termine.Any())
-            {
-                return NotFound($"No appointments found for doctor with ID {doctorId}.");
-            }
-
-            return Ok(termine);
-        }
-
-
-
         private bool TerminiExists(string id)
         {
-            return _context.Terminet.Any(e => e.Id.Equals(id));
+            return _context.Terminet.Any(e => e.Id == id);
+        }
+        // PUT: api/Termini/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutTermini(string id, [FromBody] TerminiDTO terminiDto)
+        {
+            if (id != terminiDto.Id)
+            {
+                return BadRequest("ID mismatch");
+            }
+
+            var termini = await _context.Terminet.FindAsync(id);
+            if (termini == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                termini.DoktorId = terminiDto.DoktorId;
+                termini.PacientId = terminiDto.PacientId;
+                termini.DataTerminit = terminiDto.DataTerminit;
+                termini.Statusi = terminiDto.Statusi;
+
+                _context.Entry(termini).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!TerminiExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

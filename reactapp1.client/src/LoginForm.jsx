@@ -3,7 +3,6 @@ import { MDBBtn, MDBCard, MDBCardBody, MDBInput } from 'mdb-react-ui-kit';
 import { NavLink, useNavigate } from 'react-router-dom';
 import contactImage from './assets/R.jpeg';
 
-
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -17,6 +16,7 @@ const LoginForm = () => {
         const userData = { email, password };
 
         try {
+            // Update the URL to the correct endpoint
             const response = await fetch('https://localhost:7107/api/User/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -42,7 +42,7 @@ const LoginForm = () => {
             setSuccessMessage(data.message || 'Login successful!');
 
             const roles = data.roles || [];
-            const redirectPath = roles.includes('Doctor') ? '/' : '/';
+            const redirectPath = roles.includes('Doctor') ? '/' : '/'; // Adjust the redirect based on roles if needed
             navigate(redirectPath); // Use navigate to redirect
         } catch (error) {
             console.error('Login error:', error);
@@ -73,7 +73,7 @@ const LoginForm = () => {
             >
                 <MDBCard
                     style={{
-                        minWidth:'26rem',  // Increase the width of the card
+                        minWidth: '26rem',  // Increase the width of the card
                         borderRadius: '15px',
                         boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
                     }}

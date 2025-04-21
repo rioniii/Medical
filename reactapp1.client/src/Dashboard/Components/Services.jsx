@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid"; // Import uuid package
 import {
     Box,
     Typography,
@@ -25,7 +26,6 @@ const Records = () => {
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [editingService, setEditingService] = useState(null);
-    const [newId, setNewId] = useState("");
     const [newServiceName, setNewServiceName] = useState("");
     const [newDescription, setNewDescription] = useState("");
     const [newPrice, setNewPrice] = useState("");
@@ -45,7 +45,6 @@ const Records = () => {
 
     const handleEdit = (service) => {
         setEditingService(service);
-        setNewId(service.id); // Setting the current ID for editing
         setNewServiceName(service.emri_Sherbimit);
         setNewDescription(service.pershkrimi);
         setNewPrice(service.cmimi);
@@ -65,7 +64,6 @@ const Records = () => {
         try {
             const updatedService = {
                 ...editingService,
-                id: newId, // Ensure the ID is part of the update
                 emri_Sherbimit: newServiceName,
                 pershkrimi: newDescription,
                 cmimi: newPrice,
@@ -85,7 +83,7 @@ const Records = () => {
 
     const handleAddService = async () => {
         const newService = {
-            id: newId, // Include the ID in the request
+            id: uuidv4(),  // Generate a UUID for the new service
             emri_Sherbimit: newServiceName,
             pershkrimi: newDescription,
             cmimi: newPrice,
@@ -97,7 +95,6 @@ const Records = () => {
             setOpenAddDialog(false);
 
             // Reset the fields after adding a service
-            setNewId("");
             setNewServiceName("");
             setNewDescription("");
             setNewPrice("");
@@ -109,8 +106,7 @@ const Records = () => {
     return (
         <>
             <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f5f6f7' }}>
-                <Sidebar userType="doctor" />
-
+                <Sidebar userType="doctor" /> {/* Sidebar component */}
 
                 <Box sx={{ padding: 4, backgroundColor: "#f4f6f8", minHeight: "100vh", width: "100%" }}>
                     <Typography variant="h4" fontWeight="bold" gutterBottom>
@@ -163,14 +159,6 @@ const Records = () => {
                 <DialogTitle>Edit Service</DialogTitle>
                 <DialogContent>
                     <TextField
-                        label="Service ID"
-                        fullWidth
-                        value={newId}
-                        onChange={(e) => setNewId(e.target.value)}
-                        margin="normal"
-                        disabled // Make ID field disabled for editing purposes
-                    />
-                    <TextField
                         label="Service Name"
                         fullWidth
                         value={newServiceName}
@@ -207,13 +195,6 @@ const Records = () => {
             <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)}>
                 <DialogTitle>Add New Service</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        label="Service ID"
-                        fullWidth
-                        value={newId}
-                        onChange={(e) => setNewId(e.target.value)}
-                        margin="normal"
-                    />
                     <TextField
                         label="Service Name"
                         fullWidth

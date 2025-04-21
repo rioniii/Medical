@@ -3,13 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ReactApp1.Server.Data.Models;
 using ReactApp1.Server.Services;
-using System.Threading.Tasks;
-using System;
+using System.Text;
 
 public class Program
 {
@@ -55,24 +51,57 @@ public class Program
 
     public void ConfigureServices(IServiceCollection services)
     {
-        // Configure JWT from appsettings.json
+        ConfigureJwt(services); // JWT configuration
+        ConfigureIdentity(services); // Identity setup
+        ConfigureDatabase(services); // Database setup
+        ConfigureCors(services); // CORS setup
+        ConfigureSwagger(services); // Swagger setup
+
+        services.AddScoped<IUserService, UserService>(); // Additional services
+
+        services.AddControllersWithViews();
+        services.AddEndpointsApiExplorer(); // Enable API endpoint discovery
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Medical API v1"));
+        }
+        else
+        {
+            app.UseExceptionHandler("/Home/Error");
+            app.UseHsts();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseRouting();
+
+        // Apply CORS BEFORE authentication
+        app.UseCors("AllowSpecificOrigin");
+
+        // Authentication & Authorization
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        // Map API controllers
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+    }
+
+    private void ConfigureJwt(IServiceCollection services)
+    {
         var jwtSettings = _configuration.GetSection("JWT");
         var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
         services.Configure<JWT>(jwtSettings);
 
-        // Identity setup
-        services.AddIdentity<User, IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
-
-        // Database context
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(
-                _configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
-
-        // JWT Authentication
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -94,29 +123,39 @@ public class Program
                 ClockSkew = TimeSpan.Zero
             };
         });
+    }
 
-        // Authorization
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("DoctorPolicy", policy => policy.RequireRole("Doctor"));
-        });
+    private void ConfigureIdentity(IServiceCollection services)
+    {
+        services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+    }
 
-        // CORS Policy
+    private void ConfigureDatabase(IServiceCollection services)
+    {
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(
+                _configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+    }
+
+    private void ConfigureCors(IServiceCollection services)
+    {
         services.AddCors(options =>
         {
             options.AddPolicy("AllowSpecificOrigin", builder =>
             {
-                builder.WithOrigins("https://localhost:5173")
-                       .AllowAnyMethod()
-                       .AllowAnyHeader()
-                       .AllowCredentials();
+                builder.WithOrigins("https://localhost:5173", "http://localhost:5173") // Include both HTTP and HTTPS
+                       .AllowAnyMethod()  // Allow GET, POST, PUT, DELETE, etc.
+                       .AllowAnyHeader()  // Allow all headers (e.g., Authorization, Content-Type)
+                       .AllowCredentials(); // Allow cookies and Authorization headers
             });
         });
+    }
 
-        // Register services
-        services.AddScoped<IUserService, UserService>();
-
-        // Swagger setup
+    private void ConfigureSwagger(IServiceCollection services)
+    {
         services.AddSwaggerGen(option =>
         {
             option.SwaggerDoc("v1", new OpenApiInfo
@@ -147,39 +186,6 @@ public class Program
                     new string[] {}
                 }
             });
-        });
-
-        services.AddControllersWithViews();
-        services.AddEndpointsApiExplorer(); // for automatic endpoint generation in Swagger
-    }
-
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Medical API v1"));
-        }
-        else
-        {
-            app.UseExceptionHandler("/Home/Error");
-            app.UseHsts();
-        }
-
-        app.UseHttpsRedirection();
-        app.UseStaticFiles();
-
-        app.UseRouting();
-
-        app.UseCors("AllowSpecificOrigin"); // Always place CORS before Authentication/Authorization
-
-        app.UseAuthentication(); // Authenticate JWT tokens
-        app.UseAuthorization();  // Authorize based on user roles
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers(); // Map API controllers
         });
     }
 }

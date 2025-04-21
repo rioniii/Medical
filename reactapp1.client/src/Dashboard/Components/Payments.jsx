@@ -21,8 +21,6 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Checkbox,
-    FormControlLabel,
 } from "@mui/material";
 import { FilterList, Add, Edit, Delete } from "@mui/icons-material";
 import moment from "moment";
@@ -36,40 +34,180 @@ const Payments = () => {
     const [dateRangeFilter, setDateRangeFilter] = useState("");
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
-
-    const [fatureForm, setFatureForm] = useState({
+    const [paymentForm, setPaymentForm] = useState({
         id: "",
-        pacientId: "",
-        sherbimiId: "",
-        shuma: "",
-        data: moment().format("YYYY-MM-DD"),
-        paguar: false,
+        patientId: "",
+        patientName: "",
+        amount: "",
+        date: moment().format("YYYY-MM-DD"),
+        status: "Progress",
     });
-
     const [isEditMode, setIsEditMode] = useState(false);
+    const [patients, setPatients] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
+    // Get the localStorage key for payments based on the token
+    const getPaymentsKey = () => {
+        const token = localStorage.getItem("token");
+        return token ? `payments_${token}` : null;
+    };
+
+    // Load payments from localStorage on component mount
     useEffect(() => {
-        fetchPayments();
+        const paymentsKey = getPaymentsKey();
+        if (paymentsKey) {
+            const savedPayments = localStorage.getItem(paymentsKey);
+            if (savedPayments) {
+                try {
+                    const parsedPayments = JSON.parse(savedPayments);
+                    setPayments(parsedPayments);
+                    setFilteredPayments(parsedPayments);
+                } catch (error) {
+                    console.error("Error parsing payments from localStorage:", error);
+                }
+            }
+        }
+        fetchPatients();
     }, []);
 
-    const fetchPayments = async () => {
+    // Save payments to localStorage whenever payments change
+    useEffect(() => {
+        const paymentsKey = getPaymentsKey();
+        if (paymentsKey) {
+            localStorage.setItem(paymentsKey, JSON.stringify(payments));
+        }
+    }, [payments]);
+
+    // Fetch patients from the API
+    const fetchPatients = async () => {
         try {
-            const response = await axios.get("https://localhost:7107/api/Fatura");
-            setPayments(response.data);
-            setFilteredPayments(response.data);
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("Unauthorized: No token found.");
+                return;
+            }
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const response = await axios.get("https://localhost:7107/api/User", config);
+            setPatients(response.data);
         } catch (error) {
-            console.error("Error fetching payments:", error);
+            setError("Error fetching patients: " + error.message);
+            console.error("Error fetching patients:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
+    // Handle adding a new payment
+    const handleAddPayment = () => {
+        if (!paymentForm.patientId || !paymentForm.amount || !paymentForm.date) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        // Check if the patient already has a payment
+        const patientAlreadyHasPayment = payments.some(
+            (payment) => payment.patientId === paymentForm.patientId
+        );
+
+        if (patientAlreadyHasPayment) {
+            alert("This patient already has a payment. Please edit the existing payment instead.");
+            return;
+        }
+
+        // Date validation
+        const selectedDate = moment(paymentForm.date);
+        const today = moment().startOf("day");
+        if (selectedDate.isBefore(today)) {
+            alert("Date cannot be earlier than today.");
+            return;
+        }
+
+        // Create a new payment object
+        const newPayment = {
+            id: Date.now().toString(),
+            patientId: paymentForm.patientId,
+            patientName: getPatientNameById(paymentForm.patientId),
+            amount: parseFloat(paymentForm.amount),
+            date: paymentForm.date,
+            status: paymentForm.status,
+        };
+
+        // Update payments state
+        const updatedPayments = [newPayment, ...payments];
+        setPayments(updatedPayments);
+        setFilteredPayments(updatedPayments);
+
+        // Close the dialog and reset the form
+        setOpenAddDialog(false);
+        resetForm();
+    };
+
+    // Handle editing an existing payment
+    const handleEditPayment = () => {
+        if (!paymentForm.patientName || !paymentForm.amount || !paymentForm.date) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        // Ensure amount is treated as a number
+        const amount = parseFloat(paymentForm.amount);
+        if (isNaN(amount)) {
+            alert("Amount must be a valid number.");
+            return;
+        }
+
+        // Date validation
+        const selectedDate = moment(paymentForm.date);
+        const today = moment().startOf("day");
+        if (selectedDate.isBefore(today)) {
+            alert("Date cannot be earlier than today.");
+            return;
+        }
+
+        // Update the payment in the list
+        const updatedPayments = payments.map((payment) =>
+            payment.id === paymentForm.id
+                ? { ...paymentForm, amount: amount } // Ensure amount is a number
+                : payment
+        );
+
+        setPayments(updatedPayments);
+        setFilteredPayments(updatedPayments);
+
+        // Close the dialog and reset the form
+        setOpenEditDialog(false);
+        resetForm();
+    };
+
+    // Handle deleting a payment
+    const handleDeletePayment = (id) => {
+        const updatedPayments = payments.filter((payment) => payment.id !== id);
+        setPayments(updatedPayments);
+        setFilteredPayments(updatedPayments);
+    };
+
+    // Reset the payment form
+    const resetForm = () => {
+        setPaymentForm({
+            id: "",
+            patientId: "",
+            patientName: "",
+            amount: "",
+            date: moment().format("YYYY-MM-DD"),
+            status: "Progress",
+        });
+    };
+
+    // Filter payments based on search term, status, and date range
     const handleFilter = () => {
         const filtered = payments.filter((payment) => {
             const matchesSearchTerm = searchTerm
-                ? payment.pacientId.toLowerCase().includes(searchTerm.toLowerCase())
+                ? payment.patientId === searchTerm // Filter by patient ID
                 : true;
-            const matchesStatus = statusFilter ? payment.paguar === (statusFilter === "Paid") : true;
+            const matchesStatus = statusFilter ? payment.status === statusFilter : true;
             const matchesDateRange = dateRangeFilter
-                ? moment(payment.data).isSame(dateRangeFilter, "day")
+                ? moment(payment.date).isSame(dateRangeFilter, "day")
                 : true;
 
             return matchesSearchTerm && matchesStatus && matchesDateRange;
@@ -77,53 +215,38 @@ const Payments = () => {
         setFilteredPayments(filtered);
     };
 
-    const handleAddFature = async () => {
-        try {
-            await axios.post("https://localhost:7107/api/Fatura", fatureForm);
-            fetchPayments();
-            setOpenAddDialog(false);
-            resetForm();
-        } catch (error) {
-            console.error("Error adding Fature:", error);
+    // Get patient name by ID
+    const getPatientNameById = (id) => {
+        const patient = patients.find((patient) => patient.id === id);
+        return patient ? `${patient.firstName} ${patient.lastName}` : "Unknown";
+    };
+
+    // Clear payments when token is removed or expires
+    const clearPayments = () => {
+        const paymentsKey = getPaymentsKey();
+        if (paymentsKey) {
+            localStorage.removeItem(paymentsKey);
         }
+        setPayments([]);
+        setFilteredPayments([]);
     };
 
-    const handleEditFature = async () => {
-        try {
-            await axios.put(`https://localhost:7107/api/Fatura/${fatureForm.id}`, fatureForm);
-            fetchPayments();
-            setOpenEditDialog(false);
-            resetForm();
-        } catch (error) {
-            console.error("Error updating Fature:", error);
-        }
-    };
+    // Check token status periodically
+    useEffect(() => {
+        const checkToken = () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                clearPayments();
+            }
+        };
 
-    const handleDeleteFature = async (id) => {
-        try {
-            await axios.delete(`https://localhost:7107/api/Fatura/${id}`);
-            fetchPayments();
-        } catch (error) {
-            console.error("Error deleting Fature:", error);
-        }
-    };
+        const interval = setInterval(checkToken, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
-    const openEditDialogHandler = (payment) => {
-        setFatureForm(payment);
-        setIsEditMode(true);
-        setOpenEditDialog(true);
-    };
-
-    const resetForm = () => {
-        setFatureForm({
-            id: "",
-            pacientId: "",
-            sherbimiId: "",
-            shuma: "",
-            data: moment().format("YYYY-MM-DD"),
-            paguar: false,
-        });
-    };
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f0f9f4" }}>
@@ -133,7 +256,7 @@ const Payments = () => {
                     Payments
                 </Typography>
 
-                {/* Add Fature Button */}
+                {/* Add Payment Button */}
                 <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 3 }}>
                     <Button
                         variant="contained"
@@ -142,6 +265,7 @@ const Payments = () => {
                         onClick={() => {
                             resetForm();
                             setOpenAddDialog(true);
+                            setIsEditMode(false);
                         }}
                         sx={{
                             textTransform: "none",
@@ -153,7 +277,7 @@ const Payments = () => {
                             },
                         }}
                     >
-                        Add Fature
+                        Add Payment
                     </Button>
                 </Box>
 
@@ -168,15 +292,26 @@ const Payments = () => {
                     }}
                 >
                     <Grid container spacing={2} alignItems="center">
+                        {/* Patient Filter */}
                         <Grid item xs={12} sm={6} md={4}>
-                            <TextField
-                                label="Search Patients"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                            />
+                            <FormControl fullWidth>
+                                <InputLabel>Patient</InputLabel>
+                                <Select
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    variant="outlined"
+                                >
+                                    <MenuItem value="">All Patients</MenuItem>
+                                    {patients.map((patient) => (
+                                        <MenuItem key={patient.id} value={patient.id}>
+                                            {`${patient.firstName} ${patient.lastName}`}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Grid>
+
+                        {/* Status Filter */}
                         <Grid item xs={12} sm={6} md={3}>
                             <FormControl fullWidth>
                                 <InputLabel>Status</InputLabel>
@@ -185,12 +320,15 @@ const Payments = () => {
                                     onChange={(e) => setStatusFilter(e.target.value)}
                                     variant="outlined"
                                 >
-                                    <MenuItem value="">All Status</MenuItem>
+                                    <MenuItem value="">All Statuses</MenuItem>
                                     <MenuItem value="Paid">Paid</MenuItem>
-                                    <MenuItem value="Pending">Pending</MenuItem>
+                                    <MenuItem value="Progress">Progress</MenuItem>
+                                    <MenuItem value="Canceled">Canceled</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
+
+                        {/* Date Filter */}
                         <Grid item xs={12} sm={6} md={3}>
                             <TextField
                                 type="date"
@@ -202,6 +340,8 @@ const Payments = () => {
                                 variant="outlined"
                             />
                         </Grid>
+
+                        {/* Filter Button */}
                         <Grid item xs={12} sm={6} md={2}>
                             <Button
                                 variant="contained"
@@ -223,8 +363,8 @@ const Payments = () => {
                 </Paper>
 
                 {/* Payments Table */}
-                <Paper elevation={3} sx={{ borderRadius: 3, overflow: "hidden" }}>
-                    <Table>
+                <Paper elevation={0} sx={{ borderRadius: 3, overflow: "hidden" }}>
+                    <Table sx={{ minWidth: 650 }}>
                         <TableHead>
                             <TableRow
                                 sx={{
@@ -232,9 +372,8 @@ const Payments = () => {
                                     "& th": { color: "#ffffff", fontWeight: "bold" },
                                 }}
                             >
-                                <TableCell>Fature ID</TableCell>
+                                <TableCell>Payment ID</TableCell>
                                 <TableCell>Patient</TableCell>
-                                <TableCell>Service</TableCell>
                                 <TableCell>Date</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Amount</TableCell>
@@ -252,29 +391,31 @@ const Payments = () => {
                                     }}
                                 >
                                     <TableCell>{payment.id}</TableCell>
-                                    <TableCell>{payment.pacientId}</TableCell>
-                                    <TableCell>{payment.sherbimiId}</TableCell>
+                                    <TableCell>{payment.patientName}</TableCell>
+                                    <TableCell>{moment(payment.date).format("MMM DD, YYYY")}</TableCell>
                                     <TableCell>
-                                        {moment(payment.data).format("MMM DD, YYYY")}
-                                    </TableCell>
-                                    <TableCell>
-                                        {payment.paguar ? (
+                                        {payment.status === "Paid" ? (
                                             <Typography color="green">Paid</Typography>
+                                        ) : payment.status === "Progress" ? (
+                                            <Typography color="orange">Progress</Typography>
                                         ) : (
-                                            <Typography color="orange">Pending</Typography>
+                                            <Typography color="red">Canceled</Typography>
                                         )}
                                     </TableCell>
-                                    <TableCell>${payment.shuma.toFixed(2)}</TableCell>
+                                    <TableCell>${payment.amount.toFixed(2)}</TableCell>
                                     <TableCell>
                                         <IconButton
-                                            color="success"
-                                            onClick={() => openEditDialogHandler(payment)}
+                                            onClick={() => {
+                                                setPaymentForm(payment);
+                                                setIsEditMode(true);
+                                                setOpenEditDialog(true);
+                                            }}
                                         >
                                             <Edit />
                                         </IconButton>
                                         <IconButton
                                             color="error"
-                                            onClick={() => handleDeleteFature(payment.id)}
+                                            onClick={() => handleDeletePayment(payment.id)}
                                         >
                                             <Delete />
                                         </IconButton>
@@ -293,69 +434,81 @@ const Payments = () => {
                         setOpenEditDialog(false);
                     }}
                 >
-                    <DialogTitle>
-                        {isEditMode ? "Edit Fature" : "Add New Fature"}
-                    </DialogTitle>
+                    <DialogTitle>{isEditMode ? "Edit Payment" : "Add Payment"}</DialogTitle>
                     <DialogContent>
-                        <TextField
-                            label="Fature ID"
-                            value={fatureForm.id}
-                            onChange={(e) =>
-                                setFatureForm({ ...fatureForm, id: e.target.value })
-                            }
-                            fullWidth
-                            disabled={isEditMode}
-                            margin="normal"
-                        />
-                        <TextField
-                            label="Patient ID"
-                            value={fatureForm.pacientId}
-                            onChange={(e) =>
-                                setFatureForm({ ...fatureForm, pacientId: e.target.value })
-                            }
-                            fullWidth
-                            margin="normal"
-                        />
-                        <TextField
-                            label="Service ID"
-                            value={fatureForm.sherbimiId}
-                            onChange={(e) =>
-                                setFatureForm({ ...fatureForm, sherbimiId: e.target.value })
-                            }
-                            fullWidth
-                            margin="normal"
-                        />
-                        <TextField
-                            type="number"
-                            label="Amount"
-                            value={fatureForm.shuma}
-                            onChange={(e) =>
-                                setFatureForm({ ...fatureForm, shuma: e.target.value })
-                            }
-                            fullWidth
-                            margin="normal"
-                        />
-                        <TextField
-                            type="date"
-                            label="Date"
-                            value={fatureForm.data}
-                            onChange={(e) =>
-                                setFatureForm({ ...fatureForm, data: e.target.value })
-                            }
-                            fullWidth
-                            margin="normal"
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={fatureForm.paguar}
+                        {/* Patient Field */}
+                        {isEditMode ? (
+                            <TextField
+                                label="Patient"
+                                value={paymentForm.patientName}
+                                onChange={(e) =>
+                                    setPaymentForm({ ...paymentForm, patientName: e.target.value })
+                                }
+                                fullWidth
+                                margin="normal"
+                            />
+                        ) : (
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel>Patient</InputLabel>
+                                <Select
+                                    value={paymentForm.patientId}
                                     onChange={(e) =>
-                                        setFatureForm({ ...fatureForm, paguar: e.target.checked })
+                                        setPaymentForm({ ...paymentForm, patientId: e.target.value })
                                     }
-                                />
-                            }
-                            label="Paid"
+                                    fullWidth
+                                    variant="outlined"
+                                >
+                                    <MenuItem value="">Select Patient</MenuItem>
+                                    {patients.map((patient) => (
+                                        <MenuItem key={patient.id} value={patient.id}>
+                                            {`${patient.firstName} ${patient.lastName}`}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        )}
+
+                        {/* Amount Field */}
+                        <TextField
+                            label="Amount"
+                            type="number"
+                            value={paymentForm.amount}
+                            onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
+                            fullWidth
+                            margin="normal"
                         />
+
+                        {/* Date Field */}
+                        <TextField
+                            label="Date"
+                            type="date"
+                            value={paymentForm.date}
+                            onChange={(e) => setPaymentForm({ ...paymentForm, date: e.target.value })}
+                            fullWidth
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            margin="normal"
+                        />
+
+                        {/* Status Field */}
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel>Status</InputLabel>
+                            <Select
+                                value={paymentForm.status}
+                                onChange={(e) =>
+                                    setPaymentForm({
+                                        ...paymentForm,
+                                        status: e.target.value,
+                                    })
+                                }
+                                variant="outlined"
+                            >
+                                <MenuItem value="Paid">Paid</MenuItem>
+                                <MenuItem value="Progress">Progress</MenuItem>
+                                <MenuItem value="Canceled">Canceled</MenuItem>
+                            </Select>
+                        </FormControl>
                     </DialogContent>
                     <DialogActions>
                         <Button
@@ -363,15 +516,15 @@ const Payments = () => {
                                 setOpenAddDialog(false);
                                 setOpenEditDialog(false);
                             }}
-                            color="secondary"
+                            color="primary"
                         >
                             Cancel
                         </Button>
                         <Button
-                            onClick={isEditMode ? handleEditFature : handleAddFature}
-                            color="success"
+                            onClick={isEditMode ? handleEditPayment : handleAddPayment}
+                            color="primary"
                         >
-                            {isEditMode ? "Update" : "Add"}
+                            {isEditMode ? "Save Changes" : "Add Payment"}
                         </Button>
                     </DialogActions>
                 </Dialog>

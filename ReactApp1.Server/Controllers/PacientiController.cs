@@ -26,11 +26,11 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles ="Doctor")]
+        //[Authorize(Roles = "Doctor")]
         public async Task<ActionResult<IEnumerable<Pacienti>>> GetPacientet()
         {
             return await _context.Pacientet
-                .Include(p => p.User)          
+                .Include(p => p.User)
                 .ToListAsync();
         }
 
@@ -43,9 +43,9 @@ namespace ReactApp1.Server.Controllers
         public async Task<ActionResult<Pacienti>> GetPacienti(string id)
         {
             var pacienti = await _context.Pacientet
-                .Include(p => p.User)          
-                .Include(p => p.Terminet)      
-                .Include(p => p.Historiks)     
+                .Include(p => p.User)
+                .Include(p => p.Terminet)
+                .Include(p => p.Historiks)
                 .FirstOrDefaultAsync(p => p.Id.Equals(id));
 
             if (pacienti == null)
@@ -59,7 +59,7 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpPost("Update-Pacienti")]
-        [Authorize(Roles = "Doctor")]
+        //[Authorize(Roles = "Doctor")]
         public async Task<IActionResult> PutPacienti(string id, PacientDTO request)
         {
             if (id != request.Id)
@@ -89,7 +89,7 @@ namespace ReactApp1.Server.Controllers
                 }
                 else
                 {
-                    throw; 
+                    throw;
                 }
             }
 
@@ -102,23 +102,23 @@ namespace ReactApp1.Server.Controllers
         }
 
         [HttpPost("Add-Patient")]
-        [Authorize(Roles = "Doctor")]
+        //[Authorize(Roles = "Doctor")]
         public async Task<ActionResult<Pacienti>> PostPacienti(PacientDTO request)
         {
             try
-            { 
+            {
                 var pacienti = new Pacienti
                 {
-                   Id = request.Id,
-                   Name = request.Name,
-                   Surname = request.Surname,
-                   Ditelindja = request.Ditelindja
+                    Id = request.Id,
+                    Name = request.Name,
+                    Surname = request.Surname,
+                    Ditelindja = request.Ditelindja
                 };
 
-            _context.Pacientet.Add(pacienti);
-            await _context.SaveChangesAsync();
+                _context.Pacientet.Add(pacienti);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPacienti", new { id = pacienti.Id }, pacienti);
+                return CreatedAtAction("GetPacienti", new { id = pacienti.Id }, pacienti);
             }
             catch (Exception ex)
             {
@@ -129,12 +129,12 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Doctor")]
+        //[Authorize(Roles = "Doctor")]
         public async Task<IActionResult> DeletePacienti(string id)
         {
             var pacienti = await _context.Pacientet
-            .Include(p => p.Terminet)  
-            .Include(p => p.Historiks) 
+            .Include(p => p.Terminet)
+            .Include(p => p.Historiks)
             .FirstOrDefaultAsync(p => p.Id == id);
 
 
@@ -160,6 +160,33 @@ namespace ReactApp1.Server.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+        [HttpGet("GetPatientsBatch")]
+        public async Task<ActionResult<IEnumerable<Pacienti>>> GetPatientsBatch([FromQuery] string ids)
+        {
+            if (string.IsNullOrEmpty(ids))
+            {
+                return BadRequest("No patient IDs provided");
+            }
+
+            var patientIds = ids.Split(',').ToList();
+            var patients = await _context.Pacientet
+                .Where(p => patientIds.Contains(p.Id))
+                .Include(p => p.User)
+                .Select(p => new {
+                    id = p.Id,
+                    name = p.Name,
+                    surname = p.Surname
+                })
+                .ToListAsync();
+
+            if (patients == null || !patients.Any())
+            {
+                return NotFound("No patients found with the provided IDs");
+            }
+
+            return Ok(patients);
         }
     }
 }

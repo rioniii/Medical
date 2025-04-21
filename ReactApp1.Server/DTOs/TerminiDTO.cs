@@ -10,8 +10,7 @@ namespace ReactApp1.Server.DTOs
         public DateTime DataTerminit { get; set; }
         public string Statusi { get; set; }
 
-        public string Name { get; set; }
-        public string Surname{ get; set; }
+      
 
     }
 }

@@ -33,6 +33,15 @@ function Register() {
         setEmailTakenError('');
         setErrorMessage('');
 
+
+
+        const today = new Date();
+        const selectedDate = new Date(dateOfBirth);
+
+        if (selectedDate > today) {
+            setErrorMessage('Date of Birth cannot be in the future.');
+            return;
+        }
         // Check password strength
         const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{6,}$/;
         if (!passwordRegex.test(password)) {

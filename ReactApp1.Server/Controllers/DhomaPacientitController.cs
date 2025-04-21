@@ -25,21 +25,18 @@ namespace ReactApp1.Server.Controllers
         public async Task<ActionResult<IEnumerable<DhomaPacientitDTO>>> GetDhomaPacientit()
         {
             var dhomaPacienteve = await _context.DhomaPacienteve
-                .Include(dp => dp.Pacienti)   // Include the Pacienti related data
-                .Include(dp => dp.Dhoma)      // Include the Dhoma related data
+                .Include(dp => dp.Pacienti)
+                .Include(dp => dp.Dhoma)
                 .ToListAsync();
 
-            // Map to DhomaPacientitDTO
-            var dhomaPacientitDTOs = dhomaPacienteve.Select(dp => new DhomaPacientitDTO
+            return dhomaPacienteve.Select(dp => new DhomaPacientitDTO
             {
                 Id = dp.Id,
-                PacientId = dp.Pacienti.Id,
-                DhomaId = dp.Dhoma.Id,
+                PacientId = dp.PacientId,
+                DhomaId = dp.DhomaId,
                 CheckInDate = dp.CheckInDate,
                 CheckOutDate = dp.CheckOutDate
             }).ToList();
-
-            return dhomaPacientitDTOs;
         }
 
         // GET: api/DhomaPacientit/5
@@ -56,35 +53,31 @@ namespace ReactApp1.Server.Controllers
                 return NotFound();
             }
 
-            // Map to DhomaPacientitDTO
-            var dhomaPacientitDTO = new DhomaPacientitDTO
+            return new DhomaPacientitDTO
             {
                 Id = dhomaPacientit.Id,
-                PacientId = dhomaPacientit.Pacienti.Id,
-                DhomaId = dhomaPacientit.Dhoma.Id,
+                PacientId = dhomaPacientit.PacientId,
+                DhomaId = dhomaPacientit.DhomaId,
                 CheckInDate = dhomaPacientit.CheckInDate,
                 CheckOutDate = dhomaPacientit.CheckOutDate
             };
-
-            return dhomaPacientitDTO;
         }
 
         // PUT: api/DhomaPacientit/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDhomaPacientit(string id, DhomaPacientitDTO dhomaPacientitDTO)
         {
-            if (!(id.Equals(dhomaPacientitDTO.Id)))
+            if (id != dhomaPacientitDTO.Id)
             {
-                return BadRequest();
+                return BadRequest("ID mismatch.");
             }
 
-            // Map DhomaPacientitDTO to DhomaPacientit entity
             var dhomaPacientit = await _context.DhomaPacienteve.FindAsync(id);
             if (dhomaPacientit == null)
             {
                 return NotFound();
             }
-            dhomaPacientit.Id = dhomaPacientit.Id;
+
             dhomaPacientit.PacientId = dhomaPacientitDTO.PacientId;
             dhomaPacientit.DhomaId = dhomaPacientitDTO.DhomaId;
             dhomaPacientit.CheckInDate = dhomaPacientitDTO.CheckInDate;
@@ -113,33 +106,38 @@ namespace ReactApp1.Server.Controllers
 
         // POST: api/DhomaPacientit
         [HttpPost]
-        public async Task<ActionResult<DhomaPacientitDTO>> PostDhomaPacientit(DhomaPacientitDTO dhomaPacientitDTO)
+        public async Task<ActionResult<DhomaPacientitDTO>> PostDhomaPacientit([FromBody] DhomaPacientitDTO dhomaPacientitDTO)
         {
-            // Get the DhomaId as a string
-            string dhomaId = dhomaPacientitDTO.DhomaId;
+            // Log the received request for debugging
+            Console.WriteLine($"Received Data: {System.Text.Json.JsonSerializer.Serialize(dhomaPacientitDTO)}");
+
+            if (dhomaPacientitDTO == null)
+            {
+                return BadRequest("Invalid data received.");
+            }
+
+            if (string.IsNullOrEmpty(dhomaPacientitDTO.PacientId) || string.IsNullOrEmpty(dhomaPacientitDTO.DhomaId))
+            {
+                return BadRequest("PacientId and DhomaId are required.");
+            }
 
             // Check if the room already has 3 patients
-            if (await IsRoomFull(dhomaId))
+            if (await IsRoomFull(dhomaPacientitDTO.DhomaId))
             {
                 return BadRequest("This room already has the maximum allowed number of patients (3).");
             }
 
-            // Create a new DhomaPacientit entity
             var dhomaPacientit = new DhomaPacientit
             {
-                Id = Guid.NewGuid().ToString(),  // Ensure a unique ID (e.g., using GUID)
+                Id = Guid.NewGuid().ToString(),
                 PacientId = dhomaPacientitDTO.PacientId,
-                DhomaId = dhomaId,
+                DhomaId = dhomaPacientitDTO.DhomaId,
                 CheckInDate = dhomaPacientitDTO.CheckInDate,
                 CheckOutDate = dhomaPacientitDTO.CheckOutDate
             };
 
-            // Add the new record to the database
             _context.DhomaPacienteve.Add(dhomaPacientit);
             await _context.SaveChangesAsync();
-
-            // Set the Id of the DTO to the new entity's Id
-            dhomaPacientitDTO.Id = dhomaPacientit.Id;
 
             return CreatedAtAction("GetDhomaPacientit", new { id = dhomaPacientit.Id }, dhomaPacientitDTO);
         }
@@ -164,13 +162,12 @@ namespace ReactApp1.Server.Controllers
         private async Task<bool> IsRoomFull(string dhomaId)
         {
             var currentPatientsInRoom = await _context.DhomaPacienteve
-                .Where(dp => dp.DhomaId == dhomaId && dp.CheckOutDate == null) // Ensure we are only counting checked-in patients
+                .Where(dp => dp.DhomaId == dhomaId && dp.CheckOutDate == null)
                 .CountAsync();
 
             return currentPatientsInRoom >= 3;
         }
 
-        // Check if a record exists
         private bool DhomaPacientitExists(string id)
         {
             return _context.DhomaPacienteve.Any(e => e.Id.Equals(id));

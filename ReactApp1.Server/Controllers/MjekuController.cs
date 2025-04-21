@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
@@ -22,44 +21,86 @@ namespace ReactApp1.Server.Controllers
             _context = context;
         }
 
-        // GET: api/Mjeku
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MjekuDTO>>> GetMjeket()
         {
-            var mjeket = await _context.Mjeket
-                .Include(m => m.User)           // Include related User data
-                .Select(m => new MjekuDTO
-                {
-                    Id = m.Id,
-                    Specializimi = m.Specializimi,
-                    NumriLicences = m.NumriLicences,
-                })
-                .ToListAsync();
+            try
+            {
+                var doctors = await _context.Mjeket
+                    .Where(m => !string.IsNullOrEmpty(m.Specializimi))  // Added missing parenthesis
+                    .Where(m => !string.IsNullOrEmpty(m.NumriLicences))
+                    .Select(m => new MjekuDTO
+                    {
+                        Id = m.Id,
+                        Specializimi = m.Specializimi,
+                        NumriLicences = m.NumriLicences
+                    })
+                    .ToListAsync();
 
-            return Ok(mjeket);
+                if (!doctors.Any())
+                {
+                    return NotFound(new
+                    {
+                        Message = "No doctors found with complete information",
+                        Suggestion = "Check if Specializimi and NumriLicences are populated in database"
+                    });
+                }
+
+                return Ok(doctors);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Internal server error while retrieving doctors",
+                    Error = ex.Message,
+                    Details = ex.InnerException?.Message
+                });
+            }
         }
 
-        // GET: api/Mjeket/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MjekuDTO>> GetMjeku(string id)
         {
-            var mjeku = await _context.Mjeket
-                .Include(m => m.User)
-                .FirstOrDefaultAsync(m => m.Id.ToString() == id);
-
-            if (mjeku == null)
+            try
             {
-                return NotFound();
+                var mjeku = await _context.Mjeket
+                    .FirstOrDefaultAsync(m => m.Id == id);
+
+                if (mjeku == null)
+                {
+                    return NotFound(new { Message = $"Doctor with ID {id} not found" });
+                }
+
+                // Still enforce complete data for single doctor
+                if (string.IsNullOrEmpty(mjeku.Specializimi) ||
+                    string.IsNullOrEmpty(mjeku.NumriLicences))
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Doctor record is incomplete",
+                        MissingFields = new List<string> {
+                            string.IsNullOrEmpty(mjeku.Specializimi) ? "Specializimi" : null,
+                            string.IsNullOrEmpty(mjeku.NumriLicences) ? "NumriLicences" : null
+                        }.Where(x => x != null)
+                    });
+                }
+
+                return Ok(new MjekuDTO
+                {
+                    Id = mjeku.Id,
+                    Specializimi = mjeku.Specializimi,
+                    NumriLicences = mjeku.NumriLicences
+                });
             }
-
-            var mjekuDto = new MjekuDTO
+            catch (Exception ex)
             {
-                Id = mjeku.Id,
-                Specializimi = mjeku.Specializimi,
-                NumriLicences = mjeku.NumriLicences,
-            };
-
-            return Ok(mjekuDto);
+                return StatusCode(500, new
+                {
+                    Message = $"Error retrieving doctor with ID {id}",
+                    Error = ex.Message
+                });
+            }
         }
 
         // PUT: api/Mjeket/5
@@ -67,7 +108,7 @@ namespace ReactApp1.Server.Controllers
         public async Task<IActionResult> PutMjeku(string id, MjekuDTO mjekuDto)
         {
 
-            
+
 
             if (id != mjekuDto.Id)
             {
@@ -147,7 +188,7 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpPost("Regjistro-Pacientin")]
-        [Authorize(Roles="Doctor")]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> RegisterSimplePatient([FromBody] PacientDTO dto)
         {
             var pacienti = new Pacienti
@@ -167,14 +208,14 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpGet("Get-Pacientat")]
-        [Authorize(Roles="Doctor")]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetPatients()
         {
             var patients = await _context.Pacientet
                 .Select(p => new
                 {
                     Id = p.Id,
-                    FullName = $"{p.Name} {p.Surname}"  
+                    FullName = $"{p.Name} {p.Surname}"
                 })
                 .ToListAsync();
 
@@ -184,9 +225,9 @@ namespace ReactApp1.Server.Controllers
 
 
 
-        
+
         [HttpPost("Shto-Detajet-Pacientit")]
-        [Authorize(Roles="Doctor")]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> AddPatientDetails([FromBody] PatientDetailsDTO request)
         {
             if (!ModelState.IsValid)
@@ -194,11 +235,11 @@ namespace ReactApp1.Server.Controllers
                 return BadRequest(ModelState);
             }
 
-                      var pacienti = await _context.Pacientet
-              .Include(p => p.Terminet)
-              .Include(p => p.Historiks)
-              .Include(p => p.DhomaPacienteve)
-              .FirstOrDefaultAsync(p => p.Id == request.Patient.Id); 
+            var pacienti = await _context.Pacientet
+    .Include(p => p.Terminet)
+    .Include(p => p.Historiks)
+    .Include(p => p.DhomaPacienteve)
+    .FirstOrDefaultAsync(p => p.Id == request.Patient.Id);
 
 
             if (pacienti == null)
@@ -233,7 +274,7 @@ namespace ReactApp1.Server.Controllers
                         CheckOutDate = dhoma.CheckOutDate,
                         PacientId = pacienti.Id
                     };
-                    _context.DhomaPacienteve.Add(dhomaPacientiEntity); 
+                    _context.DhomaPacienteve.Add(dhomaPacientiEntity);
                 }
             }
 
@@ -245,19 +286,19 @@ namespace ReactApp1.Server.Controllers
         }
 
 
-        
-       [HttpPost("Shto-Faturen")]
-       [Authorize(Roles="Doctor")]
-       public async Task<IActionResult> AddInvoice([FromBody] FaturaDTO request)
+
+        [HttpPost("Shto-Faturen")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> AddInvoice([FromBody] FaturaDTO request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-        
+
             var pacienti = await _context.Pacientet
                 .FirstOrDefaultAsync(p => p.Id == request.PacientId);
-        
+
             if (pacienti == null)
             {
                 return NotFound(new { Message = "Patient not found." });
@@ -272,15 +313,15 @@ namespace ReactApp1.Server.Controllers
                 Paguar = request.Paguar,
                 PacientId = pacienti.Id
             };
-        
+
             _context.Faturat.Add(fatura);
             await _context.SaveChangesAsync();
-        
+
             return Ok(new { Message = "Invoice added successfully!", InvoiceId = fatura.Id });
         }
 
         [HttpGet("CountAllPatients")]
-        [Authorize(Roles = "Doctor")] 
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> CountPatients()
         {
             try
@@ -297,7 +338,8 @@ namespace ReactApp1.Server.Controllers
                 });
             }
         }
-
-
+        // [Other methods remain exactly the same...]
+        // PUT, POST, DELETE and other endpoints stay unchanged
+        // ...
     }
 }

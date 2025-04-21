@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿
+using System.Numerics;
 
 namespace ReactApp1.Server.Data.Models
 {
