@@ -22,7 +22,7 @@ namespace ReactApp1.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MjekuDTO>>> GetMjeket()
+        public async Task<ActionResult<IEnumerable<MjekuDTO>>> GetAllMjeket()
         {
             try
             {

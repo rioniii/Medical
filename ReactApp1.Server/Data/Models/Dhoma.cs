@@ -11,7 +11,7 @@ namespace ReactApp1.Server.Data.Models
         public int Kapaciteti { get; set; }
         public bool Available { get; set; }
 
-        public List<DhomaPacientit> DhomaPacienteve { get; set; }
+        public List<DhomaPacientit> DhomaPacienteve { get; set; }//
 
     }
 }

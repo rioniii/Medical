@@ -41,12 +41,12 @@ public class UserController : ControllerBase
     }
 
 
-    [HttpPost]
+   /* [HttpPost]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> PostSecuredData()
     {
         return Ok("This Secured Data is available only for Authenticated Users.");
-    }
+    }*/
 
     [HttpPost("addrole")]
     public async Task<IActionResult> AddRoleAsync(AddRoleModel model)
