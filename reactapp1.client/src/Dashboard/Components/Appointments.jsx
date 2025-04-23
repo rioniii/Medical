@@ -101,6 +101,7 @@ const formattedAppointments = appointmentsResponse.data.map(appointment => {
         patientId: appointment.pacientId,
         status: mapStatusToEnglish(appointment.statusi) || "Planned",
         notes: appointment.notes || "",
+        originalDataTerminit: appointment.dataTerminit, // store original time string
         isValid: isValidTime
     };
 }).filter(appt => appt.isValid); // Only show valid appointments
@@ -167,35 +168,35 @@ const formattedAppointments = appointmentsResponse.data.map(appointment => {
         }
     };
 
-    const updateAppointment = async () => {
-        try {
-            setLoading(true);
-            await axios.put(
-                `https://localhost:7107/api/Termini/${selectedAppointment.id}`,
-                {
-                    Id: selectedAppointment.id,
-                    DoktorId: getDoctorIdFromToken(),
-                    PacientId: selectedAppointment.patientId,
-                    DataTerminit: selectedAppointment.start,
-                    Statusi: mapStatusToAlbanian(status),
-                    Notes: notes
-                },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json'
-                    }
+const updateAppointment = async () => {
+    try {
+        setLoading(true);
+        await axios.put(
+            `https://localhost:7107/api/Termini/${selectedAppointment.id}`,
+            {
+                Id: selectedAppointment.id,
+                DoktorId: getDoctorIdFromToken(),
+                PacientId: selectedAppointment.patientId,
+                DataTerminit: selectedAppointment.originalDataTerminit || selectedAppointment.start, // use original time if available
+                Statusi: mapStatusToAlbanian(status),
+                Notes: notes
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
                 }
-            );
-            setRefresh(prev => !prev);
-            handleCloseModal();
-        } catch (error) {
-            console.error("Error updating appointment:", error);
-            setError(error.response?.data?.message || "Failed to update appointment");
-        } finally {
-            setLoading(false);
-        }
-    };
+            }
+        );
+        setRefresh(prev => !prev);
+        handleCloseModal();
+    } catch (error) {
+        console.error("Error updating appointment:", error);
+        setError(error.response?.data?.message || "Failed to update appointment");
+    } finally {
+        setLoading(false);
+    }
+};
 
     const eventStyleGetter = (event) => {
         let backgroundColor = '#3174ad'; // Blue for default/Planned
