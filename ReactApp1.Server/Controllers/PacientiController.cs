@@ -7,12 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ReactApp1.Server.DTOs;
+using ReactApp1.Server.Migrations;
 
 namespace ReactApp1.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // Add this to require authentication for all endpoints
     public class PacientiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -22,8 +22,11 @@ namespace ReactApp1.Server.Controllers
             _context = context;
         }
 
+
+
+
         [HttpGet]
-        [Authorize(Roles = "Doctor")] // Only doctors can access this
+        //[Authorize(Roles = "Doctor")]
         public async Task<ActionResult<IEnumerable<Pacienti>>> GetPacientet()
         {
             return await _context.Pacientet
@@ -31,8 +34,12 @@ namespace ReactApp1.Server.Controllers
                 .ToListAsync();
         }
 
+
+
+
+
         [HttpGet("Get-Specific-Patient")]
-        [Authorize(Roles = "Doctor,Administrator")] // Both doctors and admins can access
+        [Authorize(Roles = "Doctor")]
         public async Task<ActionResult<Pacienti>> GetPacienti(string id)
         {
             var pacienti = await _context.Pacientet
@@ -49,8 +56,10 @@ namespace ReactApp1.Server.Controllers
             return Ok(pacienti);
         }
 
+
+
         [HttpPost("Update-Pacienti")]
-        [Authorize(Roles = "Doctor,Administrator")]
+        //[Authorize(Roles = "Doctor")]
         public async Task<IActionResult> PutPacienti(string id, PacientDTO request)
         {
             if (id != request.Id)
@@ -84,16 +93,16 @@ namespace ReactApp1.Server.Controllers
                 }
             }
 
-            return Ok("User updated successfully");
+            return Ok("User updated succesfully");
         }
 
         private bool PacientiExists(string id)
         {
-            return _context.Pacientet.Any(e => e.Id == id);
+            throw new NotImplementedException();
         }
 
         [HttpPost("Add-Patient")]
-        [Authorize(Roles = "Doctor,Administrator")]
+        //[Authorize(Roles = "Doctor")]
         public async Task<ActionResult<Pacienti>> PostPacienti(PacientDTO request)
         {
             try
@@ -117,19 +126,23 @@ namespace ReactApp1.Server.Controllers
             }
         }
 
+
+
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Doctor")] // Only admins can delete
+        //[Authorize(Roles = "Doctor")]
         public async Task<IActionResult> DeletePacienti(string id)
         {
             var pacienti = await _context.Pacientet
-                .Include(p => p.Terminet)
-                .Include(p => p.Historiks)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            .Include(p => p.Terminet)
+            .Include(p => p.Historiks)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
 
             if (pacienti == null)
             {
                 return NotFound("Pacienti with the specified ID was not found.");
             }
+
 
             if (pacienti.Terminet.Any() || pacienti.Historiks.Any())
             {
@@ -150,7 +163,6 @@ namespace ReactApp1.Server.Controllers
         }
 
         [HttpGet("GetPatientsBatch")]
-        [AllowAnonymous] // This endpoint can be accessed without authentication
         public async Task<ActionResult<IEnumerable<Pacienti>>> GetPatientsBatch([FromQuery] string ids)
         {
             if (string.IsNullOrEmpty(ids))
