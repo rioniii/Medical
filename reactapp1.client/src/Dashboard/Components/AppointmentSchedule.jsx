@@ -151,7 +151,7 @@ const AppointmentSchedule = () => {
                 Id: generatedId,
                 PacientId: newAppointment.pacientId, // Comes from token
                 DoktorId: selectedDoctorId,
-                DataTerminit: new Date(newAppointment.dataTerminit).toISOString(),
+                DataTerminit: newAppointment.dataTerminit, // Send as is, avoid toISOString()
                 Statusi: "Planned"
             };
 
@@ -190,8 +190,8 @@ const AppointmentSchedule = () => {
             <Alert variant="info" className="mb-4">
                 <strong>Appointment Scheduling Rules:</strong>
                 <ul className="mb-0">
-                    <li>Available Monday–Friday only (no weekends)</li>
-                    <li>Working hours: 8AM – 5PM</li>
+                    <li>Available Mondayï¿½Friday only (no weekends)</li>
+                    <li>Working hours: 8AM ï¿½ 5PM</li>
                     <li>Must schedule at least 1 hour in advance</li>
                     <li>Appointments are in 30-minute increments</li>
                 </ul>

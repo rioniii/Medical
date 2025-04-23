@@ -82,16 +82,28 @@ const Appointments = () => {
             });
             setPatientNames(namesMap);
 
-            // Format appointments with patient names
-            const formattedAppointments = appointmentsResponse.data.map(appointment => ({
-                title: `Appointment with ${namesMap[appointment.pacientId] || 'Patient'}`,
-                start: new Date(appointment.dataTerminit),
-                end: new Date(new Date(appointment.dataTerminit).getTime() + 30 * 60000),
-                id: appointment.id,
-                patientId: appointment.pacientId,
-                status: mapStatusToEnglish(appointment.statusi) || "Planned",
-                notes: appointment.notes || ""
-            }));
+            // Format appointments with patient names and validate times
+const formattedAppointments = appointmentsResponse.data.map(appointment => {
+    // Parse appointment time as local time explicitly to fix timezone offset
+    const startTime = moment(appointment.dataTerminit).local().toDate();
+    const endTime = new Date(startTime.getTime() + 30 * 60000); // 30 minutes duration
+
+    // Validate appointment time (weekdays 8AM-5PM)
+    const day = startTime.getDay();
+    const hours = startTime.getHours();
+    const isValidTime = (day >= 1 && day <= 5) && (hours >= 8 && hours < 17);
+
+    return {
+        title: `Appointment with ${namesMap[appointment.pacientId] || 'Patient'}`,
+        start: startTime,
+        end: endTime,
+        id: appointment.id,
+        patientId: appointment.pacientId,
+        status: mapStatusToEnglish(appointment.statusi) || "Planned",
+        notes: appointment.notes || "",
+        isValid: isValidTime
+    };
+}).filter(appt => appt.isValid); // Only show valid appointments
 
             setAppointments(formattedAppointments);
             setError(null);
@@ -165,7 +177,8 @@ const Appointments = () => {
                     DoktorId: getDoctorIdFromToken(),
                     PacientId: selectedAppointment.patientId,
                     DataTerminit: selectedAppointment.start,
-                    Statusi: mapStatusToAlbanian(status)
+                    Statusi: mapStatusToAlbanian(status),
+                    Notes: notes
                 },
                 {
                     headers: {
@@ -220,6 +233,19 @@ const Appointments = () => {
         </div>
     );
 
+    // Custom day view to hide weekends
+    const CustomDayView = ({ date, children }) => {
+        const day = date.getDay();
+        if (day === 0 || day === 6) { // Sunday (0) or Saturday (6)
+            return (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                    No appointments available on weekends
+                </div>
+            );
+        }
+        return children;
+    };
+
     if (error) {
         return (
             <Box sx={{ display: "flex", minHeight: "100vh" }}>
@@ -266,12 +292,28 @@ const Appointments = () => {
                         startAccessor="start"
                         endAccessor="end"
                         style={{ height: 600 }}
-                        defaultView="month"
+                        defaultView="week"
+                        views={['week', 'day', 'agenda']}
                         onSelectEvent={handleEventClick}
                         eventPropGetter={eventStyleGetter}
-                        components={{ event: CustomEvent }}
-                        min={new Date(0, 0, 0, 8, 0, 0)}
-                        max={new Date(0, 0, 0, 17, 0, 0)}
+                        components={{
+                            event: CustomEvent,
+                            week: {
+                                header: ({ date }) => {
+                                    const day = date.getDay();
+                                    if (day === 0 || day === 6) {
+                                        return null; // Hide weekend headers
+                                    }
+                                    return moment(date).format('dddd');
+                                }
+                            }
+                        }}
+                        min={new Date(0, 0, 0, 8, 0, 0)}  // 8AM
+                        max={new Date(0, 0, 0, 17, 0, 0)}  // 5PM
+                        step={30} // 30 minute intervals
+                        timeslots={1} // One appointment per timeslot
+                        dayLayoutAlgorithm="no-overlap"
+                        showMultiDayTimes={false}
                     />
                 )}
 
@@ -304,7 +346,7 @@ const Appointments = () => {
                                 </FormControl>
 
                                 <TextField
-                                    label="Description"
+                                    label="Notes"
                                     multiline
                                     rows={4}
                                     fullWidth
@@ -328,9 +370,9 @@ const Appointments = () => {
                             variant="contained"
                             color="primary"
                             onClick={updateAppointment}
-                            disabled={loading || status === selectedAppointment?.status}
+                            disabled={loading || (status === selectedAppointment?.status && notes === selectedAppointment?.notes)}
                         >
-                            Update Status
+                            Update
                         </Button>
                         <Button onClick={handleCloseModal}>Close</Button>
                     </DialogActions>
