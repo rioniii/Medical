@@ -115,7 +115,7 @@ const Pacientet = () => {
             const existingPatients = JSON.parse(localStorage.getItem('patients')) || [];
             existingPatients.push({ id: newPatientId, name: Name, surname: Surname, ditelindja: Ditelindja });
             localStorage.setItem('patients', JSON.stringify(existingPatients));
-            
+
             getData(userId);
             clearForm();
         } catch (error) {
@@ -261,50 +261,64 @@ const Pacientet = () => {
                         </Col>
                         <Col xs={12} md={6}>
                             <h3>Patient List</h3>
-                            <Table striped bordered hover responsive="sm" size="sm">
-                                <thead>
-                                    <tr>
-                                        <th>Id</th>
-                                        <th>Emri</th>
-                                        <th>Mbiemri</th>
-                                        <th>Ditelindja</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {data.length > 0 ? (
-                                        data.map((item, index) => (
-                                            <tr key={index}>
-                                                <td>{item.id}</td>
-                                                <td>{item.name}</td>
-                                                <td>{item.surname}</td>
-                                                <td>{formatDate(item.ditelindja)}</td>
-                                                <td>
-                                                    <IconButton 
-                                                        color="primary" 
-                                                        onClick={() => handleEdit(item)}
-                                                        sx={{ mr: 1 }}
-                                                    >
-                                                        <Edit />
-                                                    </IconButton>
-                                                    <IconButton 
-                                                        color="error" 
-                                                        onClick={() => handleDelete(item.id)}
-                                                    >
-                                                        <Delete />
-                                                    </IconButton>
+                            <div style={{
+                                maxHeight: '500px',
+                                overflowY: 'auto',
+                                border: '1px solid #dee2e6',
+                                borderRadius: '4px',
+                                boxShadow: '0 0 10px rgba(0,0,0,0.1)'
+                            }}>
+                                <Table striped bordered hover responsive="sm" size="sm" style={{ marginBottom: '0' }}>
+                                    <thead style={{
+                                        position: 'sticky',
+                                        top: 0,
+                                        backgroundColor: 'white',
+                                        zIndex: 1,
+                                        boxShadow: '0 2px 2px -1px rgba(0,0,0,0.1)'
+                                    }}>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Emri</th>
+                                            <th>Mbiemri</th>
+                                            <th>Ditelindja</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {data.length > 0 ? (
+                                            data.map((item, index) => (
+                                                <tr key={index}>
+                                                    <td>{item.id}</td>
+                                                    <td>{item.name}</td>
+                                                    <td>{item.surname}</td>
+                                                    <td>{formatDate(item.ditelindja)}</td>
+                                                    <td>
+                                                        <IconButton
+                                                            color="primary"
+                                                            onClick={() => handleEdit(item)}
+                                                            sx={{ mr: 1 }}
+                                                        >
+                                                            <Edit />
+                                                        </IconButton>
+                                                        <IconButton
+                                                            color="error"
+                                                            onClick={() => handleDelete(item.id)}
+                                                        >
+                                                            <Delete />
+                                                        </IconButton>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="5" style={{ textAlign: "center" }}>
+                                                    No data available or failed to load data.
                                                 </td>
                                             </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="5" style={{ textAlign: "center" }}>
-                                                No data available or failed to load data.
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </Table>
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </div>
                         </Col>
                     </Row>
                 </Container>
