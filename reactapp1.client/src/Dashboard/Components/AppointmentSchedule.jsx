@@ -192,7 +192,7 @@ const AppointmentSchedule = () => {
                 <ul className="mb-0">
                     <li>Available Monday�Friday only (no weekends)</li>
                     <li>Working hours: 8AM � 5PM</li>
-                    <li>Must schedule at least 1 hour in advance</li>
+                    <li>Must schedule at least 1 hour in advance (example 11:00,12:00,13:00)</li>
                     <li>Appointments are in 30-minute increments</li>
                 </ul>
             </Alert>

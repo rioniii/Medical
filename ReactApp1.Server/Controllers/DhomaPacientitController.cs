@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
 using ReactApp1.Server.Data.Models;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace ReactApp1.Server.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class DhomaPacientitController : ControllerBase
@@ -22,6 +25,7 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/DhomaPacientit
         [HttpGet]
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<ActionResult<IEnumerable<DhomaPacientitDTO>>> GetDhomaPacientit()
         {
             var dhomaPacienteve = await _context.DhomaPacienteve
@@ -41,6 +45,7 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/DhomaPacientit/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<ActionResult<DhomaPacientitDTO>> GetDhomaPacientit(string id)
         {
             var dhomaPacientit = await _context.DhomaPacienteve
@@ -65,6 +70,7 @@ namespace ReactApp1.Server.Controllers
 
         // PUT: api/DhomaPacientit/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<IActionResult> PutDhomaPacientit(string id, DhomaPacientitDTO dhomaPacientitDTO)
         {
             if (id != dhomaPacientitDTO.Id)
@@ -106,6 +112,7 @@ namespace ReactApp1.Server.Controllers
 
         // POST: api/DhomaPacientit
         [HttpPost]
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<ActionResult<DhomaPacientitDTO>> PostDhomaPacientit([FromBody] DhomaPacientitDTO dhomaPacientitDTO)
         {
             // Log the received request for debugging
@@ -144,6 +151,7 @@ namespace ReactApp1.Server.Controllers
 
         // DELETE: api/DhomaPacientit/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<IActionResult> DeleteDhomaPacientit(string id)
         {
             var dhomaPacientit = await _context.DhomaPacienteve.FindAsync(id);

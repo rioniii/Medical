@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data.Models;
 using ReactApp1.Server.DTOs;
@@ -8,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace ReactApp1.Server.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class FaturaController : ControllerBase
@@ -21,6 +24,7 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/Fatura
         [HttpGet]
+        [Authorize(Roles = "Doctor")]
         public async Task<ActionResult<IEnumerable<Fatura>>> GetFaturas()
         {
             var faturas = await _context.Faturat
@@ -32,6 +36,7 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/Fatura/{id}
         [HttpGet("{id}")]
+        [Authorize(Roles = "Doctor")]
         public async Task<ActionResult<Fatura>> GetFatura(string id)
         {
             var fatura = await _context.Faturat
@@ -48,6 +53,7 @@ namespace ReactApp1.Server.Controllers
 
         // POST: api/Fatura
         [HttpPost]
+        [Authorize(Roles = "Doctor")]
         public async Task<ActionResult<Fatura>> PostFatura(FaturaDTO request)
         {
             var fatura = new Fatura
@@ -68,6 +74,7 @@ namespace ReactApp1.Server.Controllers
 
         // PUT: api/Fatura/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> PutFatura(string id, FaturaDTO request)
         {
             if (id != request.Id)
@@ -110,6 +117,7 @@ namespace ReactApp1.Server.Controllers
 
         // DELETE: api/Fatura/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> DeleteFatura(string id)
         {
             var fatura = await _context.Faturat.FindAsync(id);

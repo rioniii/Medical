@@ -8,9 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using ReactApp1.Server.DTOs;
 using ReactApp1.Server.Migrations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ReactApp1.Server.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class PacientiController : ControllerBase
@@ -26,7 +28,7 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpGet]
-        //[Authorize(Roles = "Doctor")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Pacienti>>> GetPacientet()
         {
             return await _context.Pacientet
@@ -59,7 +61,7 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpPost("Update-Pacienti")]
-        //[Authorize(Roles = "Doctor")]
+        [Authorize]
         public async Task<IActionResult> PutPacienti(string id, PacientDTO request)
         {
             if (id != request.Id)
@@ -102,7 +104,7 @@ namespace ReactApp1.Server.Controllers
         }
 
         [HttpPost("Add-Patient")]
-        //[Authorize(Roles = "Doctor")]
+        [Authorize]
         public async Task<ActionResult<Pacienti>> PostPacienti(PacientDTO request)
         {
             try
@@ -129,7 +131,7 @@ namespace ReactApp1.Server.Controllers
 
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Doctor")]
+        [Authorize]
         public async Task<IActionResult> DeletePacienti(string id)
         {
             var pacienti = await _context.Pacientet

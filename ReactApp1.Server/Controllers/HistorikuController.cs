@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
 using ReactApp1.Server.Data.Models;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace ReactApp1.Server.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class HistorikuController : ControllerBase
@@ -24,6 +27,7 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/Historiku
         [HttpGet]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetHistoriku()
         {
             try
@@ -44,6 +48,7 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/Historiku/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetHistoriku(string id)
         {
             try
@@ -69,6 +74,7 @@ namespace ReactApp1.Server.Controllers
 
         // POST: api/Historiku
         [HttpPost]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> PostHistoriku(HistorikuDTO historikuDTO)
         {
             try
@@ -119,6 +125,7 @@ namespace ReactApp1.Server.Controllers
 
         // PUT: api/Historiku/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> PutHistoriku(string id, HistorikuDTO historikuDTO)
         {
             try
@@ -159,6 +166,7 @@ namespace ReactApp1.Server.Controllers
 
         // DELETE: api/Historiku/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> DeleteHistoriku(string id)
         {
             try

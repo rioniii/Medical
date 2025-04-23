@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace ReactApp1.Server.Controllers
 
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class InvoiceController : ControllerBase
@@ -15,6 +18,8 @@ namespace ReactApp1.Server.Controllers
         }
 
         [HttpGet("{Id}/Invoice")]
+
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<IActionResult> GetInvoice(string Id)
         {
             // Fetch patient with their invoices (Faturat) and related Records (Sherbimi)
