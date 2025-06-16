@@ -79,7 +79,7 @@ const Payments = () => {
         }
     }, [payments]);
 
-    // Fetch patients from the API
+    // Fetch patients from the API (updated to fetch only patients)
     const fetchPatients = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -88,7 +88,7 @@ const Payments = () => {
                 return;
             }
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            const response = await axios.get("https://localhost:7107/api/User", config);
+            const response = await axios.get("https://localhost:7107/api/Pacienti", config);
             setPatients(response.data);
         } catch (error) {
             setError("Error fetching patients: " + error.message);
@@ -218,7 +218,7 @@ const Payments = () => {
     // Get patient name by ID
     const getPatientNameById = (id) => {
         const patient = patients.find((patient) => patient.id === id);
-        return patient ? `${patient.firstName} ${patient.lastName}` : "Unknown";
+        return patient ? `${patient.name} ${patient.surname}` : "Unknown";
     };
 
     // Clear payments when token is removed or expires
@@ -304,7 +304,7 @@ const Payments = () => {
                                     <MenuItem value="">All Patients</MenuItem>
                                     {patients.map((patient) => (
                                         <MenuItem key={patient.id} value={patient.id}>
-                                            {`${patient.firstName} ${patient.lastName}`}
+                                            {`${patient.name} ${patient.surname}`}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -461,7 +461,7 @@ const Payments = () => {
                                     <MenuItem value="">Select Patient</MenuItem>
                                     {patients.map((patient) => (
                                         <MenuItem key={patient.id} value={patient.id}>
-                                            {`${patient.firstName} ${patient.lastName}`}
+                                            {`${patient.name} ${patient.surname}`}
                                         </MenuItem>
                                     ))}
                                 </Select>
