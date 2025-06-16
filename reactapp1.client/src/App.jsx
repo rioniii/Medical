@@ -20,6 +20,7 @@ import Payments from './Dashboard/Components/Payments';
 import Records from './Dashboard/Components/Records';
 import Services from './Dashboard/Components/Services';
 import Invoice from './Dashboard/Components/Invoice';
+import LiveChat from './LiveChat';
 
 
 
@@ -160,6 +161,7 @@ class App extends Component {
                         } />
                     </Routes>
                     <Footer />
+                    <LiveChat />
                 </HashRouter>
             </Suspense>
         );
@@ -167,3 +169,4 @@ class App extends Component {
 }
 
 export default App;
+
