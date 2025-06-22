@@ -3,7 +3,7 @@ import axios from "axios";
 import { Button, Modal, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "./Sidebar";
 import emailjs from "emailjs-com"; // Import EmailJS
@@ -124,7 +124,7 @@ const Invoice = () => {
         // Add services (Sherbimet) next
         const finalYAfterHistory = historikuStartY + historikuHeight + 10;
         doc.text("Services:", 14, finalYAfterHistory);
-        doc.autoTable({
+        autoTable(doc, {
             head: [['Item', 'Price ', 'Quantity', 'Amount ']],
             body: invoiceDetails.records.map((service) => [
                 service.emri_Sherbimit,
@@ -135,8 +135,7 @@ const Invoice = () => {
             startY: finalYAfterHistory + 10,
             styles: { fontSize: 10 },
         });
-
-        const finalY = doc.previousAutoTable.finalY + 10;
+        const finalY = doc.lastAutoTable.finalY + 10;
 
         // Add price details at the end
         doc.text(`Subtotal: ${formatCurrency(invoiceDetails.subTotal)}Euro`, 14, finalY);
