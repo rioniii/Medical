@@ -44,6 +44,22 @@ namespace ReactApp1.Server.Services
                 {
                     await _userManager.AddToRoleAsync(user, Authorization.default_role.ToString());
 
+                    // Create the patient and link to user
+                    var pacienti = new Pacienti
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = model.FirstName,
+                        Surname = model.LastName,
+                        Ditelindja = model.Ditelindja,
+                        UserId = user.Id
+                    };
+                    _context.Pacientet.Add(pacienti);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    // Optionally, return or log the error details
+                    return $"User creation failed: {string.Join(", ", result.Errors.Select(e => e.Description))}";
                 }
                 return $"User Registered with username {user.UserName}";
             }

@@ -57,18 +57,16 @@ function Register() {
 
         const userData = {
             Username: username,
-            FirstName: fullName,  // Full name as FirstName
-            LastName: lastName,   // Last name as LastName
+            FirstName: fullName,
+            LastName: lastName,
             Email: email,
             Password: password,
-            ConfirmPassword: confirmPassword,
-            DateOfBirth: dateOfBirth,
-            Role: 'User',  // Default role
+            Ditelindja: dateOfBirth
         };
 
         try {
             // API call to backend for registration
-            const response = await fetch('https://localhost:7107/api/Auth/register', {
+            const response = await fetch('https://localhost:7107/api/User/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

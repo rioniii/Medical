@@ -86,5 +86,11 @@ public class ApplicationDbContext : IdentityDbContext<User>  // Use User here in
             .WithOne(dp => dp.Pacienti)
             .HasForeignKey(dp => dp.PacientId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Pacienti>()
+            .HasOne(p => p.User)
+            .WithMany()
+            .HasForeignKey(p => p.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
