@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
     Box,
     Typography,
@@ -91,8 +93,10 @@ const Payments = () => {
             const response = await axios.get("https://localhost:7107/api/Pacienti", config);
             setPatients(response.data);
         } catch (error) {
-            setError("Error fetching patients: " + error.message);
-            console.error("Error fetching patients:", error);
+            const errorMsg = "Error fetching patients: " + error.message;
+            console.error(errorMsg);
+            setError(errorMsg);
+            toast.error(errorMsg);
         } finally {
             setLoading(false);
         }
@@ -101,7 +105,7 @@ const Payments = () => {
     // Handle adding a new payment
     const handleAddPayment = () => {
         if (!paymentForm.patientId || !paymentForm.amount || !paymentForm.date) {
-            alert("Please fill in all fields.");
+            toast.error("Please fill in all fields.");
             return;
         }
 
@@ -111,7 +115,7 @@ const Payments = () => {
         );
 
         if (patientAlreadyHasPayment) {
-            alert("This patient already has a payment. Please edit the existing payment instead.");
+            toast.warning("This patient already has a payment. Please edit the existing payment instead.");
             return;
         }
 
@@ -119,7 +123,7 @@ const Payments = () => {
         const selectedDate = moment(paymentForm.date);
         const today = moment().startOf("day");
         if (selectedDate.isBefore(today)) {
-            alert("Date cannot be earlier than today.");
+            toast.error("Date cannot be earlier than today.");
             return;
         }
 
@@ -141,19 +145,20 @@ const Payments = () => {
         // Close the dialog and reset the form
         setOpenAddDialog(false);
         resetForm();
+        toast.success("Payment added successfully!");
     };
 
     // Handle editing an existing payment
     const handleEditPayment = () => {
         if (!paymentForm.patientName || !paymentForm.amount || !paymentForm.date) {
-            alert("Please fill in all fields.");
+            toast.error("Please fill in all fields.");
             return;
         }
 
         // Ensure amount is treated as a number
         const amount = parseFloat(paymentForm.amount);
         if (isNaN(amount)) {
-            alert("Amount must be a valid number.");
+            toast.error("Amount must be a valid number.");
             return;
         }
 
@@ -161,7 +166,7 @@ const Payments = () => {
         const selectedDate = moment(paymentForm.date);
         const today = moment().startOf("day");
         if (selectedDate.isBefore(today)) {
-            alert("Date cannot be earlier than today.");
+            toast.error("Date cannot be earlier than today.");
             return;
         }
 
@@ -178,13 +183,17 @@ const Payments = () => {
         // Close the dialog and reset the form
         setOpenEditDialog(false);
         resetForm();
+        toast.success("Payment updated successfully!");
     };
 
     // Handle deleting a payment
     const handleDeletePayment = (id) => {
-        const updatedPayments = payments.filter((payment) => payment.id !== id);
-        setPayments(updatedPayments);
-        setFilteredPayments(updatedPayments);
+        if (window.confirm("Are you sure you want to delete this payment?")) {
+            const updatedPayments = payments.filter((payment) => payment.id !== id);
+            setPayments(updatedPayments);
+            setFilteredPayments(updatedPayments);
+            toast.success("Payment deleted successfully!");
+        }
     };
 
     // Reset the payment form

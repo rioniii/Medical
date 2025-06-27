@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { v4 as uuidv4 } from "uuid"; // Import uuid package
+import { v4 as uuidv4 } from "uuid";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
     Box,
     Typography,
@@ -36,10 +38,12 @@ const Records = () => {
 
     const fetchRecords = async () => {
         try {
-            const response = await axios.get("https://localhost:7107/api/Sherbimi"); // Adjust the endpoint accordingly
+            const response = await axios.get("https://localhost:7107/api/Sherbimi");
             setRecords(response.data);
         } catch (error) {
-            console.error("Error fetching Records:", error);
+            const errorMsg = `Error fetching services: ${error.message}`;
+            console.error(errorMsg);
+            toast.error(errorMsg);
         }
     };
 
@@ -53,10 +57,13 @@ const Records = () => {
 
     const handleDelete = async (serviceId) => {
         try {
-            await axios.delete(`https://localhost:7107/api/Sherbimi/${serviceId}`); // Adjust the endpoint
+            await axios.delete(`https://localhost:7107/api/Sherbimi/${serviceId}`);
             setRecords(Records.filter((service) => service.id !== serviceId));
+            toast.success("Service deleted successfully!");
         } catch (error) {
+            const errorMsg = error.response?.data?.title || "Error deleting service";
             console.error("Error deleting service:", error);
+            toast.error(errorMsg);
         }
     };
 
@@ -76,8 +83,11 @@ const Records = () => {
                 service.id === editingService.id ? updatedService : service
             ));
             setOpenEditDialog(false);
+            toast.success("Service updated successfully!");
         } catch (error) {
+            const errorMsg = error.response?.data?.title || "Error updating service";
             console.error("Error updating service:", error);
+            toast.error(errorMsg);
         }
     };
 
@@ -93,6 +103,7 @@ const Records = () => {
             const response = await axios.post("https://localhost:7107/api/Sherbimi", newService); // Adjust the endpoint
             setRecords([...Records, response.data]);
             setOpenAddDialog(false);
+            toast.success("Service added successfully!");
 
             // Reset the fields after adding a service
             setNewServiceName("");

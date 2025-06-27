@@ -14,6 +14,8 @@ import {
     InputLabel,
 } from "@mui/material";
 import Sidebar from "./Sidebar";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Records = () => {
     const [newEntry, setNewEntry] = useState({
@@ -50,11 +52,15 @@ const Records = () => {
             if (Array.isArray(response.data)) {
                 setPatients(response.data);
             } else {
-                setError("Invalid patient data format.");
+                const errorMsg = "Invalid patient data format.";
+            setError(errorMsg);
+            toast.error(errorMsg);
             }
         } catch (error) {
-            setError("Error fetching patients: " + error.message);
+            const errorMsg = `Error fetching patients: ${error.message}`;
+            setError(errorMsg);
             console.error("Error fetching patients:", error);
+            toast.error(errorMsg);
         }
     };
 
@@ -71,8 +77,10 @@ const Records = () => {
                     }));
                 }
             } catch (error) {
+                const errorMsg = error.response?.data?.title || "Error decoding token. Please try again.";
                 console.error("Error decoding token:", error);
-                setError("Failed to decode token.");
+                setError(errorMsg);
+                toast.error(errorMsg);
             }
         }
     };
@@ -95,7 +103,9 @@ const Records = () => {
 
     const validateEntry = () => {
         if (!newEntry.MjekuId || !newEntry.PacientId || !newEntry.Data) {
-            setError("All fields are required.");
+            const errorMsg = "All fields are required.";
+            setError(errorMsg);
+            toast.error(errorMsg);
             return false;
         }
 
@@ -135,8 +145,10 @@ const Records = () => {
                 Perfundimi: newEntry.Perfundimi || "",
             };
             await axios.post("https://localhost:7107/api/Historiku", newData);
-            setMessage("Entry added successfully!");
+            const successMsg = "Record saved successfully!";
+            setMessage(successMsg);
             setError("");
+            toast.success(successMsg);
             setNewEntry({
                 Id: "",
                 MjekuId: newEntry.MjekuId,

@@ -72,26 +72,20 @@ function Register() {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Registration failed:', errorData);
+            const data = response.data;
 
-                // Check specific error messages
-                if (errorData.title === 'Email already taken') {
-                    setEmailTakenError('Email is already taken!');
+            if (typeof data === "string" && data.includes("User Registered")) {
+                console.log('Registration successful');
+                if (data.token && data.token.split('.').length === 3) {
+                    localStorage.setItem("token", data.token);
                 } else {
-                    setErrorMessage(errorData.title || 'Registration failed. Please try again.');
+                    console.error('Invalid token received');
                 }
-                return;
-            }
-
-            console.log('Registration successful');
-            if (response.data.token && response.data.token.split('.').length === 3) {
-                localStorage.setItem("token", response.data.token);
+                document.location = "/login"; // Redirect to login page
             } else {
-                console.error('Invalid token received');
+                console.error('Registration failed:', data.message || data);
+                setErrorMessage(data.message || 'Registration failed. Please try again.');
             }
-            document.location = "/login"; // Redirect to login page
 
         } catch (error) {
             console.error('Registration failed:', error);

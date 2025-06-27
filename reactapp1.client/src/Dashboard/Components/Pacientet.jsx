@@ -12,6 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 import Sidebar from "./Sidebar.jsx";
 import { IconButton } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Pacientet = () => {
     const [show, setShow] = useState(false);
@@ -68,7 +70,9 @@ const Pacientet = () => {
             });
             setData(response.data);
         } catch (error) {
-            console.error("Error fetching data:", error.response?.data || error.message);
+            const errorMsg = `Error fetching patient data: ${error.response?.data?.title || error.message}`;
+            console.error(errorMsg);
+            toast.error(errorMsg);
         }
     };
 
@@ -83,7 +87,7 @@ const Pacientet = () => {
         const token = localStorage.getItem("token");
 
         if (!token) {
-            alert("User not authenticated.");
+            toast.error("User not authenticated. Please log in.");
             return;
         }
 
@@ -93,7 +97,7 @@ const Pacientet = () => {
         const today = new Date();
         const dob = new Date(Ditelindja);
         if (dob > today) {
-            alert("Date of Birth cannot be in the future.");
+            toast.error("Date of Birth cannot be in the future.");
             return;
         }
 
@@ -103,13 +107,16 @@ const Pacientet = () => {
         console.log("Payload to send:", payload);
 
         if (!Name || !Surname || !Ditelindja) {
-            alert("Please fill out all required fields.");
+            toast.error("Please fill out all required fields.");
             return;
         }
 
         try {
             const response = await axios.post("https://localhost:7107/api/Pacienti/Add-Patient", payload, {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
             });
 
             const existingPatients = JSON.parse(localStorage.getItem('patients')) || [];
@@ -118,14 +125,11 @@ const Pacientet = () => {
 
             getData(userId);
             clearForm();
+            toast.success("Patient added successfully!");
         } catch (error) {
-            if (error.response) {
-                console.error("Error adding patient:", error.response.data);
-                alert(`Error adding patient: ${error.response?.data?.message || 'Unknown error'}`);
-            } else {
-                console.error("Error adding patient:", error.message);
-                alert("There was an error adding the patient. Please try again.");
-            }
+            console.error("Error adding patient:", error);
+            const errorMessage = error.response?.data?.title || error.response?.data || error.message;
+            toast.error(`Error adding patient: ${errorMessage}`);
         }
     };
 
@@ -142,7 +146,7 @@ const Pacientet = () => {
         const token = localStorage.getItem("token");
 
         if (!token) {
-            alert("User not authenticated.");
+            toast.error("User not authenticated. Please log in.");
             return;
         }
 
@@ -151,7 +155,7 @@ const Pacientet = () => {
         const today = new Date();
         const dob = new Date(Ditelindja);
         if (dob > today) {
-            alert("Date of Birth cannot be in the future.");
+            toast.error("Date of Birth cannot be in the future.");
             return;
         }
 
@@ -159,29 +163,25 @@ const Pacientet = () => {
         console.log("Updating patient with payload:", updatedPatient);
 
         try {
-            const response = await fetch(
+            const response = await axios.post(
                 `https://localhost:7107/api/Pacienti/Update-Pacienti?id=${Id}`,
+                updatedPatient,
                 {
-                    method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(updatedPatient),
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
                 }
             );
 
-            if (response.ok) {
-                console.log("Patient updated successfully");
-                handleClose();
-                getData(decoded.id);
-            } else {
-                console.error("Failed to update patient:", response.statusText);
-                alert("Error updating patient.");
-            }
+            console.log("Patient updated successfully");
+            handleClose();
+            getData(decoded.id);
+            toast.success("Patient updated successfully!");
         } catch (error) {
             console.error("Error updating patient:", error);
-            alert("There was an error updating the patient. Please try again.");
+            const errorMessage = error.response?.data?.title || error.response?.data || error.message;
+            toast.error(`Error updating patient: ${errorMessage}`);
         }
     };
 
@@ -191,7 +191,7 @@ const Pacientet = () => {
             const token = localStorage.getItem("token");
 
             if (!token) {
-                alert("User not authenticated.");
+                toast.error("User not authenticated. Please log in.");
                 return;
             }
 
@@ -204,15 +204,16 @@ const Pacientet = () => {
 
                 if (response.status === 200) {
                     console.log("Patient deleted successfully");
-                    alert("Patient deleted successfully!");
+                    toast.success("Patient deleted successfully!");
                     getData(decoded.id);
                 } else {
                     console.error("Failed to delete patient:", response.statusText);
-                    alert("Error deleting patient.");
+                    toast.error("Error deleting patient.");
                 }
             } catch (error) {
+                const errorMsg = error.response?.data?.title || "Error deleting patient";
                 console.error("Error deleting patient:", error);
-                alert("There was an error deleting the patient. Please try again.");
+                toast.error(errorMsg);
             }
         }
     };

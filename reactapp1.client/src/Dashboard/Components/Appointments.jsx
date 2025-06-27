@@ -22,6 +22,8 @@ import {
 } from "@mui/material";
 import Sidebar from "./Sidebar";
 import { jwtDecode } from "jwt-decode";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const localizer = momentLocalizer(moment);
 
@@ -53,7 +55,9 @@ const Appointments = () => {
             setLoading(true);
             const doctorId = getDoctorIdFromToken();
             if (!doctorId) {
-                setError("Unable to identify doctor. Please log in again.");
+                const errorMsg = "Unable to identify doctor. Please log in again.";
+                setError(errorMsg);
+                toast.error(errorMsg);
                 return;
             }
 
@@ -110,7 +114,9 @@ const formattedAppointments = appointmentsResponse.data.map(appointment => {
             setError(null);
         } catch (error) {
             console.error("Error fetching appointments:", error);
-            setError(error.response?.data?.message || error.message);
+            const errorMsg = error.response?.data?.message || error.message;
+            setError(errorMsg);
+            toast.error(`Error: ${errorMsg}`);
         } finally {
             setLoading(false);
         }
@@ -160,9 +166,12 @@ const formattedAppointments = appointmentsResponse.data.map(appointment => {
             );
             setRefresh(prev => !prev);
             handleCloseModal();
+            toast.success('Appointment deleted successfully!');
         } catch (error) {
             console.error("Error deleting appointment:", error);
-            setError(error.response?.data?.message || "Failed to delete appointment");
+            const errorMessage = error.response?.data?.message || "Failed to delete appointment";
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -190,9 +199,12 @@ const updateAppointment = async () => {
         );
         setRefresh(prev => !prev);
         handleCloseModal();
+        toast.success('Appointment updated successfully!');
     } catch (error) {
         console.error("Error updating appointment:", error);
-        setError(error.response?.data?.message || "Failed to update appointment");
+        const errorMessage = error.response?.data?.message || "Failed to update appointment";
+        setError(errorMessage);
+        toast.error(errorMessage);
     } finally {
         setLoading(false);
     }

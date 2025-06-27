@@ -21,6 +21,8 @@ import Records from './Dashboard/Components/Records';
 import Services from './Dashboard/Components/Services';
 import Invoice from './Dashboard/Components/Invoice';
 import LiveChat from './LiveChat';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -162,6 +164,7 @@ class App extends Component {
                     </Routes>
                     <Footer />
                     <LiveChat />
+                    <ToastContainer />
                 </HashRouter>
             </Suspense>
         );

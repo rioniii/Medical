@@ -12,6 +12,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { IconButton } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Room = () => {
     const [showEditModal, setShowEditModal] = useState(false);
@@ -75,10 +77,16 @@ const Room = () => {
                     const patientsData = await patientsResponse.json();
                     setPatients(patientsData);
                 } else {
-                    throw new Error("Data could not be fetched.");
+                    const errorMsg = "Data could not be fetched.";
+                    setError(errorMsg);
+                    toast.error(errorMsg);
+                    throw new Error(errorMsg);
                 }
             } catch (error) {
-                console.error("Error fetching data:", error);
+                const errorMsg = `Error fetching data: ${error.message}`;
+                console.error(errorMsg);
+                setError(errorMsg);
+                toast.error(errorMsg);
             }
         }
     };
@@ -92,9 +100,15 @@ const Room = () => {
             if (response.ok) {
                 const data = await response.json();
                 setAssignments(data);
+            } else {
+                const errorMsg = `Failed to fetch assignments: ${response.status}`;
+                setError(errorMsg);
+                toast.error(errorMsg);
             }
         } catch (err) {
-            setError("Failed to fetch assignments.");
+            const errorMsg = `Failed to fetch assignments: ${err.message}`;
+            setError(errorMsg);
+            toast.error(errorMsg);
         }
     };
 
@@ -144,14 +158,17 @@ const Room = () => {
                 },
             });
             if (response.ok) {
-                fetchData();
                 fetchAssignments();
-                alert("Room assignment added successfully!");
+                handleCloseEditModal();
+                toast.success('Room assignment added successfully!');
             } else {
                 setError("Failed to add assignment.");
             }
-        } catch (err) {
-            setError("Error adding assignment.");
+        } catch (error) {
+            const errorMsg = error.response?.data?.title || "Failed to add room assignment.";
+            console.error("Error adding room assignment:", error);
+            setError(errorMsg);
+            toast.error(errorMsg);
         }
     };
 
