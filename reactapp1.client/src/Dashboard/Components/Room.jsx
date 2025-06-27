@@ -14,6 +14,7 @@ import { Edit, Delete } from "@mui/icons-material";
 import axios from "axios";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import dayjs from "dayjs";
 
 const Room = () => {
     const [showEditModal, setShowEditModal] = useState(false);
@@ -33,6 +34,7 @@ const Room = () => {
     const [assignments, setAssignments] = useState([]);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [rooms, setRooms] = useState([]);
 
     const handleCloseEditModal = () => {
         setShowEditModal(false);
@@ -99,7 +101,19 @@ const Room = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setAssignments(data);
+                console.log("Fetched assignments:", data);
+                // Map IDs to names/numbers, always preserve id
+                const mapped = data.map(assignment => {
+                    const patient = patients.find(p => p.id === assignment.pacientId);
+                    const room = rooms.find(r => String(r.id) === String(assignment.dhomaId));
+                    return {
+                        ...assignment, // preserves id
+                        pacientName: patient ? `${patient.name} ${patient.surname}` : assignment.pacientId,
+                        roomNumber: room ? room.nrDhomes : assignment.dhomaId
+                    };
+                });
+                console.log("Mapped assignments:", mapped);
+                setAssignments(mapped);
             } else {
                 const errorMsg = `Failed to fetch assignments: ${response.status}`;
                 setError(errorMsg);
@@ -112,9 +126,28 @@ const Room = () => {
         }
     };
 
+    const fetchRooms = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch("https://localhost:7107/api/Dhoma", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setRooms(data);
+                console.log('Fetched rooms:', data);
+            } else {
+                toast.error("Failed to fetch rooms");
+            }
+        } catch (err) {
+            toast.error("Failed to fetch rooms");
+        }
+    };
+
     useEffect(() => {
         fetchData();
         fetchAssignments();
+        fetchRooms();
     }, []);
 
     const generateGuid = () => {
@@ -140,85 +173,98 @@ const Room = () => {
 
         const token = localStorage.getItem("token");
         const newAssignment = {
-            pacientId: formData.pacientId,
-            dhomaId: formData.dhomaId,
-            checkInDate: formData.checkInDate,
-            checkOutDate: formData.checkOutDate,
+            Id: "",
+            PacientId: formData.pacientId,
+            DhomaId: formData.dhomaId,
+            CheckInDate: formData.checkInDate,
+            CheckOutDate: formData.checkOutDate,
             roomNumber: formData.roomNumber,
             roomType: formData.roomType,
             roomCapacity: formData.roomCapacity,
             isAvailable: formData.isAvailable === "true",
         };
 
+        const occupancy = getRoomOccupancy();
+        const selectedRoom = rooms.find(r => String(r.id) === String(formData.dhomaId));
+        if (selectedRoom && occupancy[selectedRoom.id] >= selectedRoom.kapaciteti) {
+            setError("This room is already at full capacity.");
+            return;
+        }
+
         try {
-            const response = await axios.post("https://localhost:7107/api/DhomaPacientit", newAssignment, {
+            await axios.post("https://localhost:7107/api/DhomaPacientit", newAssignment, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
             });
-            if (response.ok) {
-                fetchAssignments();
-                handleCloseEditModal();
-                toast.success('Room assignment added successfully!');
-            } else {
-                setError("Failed to add assignment.");
-            }
+            fetchAssignments();
+            handleCloseEditModal();
+            toast.success('Room assignment added successfully!');
         } catch (error) {
-            const errorMsg = error.response?.data?.title || "Failed to add room assignment.";
+            const errorMsg = error.response?.data?.title || "Failed to add assignment.";
             console.error("Error adding room assignment:", error);
             setError(errorMsg);
             toast.error(errorMsg);
         }
     };
 
-    const handleSubmitEdit = (e) => {
+    const handleSubmitEdit = async (e) => {
         e.preventDefault();
 
-        if (!formData.pacientName || !formData.roomNumber || !formData.roomType || !formData.roomCapacity || !formData.checkInDate) {
-            setError("Patient Name, Room, and Check-in Date are required.");
-            return;
-        }
-
-        if (formData.checkOutDate && new Date(formData.checkOutDate) < new Date(formData.checkInDate)) {
-            setError("Check-out date cannot be before the check-in date.");
+        const assignmentId = formData.id;
+        if (!assignmentId) {
+            setError("Assignment ID not found.");
             return;
         }
 
         const updatedAssignment = {
-            pacientId: formData.pacientId,
-            pacientName: formData.pacientName,
-            dhomaId: formData.dhomaId,
-            checkInDate: formData.checkInDate,
-            checkOutDate: formData.checkOutDate || "N/A",
-            roomNumber: formData.roomNumber,
-            roomType: formData.roomType,
-            roomCapacity: formData.roomCapacity,
-            isAvailable: formData.isAvailable === "true",
+            Id: assignmentId,
+            PacientId: formData.pacientId,
+            DhomaId: formData.dhomaId,
+            CheckInDate: formData.checkInDate,
+            CheckOutDate: formData.checkOutDate,
         };
 
-        setAssignments((prevAssignments) => {
-            const updatedAssignments = [...prevAssignments];
-            updatedAssignments[editingIndex] = updatedAssignment;
-            return updatedAssignments;
-        });
+        const token = localStorage.getItem("token");
 
-        alert("Room assignment updated successfully!");
-        handleCloseEditModal();
+        try {
+            console.log("PUT URL:", `https://localhost:7107/api/DhomaPacientit/${assignmentId}`);
+            console.log("PUT BODY:", updatedAssignment);
+            await axios.put(
+                `https://localhost:7107/api/DhomaPacientit/${assignmentId}`,
+                updatedAssignment,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            fetchAssignments();
+            handleCloseEditModal();
+            toast.success('Room assignment updated successfully!');
+        } catch (error) {
+            const errorMsg = error.response?.data?.title || "Failed to update assignment.";
+            setError(errorMsg);
+            toast.error(errorMsg);
+        }
     };
 
     const handleEdit = (index) => {
         setEditingIndex(index);
         const selectedAssignment = assignments[index];
+        const selectedRoom = rooms.find(r => String(r.id) === String(selectedAssignment.dhomaId));
 
         setFormData({
+            id: selectedAssignment.id || selectedAssignment.Id,
             pacientId: selectedAssignment.pacientId,
             pacientName: selectedAssignment.pacientName,
             dhomaId: selectedAssignment.dhomaId,
-            roomNumber: selectedAssignment.roomNumber,
-            roomType: selectedAssignment.roomType,
-            roomCapacity: selectedAssignment.roomCapacity,
-            isAvailable: selectedAssignment.isAvailable ? "true" : "false",
+            roomNumber: selectedRoom ? selectedRoom.nrDhomes : "",
+            roomType: selectedRoom ? selectedRoom.lloji_Dhomes : "",
+            roomCapacity: selectedRoom ? selectedRoom.kapaciteti : "",
+            isAvailable: selectedRoom ? (selectedRoom.available ? "true" : "false") : "true",
             checkInDate: selectedAssignment.checkInDate,
             checkOutDate: selectedAssignment.checkOutDate !== "N/A" ? selectedAssignment.checkOutDate : "",
         });
@@ -226,15 +272,57 @@ const Room = () => {
         setShowEditModal(true);
     };
 
-    const handleDelete = (index) => {
+    const handleDelete = async (index) => {
         if (window.confirm("Are you sure you want to delete this assignment?")) {
-            setAssignments(assignments.filter((_, i) => i !== index));
+            const token = localStorage.getItem("token");
+            const assignmentId = assignments[index]?.id || assignments[index]?.Id;
+            console.log("Deleting assignment with ID:", assignmentId);
+            if (!assignmentId) {
+                toast.error("Assignment ID not found.");
+                return;
+            }
+            try {
+                await axios.delete(`https://localhost:7107/api/DhomaPacientit/${assignmentId}`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
+                fetchAssignments();
+                toast.success('Room assignment deleted successfully!');
+            } catch (error) {
+                toast.error("Failed to delete assignment.");
+            }
         }
     };
 
     const availablePatients = patients.filter(
         (patient) => !assignments.some((assignment) => assignment.pacientId === patient.id)
     );
+
+    const handleRoomChange = (e) => {
+        const selectedId = e.target.value;
+        const selectedRoom = rooms.find(r => String(r.id) === String(selectedId));
+        setFormData(prev => ({
+            ...prev,
+            dhomaId: selectedRoom ? selectedRoom.id : "",
+            roomNumber: selectedRoom ? selectedRoom.nrDhomes : "",
+            roomType: selectedRoom ? selectedRoom.lloji_Dhomes : "",
+            roomCapacity: selectedRoom ? selectedRoom.kapaciteti : "",
+            isAvailable: selectedRoom ? (selectedRoom.available ? "true" : "false") : "true"
+        }));
+    };
+
+    // Returns a map: { roomId: numberOfAssignments }
+    const getRoomOccupancy = () => {
+        const occupancy = {};
+        assignments.forEach(a => {
+            if (!occupancy[a.dhomaId]) occupancy[a.dhomaId] = 0;
+            occupancy[a.dhomaId]++;
+        });
+        return occupancy;
+    };
+
+    const occupancy = getRoomOccupancy();
 
     return (
         <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f5f6f7" }}>
@@ -266,20 +354,30 @@ const Room = () => {
                                 <Form.Group className="mb-3">
                                     <Form.Label>Room Number</Form.Label>
                                     <Form.Control
-                                        type="text"
-                                        name="roomNumber"
-                                        value={formData.roomNumber}
-                                        onChange={handleChange}
+                                        as="select"
+                                        name="dhomaId"
+                                        value={formData.dhomaId || ""}
+                                        onChange={handleRoomChange}
                                         required
-                                    />
+                                    >
+                                        <option value="">Select Room</option>
+                                        {rooms.map(room => {
+                                            const isFull = occupancy[room.id] >= room.kapaciteti;
+                                            return (
+                                                <option key={room.id} value={room.id} disabled={isFull}>
+                                                    {room.nrDhomes} {isFull ? "(Full)" : ""}
+                                                </option>
+                                            );
+                                        })}
+                                    </Form.Control>
                                 </Form.Group>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Room Type</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="roomType"
-                                        value={formData.roomType}
-                                        onChange={handleChange}
+                                        value={formData.roomType || ""}
+                                        readOnly
                                         required
                                     />
                                 </Form.Group>
@@ -288,8 +386,8 @@ const Room = () => {
                                     <Form.Control
                                         type="number"
                                         name="roomCapacity"
-                                        value={formData.roomCapacity}
-                                        onChange={handleChange}
+                                        value={formData.roomCapacity !== undefined && formData.roomCapacity !== null ? formData.roomCapacity : ""}
+                                        readOnly
                                         required
                                     />
                                 </Form.Group>
@@ -298,8 +396,8 @@ const Room = () => {
                                     <Form.Control
                                         as="select"
                                         name="isAvailable"
-                                        value={formData.isAvailable}
-                                        onChange={handleChange}
+                                        value={formData.isAvailable || "true"}
+                                        readOnly
                                         required
                                     >
                                         <option value="true">Yes</option>
@@ -336,10 +434,8 @@ const Room = () => {
                             <Table striped bordered hover responsive="sm" size="sm">
                                 <thead>
                                     <tr>
-                                        <th>Patient ID</th>
                                         <th>Patient</th>
                                         <th>Room</th>
-                                        <th>Availability</th>
                                         <th>Check-in Date</th>
                                         <th>Check-out Date</th>
                                         <th>Actions</th>
@@ -349,14 +445,10 @@ const Room = () => {
                                     {assignments.length > 0 ? (
                                         assignments.map((assignment, index) => (
                                             <tr key={index}>
-                                                <td>{assignment.pacientId}</td>
                                                 <td>{assignment.pacientName}</td>
                                                 <td>{assignment.roomNumber}</td>
-                                                <td style={{ color: assignment.isAvailable ? "green" : "red", fontWeight: "bold" }}>
-                                                    {assignment.isAvailable ? "Available" : "Not Available"}
-                                                </td>
-                                                <td>{assignment.checkInDate}</td>
-                                                <td>{assignment.checkOutDate}</td>
+                                                <td>{assignment.checkInDate ? dayjs(assignment.checkInDate).format("DD-MM-YYYY") : ""}</td>
+                                                <td>{assignment.checkOutDate ? dayjs(assignment.checkOutDate).format("DD-MM-YYYY") : ""}</td>
                                                 <td>
                                                     <IconButton
                                                         color="primary"
@@ -376,7 +468,7 @@ const Room = () => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="7" className="text-center">No room assignments available.</td>
+                                            <td colSpan="5" className="text-center">No room assignments available.</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -393,64 +485,11 @@ const Room = () => {
                 <Modal.Body>
                     <Form onSubmit={handleSubmitEdit}>
                         <Form.Group className="mb-3">
-                            <Form.Label>Patient Name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="pacientName"
-                                value={formData.pacientName}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Room Number</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="roomNumber"
-                                value={formData.roomNumber}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Room Type</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="roomType"
-                                value={formData.roomType}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Room Capacity</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="roomCapacity"
-                                value={formData.roomCapacity}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Is Available?</Form.Label>
-                            <Form.Control
-                                as="select"
-                                name="isAvailable"
-                                value={formData.isAvailable}
-                                onChange={handleChange}
-                                required
-                            >
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </Form.Control>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
                             <Form.Label>Check-in Date</Form.Label>
                             <Form.Control
                                 type="date"
                                 name="checkInDate"
-                                value={formData.checkInDate}
+                                value={formData.checkInDate ? dayjs(formData.checkInDate).format("YYYY-MM-DD") : ""}
                                 onChange={handleChange}
                                 required
                             />
@@ -460,7 +499,7 @@ const Room = () => {
                             <Form.Control
                                 type="date"
                                 name="checkOutDate"
-                                value={formData.checkOutDate}
+                                value={formData.checkOutDate ? dayjs(formData.checkOutDate).format("YYYY-MM-DD") : ""}
                                 onChange={handleChange}
                             />
                         </Form.Group>

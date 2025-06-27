@@ -60,7 +60,6 @@ namespace ReactApp1.Server.Controllers
 
             return new DhomaPacientitDTO
             {
-                Id = dhomaPacientit.Id,
                 PacientId = dhomaPacientit.PacientId,
                 DhomaId = dhomaPacientit.DhomaId,
                 CheckInDate = dhomaPacientit.CheckInDate,
@@ -73,10 +72,10 @@ namespace ReactApp1.Server.Controllers
         [Authorize(Roles = "Doctor,Administrator")]
         public async Task<IActionResult> PutDhomaPacientit(string id, DhomaPacientitDTO dhomaPacientitDTO)
         {
-            if (id != dhomaPacientitDTO.Id)
+/*            if (id != dhomaPacientitDTO.DhomaId)
             {
                 return BadRequest("ID mismatch.");
-            }
+            }*/
 
             var dhomaPacientit = await _context.DhomaPacienteve.FindAsync(id);
             if (dhomaPacientit == null)
@@ -182,3 +181,4 @@ namespace ReactApp1.Server.Controllers
         }
     }
 }
+

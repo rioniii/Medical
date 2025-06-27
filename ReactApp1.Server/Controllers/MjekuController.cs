@@ -269,7 +269,7 @@ namespace ReactApp1.Server.Controllers
                 {
                     var dhomaPacientiEntity = new DhomaPacientit
                     {
-                        Id = dhoma.Id,
+                        DhomaId = dhoma.DhomaId,
                         CheckInDate = dhoma.CheckInDate,
                         CheckOutDate = dhoma.CheckOutDate,
                         PacientId = pacienti.Id
