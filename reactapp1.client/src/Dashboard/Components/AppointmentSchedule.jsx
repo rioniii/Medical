@@ -147,9 +147,21 @@ const AppointmentSchedule = () => {
 
             if (!doctorResponse.data) throw new Error("Doctor not found");
 
+            console.log("Token being sent:", token);
+
+            const patientResponse = await axios.get(
+                `https://localhost:7107/api/Pacienti/byUserId/${newAppointment.pacientId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            const pacientId = patientResponse.data.id;
+
             const appointmentData = {
                 Id: generatedId,
-                PacientId: newAppointment.pacientId, // Comes from token
+                PacientId: pacientId,
                 DoktorId: selectedDoctorId,
                 DataTerminit: newAppointment.dataTerminit, // Send as is, avoid toISOString()
                 Statusi: "Planned"

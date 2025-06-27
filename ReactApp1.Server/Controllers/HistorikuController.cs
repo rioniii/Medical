@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace ReactApp1.Server.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Doctor")]
     [Route("api/[controller]")]
     [ApiController]
     public class HistorikuController : ControllerBase

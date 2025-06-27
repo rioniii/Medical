@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MDBBtn, MDBCard, MDBCardBody, MDBInput } from 'mdb-react-ui-kit';
 import { NavLink } from 'react-router-dom';
 import contactImage from './assets/R.jpeg'; // Ensure the image path is correct
+import axios from 'axios';
 
 function Register() {
     document.title = "Register";
@@ -32,8 +33,6 @@ function Register() {
         setPasswordMatchError('');
         setEmailTakenError('');
         setErrorMessage('');
-
-
 
         const today = new Date();
         const selectedDate = new Date(dateOfBirth);
@@ -66,13 +65,12 @@ function Register() {
 
         try {
             // API call to backend for registration
-            const response = await fetch('https://localhost:7107/api/User/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(userData),
-            });
+            const token = localStorage.getItem("token");
+            const response = await axios.post(
+                'https://localhost:7107/api/User/register',
+                userData,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -88,6 +86,11 @@ function Register() {
             }
 
             console.log('Registration successful');
+            if (response.data.token && response.data.token.split('.').length === 3) {
+                localStorage.setItem("token", response.data.token);
+            } else {
+                console.error('Invalid token received');
+            }
             document.location = "/login"; // Redirect to login page
 
         } catch (error) {

@@ -190,5 +190,14 @@ namespace ReactApp1.Server.Controllers
 
             return Ok(patients);
         }
+
+        [HttpGet("byUserId/{userId}")]
+        public async Task<IActionResult> GetByUserId(string userId)
+        {
+            var pacient = await _context.Pacientet.FirstOrDefaultAsync(p => p.UserId == userId);
+            if (pacient == null)
+                return NotFound();
+            return Ok(pacient);
+        }
     }
 }

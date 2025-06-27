@@ -11,6 +11,7 @@ import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { IconButton } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
+import axios from "axios";
 
 const Room = () => {
     const [showEditModal, setShowEditModal] = useState(false);
@@ -82,22 +83,25 @@ const Room = () => {
         }
     };
 
+    const fetchAssignments = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch("https://localhost:7107/api/DhomaPacientit", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setAssignments(data);
+            }
+        } catch (err) {
+            setError("Failed to fetch assignments.");
+        }
+    };
+
     useEffect(() => {
         fetchData();
+        fetchAssignments();
     }, []);
-
-    useEffect(() => {
-        const storedAssignments = localStorage.getItem("assignments");
-        if (storedAssignments) {
-            setAssignments(JSON.parse(storedAssignments));
-        }
-    }, []);
-
-    useEffect(() => {
-        if (assignments.length > 0) {
-            localStorage.setItem("assignments", JSON.stringify(assignments));
-        }
-    }, [assignments]);
 
     const generateGuid = () => {
         return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -107,7 +111,7 @@ const Room = () => {
         });
     };
 
-    const handleSubmitAdd = (e) => {
+    const handleSubmitAdd = async (e) => {
         e.preventDefault();
 
         if (!formData.pacientId || !formData.roomNumber || !formData.roomType || !formData.roomCapacity || !formData.checkInDate) {
@@ -120,33 +124,35 @@ const Room = () => {
             return;
         }
 
+        const token = localStorage.getItem("token");
         const newAssignment = {
             pacientId: formData.pacientId,
-            pacientName: patients.find((p) => p.id === formData.pacientId)?.name || "",
             dhomaId: formData.dhomaId,
             checkInDate: formData.checkInDate,
-            checkOutDate: formData.checkOutDate || "N/A",
+            checkOutDate: formData.checkOutDate,
             roomNumber: formData.roomNumber,
             roomType: formData.roomType,
             roomCapacity: formData.roomCapacity,
             isAvailable: formData.isAvailable === "true",
         };
 
-        setAssignments((prevAssignments) => [...prevAssignments, newAssignment]);
-        alert("Room assignment added successfully!");
-
-        setFormData({
-            pacientId: "",
-            pacientName: "",
-            dhomaId: generateGuid(),
-            roomNumber: "",
-            roomType: "",
-            roomCapacity: "",
-            isAvailable: "true",
-            checkInDate: "",
-            checkOutDate: "",
-        });
-        setError("");
+        try {
+            const response = await axios.post("https://localhost:7107/api/DhomaPacientit", newAssignment, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            if (response.ok) {
+                fetchData();
+                fetchAssignments();
+                alert("Room assignment added successfully!");
+            } else {
+                setError("Failed to add assignment.");
+            }
+        } catch (err) {
+            setError("Error adding assignment.");
+        }
     };
 
     const handleSubmitEdit = (e) => {
