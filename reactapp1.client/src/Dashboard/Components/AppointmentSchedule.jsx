@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Container, Button, Form, Alert, Spinner } from "react-bootstrap";
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AppointmentSchedule = () => {
     const navigate = useNavigate();
@@ -13,11 +15,16 @@ const AppointmentSchedule = () => {
         dataTerminit: null,
         statusi: "Planned"
     });
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState({
         doctors: false,
         submitting: false
     });
+    
+    // Initialize toast container
+    useEffect(() => {
+        // This ensures the toast container is available
+        return () => toast.dismiss();
+    }, []);
 
     const decodeToken = (token) => {
         try {
@@ -60,7 +67,7 @@ const AppointmentSchedule = () => {
                 setLoading(prev => ({ ...prev, doctors: true }));
                 await fetchDoctors(token);
             } catch (err) {
-                setError("Invalid session. Please login again.");
+                toast.error("Session expired. Please login again.");
                 navigate("/login");
             } finally {
                 setLoading(prev => ({ ...prev, doctors: false }));
@@ -88,7 +95,7 @@ const AppointmentSchedule = () => {
             setDoctors(validatedDoctors);
         } catch (err) {
             console.error("Failed to fetch doctors:", err);
-            setError("Failed to load doctors list. Please try again later.");
+            toast.error("Failed to load doctors list. Please try again later.");
         }
     };
 
@@ -96,12 +103,12 @@ const AppointmentSchedule = () => {
         const token = localStorage.getItem("token");
 
         if (!selectedDoctorId) {
-            setError("Please select a doctor");
+            toast.error("Please select a doctor");
             return;
         }
 
         if (!newAppointment.dataTerminit) {
-            setError("Please select appointment date and time");
+            toast.error("Please select appointment date and time");
             return;
         }
 
@@ -110,22 +117,21 @@ const AppointmentSchedule = () => {
         const day = appointmentDate.getDay();
 
         if (day === 0 || day === 6) {
-            setError("Appointments are only available on weekdays (Monday-Friday)");
+            toast.error("Appointments are only available on weekdays (Monday-Friday)");
             return;
         }
 
         if (hours < 8 || hours >= 17) {
-            setError("Appointments are only available between 8AM and 5PM");
+            toast.error("Appointments are only available between 8AM and 5PM");
             return;
         }
 
         if (appointmentDate < new Date()) {
-            setError("Appointment time must be in the future");
+            toast.error("Appointment time must be in the future");
             return;
         }
 
         setLoading(prev => ({ ...prev, submitting: true }));
-        setError("");
 
         try {
             const generateGuid = () => {
@@ -178,14 +184,14 @@ const AppointmentSchedule = () => {
 
             setSelectedDoctorId("");
             setNewAppointment(prev => ({ ...prev, dataTerminit: "" }));
-            alert("Appointment scheduled successfully!");
+            toast.success("Appointment scheduled successfully!");
         } catch (err) {
             console.error("Appointment error:", err.response?.data || err.message);
             if (err.response?.data?.errors) {
                 const errorMessages = Object.values(err.response.data.errors).flat();
-                setError(errorMessages.join(', '));
+                toast.error(errorMessages.join(', '));
             } else {
-                setError(err.response?.data?.title || "Failed to schedule appointment. Please try again.");
+                toast.error(err.response?.data?.title || "Failed to schedule appointment. Please try again.");
             }
         } finally {
             setLoading(prev => ({ ...prev, submitting: false }));
@@ -196,7 +202,7 @@ const AppointmentSchedule = () => {
         <Container className="mt-4">
             <h2 className="mb-4">Appointment Schedule</h2>
 
-            {error && <Alert variant="danger" onClose={() => setError("")} dismissible>{error}</Alert>}
+            {/* Toast container is already included in App.js */}
 
             <h3 className="mb-4">Schedule New Appointment</h3>
             <Alert variant="info" className="mb-4">

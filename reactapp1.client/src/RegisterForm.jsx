@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { MDBBtn, MDBCard, MDBCardBody, MDBInput } from 'mdb-react-ui-kit';
-import { NavLink } from 'react-router-dom';
-import contactImage from './assets/R.jpeg'; // Ensure the image path is correct
+import { NavLink, useNavigate } from 'react-router-dom';
+import contactImage from './assets/R.jpeg';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Register() {
     document.title = "Register";
+
+    const navigate = useNavigate();
 
     // Redirect if user is already registered
     useEffect(() => {
         const user = localStorage.getItem("User");
         if (user) {
-            document.location = "/";
+            navigate("/");
         }
-    }, []);
+    }, [navigate]);
 
     const [username, setUsername] = useState('');
     const [fullName, setFullName] = useState('');
@@ -22,35 +26,45 @@ function Register() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [passwordMatchError, setPasswordMatchError] = useState('');
-    const [emailTakenError, setEmailTakenError] = useState('');
+    // Initialize toast container
+    useEffect(() => {
+        return () => toast.dismiss();
+    }, []);
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleRegister = async (event) => {
         event.preventDefault();
 
-        // Reset errors
-        setPasswordMatchError('');
-        setEmailTakenError('');
-        setErrorMessage('');
+        // Prevent multiple submissions
+        if (isSubmitting) return;
+        
+        setIsSubmitting(true);
+        
+        // Reset any previous errors
+        toast.dismiss();
 
         const today = new Date();
         const selectedDate = new Date(dateOfBirth);
 
         if (selectedDate > today) {
-            setErrorMessage('Date of Birth cannot be in the future.');
+            toast.error('Date of Birth cannot be in the future.');
+            setIsSubmitting(false);
             return;
         }
+        
         // Check password strength
         const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{6,}$/;
         if (!passwordRegex.test(password)) {
-            setPasswordMatchError('Password must be at least 6 characters long, contain one uppercase letter, and one special character.');
+            toast.error('Password must be at least 6 characters long, contain one uppercase letter, and one special character.');
+            setIsSubmitting(false);
             return;
         }
 
         // Check if passwords match
         if (password !== confirmPassword) {
-            setPasswordMatchError('Passwords do not match.');
+            toast.error('Passwords do not match.');
+            setIsSubmitting(false);
             return;
         }
 
@@ -185,9 +199,7 @@ function Register() {
                                     style={{ fontSize: '0.9rem' }}
                                 />
 
-                                {passwordMatchError && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{passwordMatchError}</div>}
-                                {emailTakenError && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{emailTakenError}</div>}
-                                {errorMessage && <div className="text-danger mb-2" style={{ fontSize: '0.8rem' }}>{errorMessage}</div>}
+                                {/* Error messages are now shown via toast notifications */}
 
                                 <MDBBtn
                                     className='register-btn'
