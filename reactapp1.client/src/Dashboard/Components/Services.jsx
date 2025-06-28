@@ -19,6 +19,7 @@ import {
     DialogContent,
     DialogTitle,
     TextField,
+    TableContainer,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import Sidebar from "./Sidebar";  // Assuming you have a Sidebar component
@@ -134,7 +135,8 @@ const Records = () => {
                     </Button>
 
                     <Paper sx={{ overflow: "hidden", width: "100%", borderRadius: "8px", boxShadow: 3 }}>
-                        <Table sx={{ width: "100%" }}>
+                        <TableContainer sx={{ maxHeight: 500, overflow: "auto" }}>
+                            <Table stickyHeader sx={{ width: "100%" }}>
                             <TableHead>
                                 <TableRow>
                                     <TableCell><strong>Service Name</strong></TableCell>
@@ -148,7 +150,7 @@ const Records = () => {
                                     <TableRow key={service.id} sx={{ "&:nth-of-type(odd)": { backgroundColor: "#f9f9f9" } }}>
                                         <TableCell>{service.emri_Sherbimit}</TableCell>
                                         <TableCell>{service.pershkrimi}</TableCell>
-                                        <TableCell>{service.cmimi.toFixed(2)}</TableCell>
+                                            <TableCell>{!isNaN(Number(service.cmimi)) ? Number(service.cmimi).toFixed(2) : "0.00"}</TableCell>
                                         <TableCell>
                                             <IconButton onClick={() => handleEdit(service)} color="primary" size="small">
                                                 <Edit />
@@ -161,6 +163,7 @@ const Records = () => {
                                 ))}
                             </TableBody>
                         </Table>
+                        </TableContainer>
                     </Paper>
                 </Box>
             </div>

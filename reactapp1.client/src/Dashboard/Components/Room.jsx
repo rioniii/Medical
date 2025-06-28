@@ -35,6 +35,7 @@ const Room = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const [rooms, setRooms] = useState([]);
+    const [assignmentsRaw, setAssignmentsRaw] = useState([]);
 
     const handleCloseEditModal = () => {
         setShowEditModal(false);
@@ -102,18 +103,7 @@ const Room = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log("Fetched assignments:", data);
-                // Map IDs to names/numbers, always preserve id
-                const mapped = data.map(assignment => {
-                    const patient = patients.find(p => p.id === assignment.pacientId);
-                    const room = rooms.find(r => String(r.id) === String(assignment.dhomaId));
-                    return {
-                        ...assignment, // preserves id
-                        pacientName: patient ? `${patient.name} ${patient.surname}` : assignment.pacientId,
-                        roomNumber: room ? room.nrDhomes : assignment.dhomaId
-                    };
-                });
-                console.log("Mapped assignments:", mapped);
-                setAssignments(mapped);
+                setAssignmentsRaw(data);
             } else {
                 const errorMsg = `Failed to fetch assignments: ${response.status}`;
                 setError(errorMsg);
@@ -146,9 +136,29 @@ const Room = () => {
 
     useEffect(() => {
         fetchData();
-        fetchAssignments();
-        fetchRooms();
     }, []);
+
+    useEffect(() => {
+        if (patients.length) {
+            fetchAssignments();
+        }
+    }, [patients]);
+
+    useEffect(() => {
+        if (assignmentsRaw.length && patients.length) {
+            const mapped = assignmentsRaw.map(assignment => {
+                const patient = patients.find(p => p.id === assignment.pacientId || p.Id === assignment.pacientId);
+                const room = rooms.find(r => String(r.id) === String(assignment.dhomaId));
+                return {
+                    ...assignment,
+                    pacientName: patient ? `${patient.name} ${patient.surname}` : assignment.pacientId,
+                    roomNumber: room ? room.nrDhomes : assignment.dhomaId
+                };
+            });
+            console.log("Mapped assignments:", mapped);
+            setAssignments(mapped);
+        }
+    }, [assignmentsRaw, patients, rooms]);
 
     const generateGuid = () => {
         return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -431,48 +441,50 @@ const Room = () => {
                         </Col>
                         <Col xs={12} md={6}>
                             <h4>Current Room Assignments</h4>
-                            <Table striped bordered hover responsive="sm" size="sm">
-                                <thead>
-                                    <tr>
-                                        <th>Patient</th>
-                                        <th>Room</th>
-                                        <th>Check-in Date</th>
-                                        <th>Check-out Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {assignments.length > 0 ? (
-                                        assignments.map((assignment, index) => (
-                                            <tr key={index}>
-                                                <td>{assignment.pacientName}</td>
-                                                <td>{assignment.roomNumber}</td>
-                                                <td>{assignment.checkInDate ? dayjs(assignment.checkInDate).format("DD-MM-YYYY") : ""}</td>
-                                                <td>{assignment.checkOutDate ? dayjs(assignment.checkOutDate).format("DD-MM-YYYY") : ""}</td>
-                                                <td>
-                                                    <IconButton
-                                                        color="primary"
-                                                        onClick={() => handleEdit(index)}
-                                                        sx={{ mr: 1 }}
-                                                    >
-                                                        <Edit />
-                                                    </IconButton>
-                                                    <IconButton
-                                                        color="error"
-                                                        onClick={() => handleDelete(index)}
-                                                    >
-                                                        <Delete />
-                                                    </IconButton>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
+                            <div style={{ maxHeight: 350, overflowY: 'auto' }}>
+                                <Table striped bordered hover responsive="sm" size="sm">
+                                    <thead>
                                         <tr>
-                                            <td colSpan="5" className="text-center">No room assignments available.</td>
+                                            <th>Patient</th>
+                                            <th>Room</th>
+                                            <th>Check-in Date</th>
+                                            <th>Check-out Date</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    )}
-                                </tbody>
-                            </Table>
+                                    </thead>
+                                    <tbody>
+                                        {assignments.length > 0 ? (
+                                            assignments.map((assignment, index) => (
+                                                <tr key={index}>
+                                                    <td>{assignment.pacientName}</td>
+                                                    <td>{assignment.roomNumber}</td>
+                                                    <td>{assignment.checkInDate ? dayjs(assignment.checkInDate).format("DD-MM-YYYY") : ""}</td>
+                                                    <td>{assignment.checkOutDate ? dayjs(assignment.checkOutDate).format("DD-MM-YYYY") : ""}</td>
+                                                    <td>
+                                                        <IconButton
+                                                            color="primary"
+                                                            onClick={() => handleEdit(index)}
+                                                            sx={{ mr: 1 }}
+                                                        >
+                                                            <Edit />
+                                                        </IconButton>
+                                                        <IconButton
+                                                            color="error"
+                                                            onClick={() => handleDelete(index)}
+                                                        >
+                                                            <Delete />
+                                                        </IconButton>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="5" className="text-center">No room assignments available.</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </div>
                         </Col>
                     </Row>
                 </Container>

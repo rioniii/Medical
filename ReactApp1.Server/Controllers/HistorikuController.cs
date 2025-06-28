@@ -38,7 +38,17 @@ namespace ReactApp1.Server.Controllers
                     .Include(h => h.Pacienti)
                     .ToListAsync();
 
-                return Ok(historikuList);
+                return Ok(historikuList.Select(h => new HistorikuDTO {
+                    Id = h.Id,
+                    MjekuId = h.MjekuId,
+                    PacientId = h.PacientId,
+                    Data = h.Data,
+                    Anamneza_Statusi = h.Anamneza_Statusi,
+                    Ekzaminimi = h.Ekzaminimi,
+                    Diagnoza = h.Diagnoza,
+                    Terapia = h.Terapia,
+                    Perfundimi = h.Perfundimi
+                }).ToList());
             }
             catch (Exception ex)
             {

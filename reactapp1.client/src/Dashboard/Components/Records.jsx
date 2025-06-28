@@ -12,10 +12,19 @@ import {
     MenuItem,
     FormControl,
     InputLabel,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
 } from "@mui/material";
 import Sidebar from "./Sidebar";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 
 const Records = () => {
     const [newEntry, setNewEntry] = useState({
@@ -34,10 +43,13 @@ const Records = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+    const [records, setRecords] = useState([]);
+    const [editRecord, setEditRecord] = useState(null);
 
     useEffect(() => {
         fetchPatients();
         fetchLoggedInDoctorId();
+        fetchRecords();
     }, []);
 
     const fetchPatients = async () => {
@@ -89,7 +101,7 @@ const Records = () => {
         const { name, value } = e.target;
         setNewEntry({
             ...newEntry,
-            [name]: value,
+            [name]: name === "Data" ? value : value,
         });
     };
 
@@ -133,18 +145,37 @@ const Records = () => {
         if (!validateEntry()) return;
         setLoading(true);
         try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setError("You are not logged in. Please log in again.");
+                toast.error("You are not logged in. Please log in again.");
+                setLoading(false);
+                return;
+            }
+
             const newData = {
-                Id: uuidv4(),
-                MjekuId: newEntry.MjekuId,
-                PacientId: newEntry.PacientId,
-                Data: new Date(newEntry.Data).toISOString(),
-                Anamneza_Statusi: newEntry.Anamneza_Statusi || "",
-                Ekzaminimi: newEntry.Ekzaminimi || "",
-                Diagnoza: newEntry.Diagnoza || "",
-                Terapia: newEntry.Terapia || "",
-                Perfundimi: newEntry.Perfundimi || "",
+                id: uuidv4(),
+                mjekuId: newEntry.MjekuId,
+                pacientId: newEntry.PacientId,
+                data: newEntry.Data ? new Date(newEntry.Data).toISOString() : new Date().toISOString(),
+                anamneza_Statusi: newEntry.Anamneza_Statusi || "",
+                ekzaminimi: newEntry.Ekzaminimi || "",
+                diagnoza: newEntry.Diagnoza || "",
+                terapia: newEntry.Terapia || "",
+                perfundimi: newEntry.Perfundimi || "",
             };
-            await axios.post("https://localhost:7107/api/Historiku", newData);
+
+            await axios.post(
+                "https://localhost:7107/api/Historiku",
+                newData,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
             const successMsg = "Record saved successfully!";
             setMessage(successMsg);
             setError("");
@@ -160,6 +191,7 @@ const Records = () => {
                 Terapia: "",
                 Perfundimi: "",
             });
+            fetchRecords();
         } catch (error) {
             setError("Error adding entry: " + error.message);
             setMessage("");
@@ -168,7 +200,143 @@ const Records = () => {
         }
     };
 
+    const fetchRecords = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        try {
+            const response = await axios.get("https://localhost:7107/api/Historiku", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            setRecords(response.data);
+        } catch (error) {
+            console.error("Error fetching records:", error);
+            setError("Error fetching records: " + error.message);
+        }
+    };
+
     const todayStr = new Date().toISOString().split("T")[0];
+
+    const formatDate = (isoString) => {
+        if (!isoString) return "";
+        const d = new Date(isoString);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+
+    const mappedRecords = records.map((record) => {
+        // Try different ways to find the patient
+        const patient = patients.find(p => 
+            p.id === record.pacientId || 
+            p.Id === record.pacientId ||
+            p.pacientId === record.pacientId ||
+            p.PacientId === record.pacientId
+        );
+        
+        return {
+            ...record,
+            patientName: patient ? `${patient.name || patient.Name} ${patient.surname || patient.Surname}` : `Patient ID: ${record.pacientId}`,
+        };
+    });
+
+    const handleEdit = (record) => {
+        setEditRecord(record);
+        setNewEntry({
+            Id: record.id || record.Id || "",
+            MjekuId: record.mjekuId || record.MjekuId || "",
+            PacientId: record.pacientId || record.PacientId || "",
+            Data: record.data ? record.data.split("T")[0] : "",
+            Anamneza_Statusi: record.anamneza_Statusi || "",
+            Ekzaminimi: record.ekzaminimi || "",
+            Diagnoza: record.diagnoza || "",
+            Terapia: record.terapia || "",
+            Perfundimi: record.perfundimi || "",
+        });
+    };
+
+    const handleCancelEdit = () => {
+        setEditRecord(null);
+        setNewEntry({
+            Id: "",
+            MjekuId: newEntry.MjekuId,
+            PacientId: "",
+            Data: "",
+            Anamneza_Statusi: "",
+            Ekzaminimi: "",
+            Diagnoza: "",
+            Terapia: "",
+            Perfundimi: "",
+        });
+    };
+
+    const handleUpdate = async () => {
+        if (!validateEntry()) return;
+        setLoading(true);
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setError("You are not logged in. Please log in again.");
+                toast.error("You are not logged in. Please log in again.");
+                setLoading(false);
+                return;
+            }
+            const updatedData = {
+                id: newEntry.Id,
+                mjekuId: newEntry.MjekuId,
+                pacientId: newEntry.PacientId,
+                data: newEntry.Data ? new Date(newEntry.Data).toISOString() : new Date().toISOString(),
+                anamneza_Statusi: newEntry.Anamneza_Statusi || "",
+                ekzaminimi: newEntry.Ekzaminimi || "",
+                diagnoza: newEntry.Diagnoza || "",
+                terapia: newEntry.Terapia || "",
+                perfundimi: newEntry.Perfundimi || "",
+            };
+            await axios.put(
+                `https://localhost:7107/api/Historiku/${newEntry.Id}`,
+                updatedData,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            toast.success("Record updated successfully!");
+            setEditRecord(null);
+            setNewEntry({
+                Id: "",
+                MjekuId: newEntry.MjekuId,
+                PacientId: "",
+                Data: "",
+                Anamneza_Statusi: "",
+                Ekzaminimi: "",
+                Diagnoza: "",
+                Terapia: "",
+                Perfundimi: "",
+            });
+            fetchRecords();
+        } catch (error) {
+            setError("Error updating entry: " + error.message);
+            toast.error("Error updating entry: " + error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this record?")) return;
+        const token = localStorage.getItem("token");
+        try {
+            await axios.delete(`https://localhost:7107/api/Historiku/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            toast.success("Record deleted!");
+            fetchRecords();
+        } catch (error) {
+            toast.error("Failed to delete record.");
+        }
+    };
 
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
@@ -189,8 +357,8 @@ const Records = () => {
                                     label="Select Patient"
                                 >
                                     {patients.map((patient) => (
-                                        <MenuItem key={patient.id} value={patient.id}>
-                                            {`${patient.name} ${patient.surname}`}
+                                        <MenuItem key={patient.id || patient.Id} value={patient.id || patient.Id}>
+                                            {`${patient.name || patient.Name} ${patient.surname || patient.Surname}`}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -201,14 +369,10 @@ const Records = () => {
                                 label="Date"
                                 type="date"
                                 name="Data"
-                                value={newEntry.Data || ""}
+                                value={newEntry.Data ? newEntry.Data : todayStr}
                                 onChange={handleChange}
                                 fullWidth
-                                InputLabelProps={{ shrink: true }}
-                                inputProps={{
-                                    min: todayStr,
-                                    max: todayStr,
-                                }}
+                                inputProps={{}}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -259,16 +423,74 @@ const Records = () => {
                     </Grid>
                     <Button
                         variant="contained"
-                        color="success"
-                        onClick={handleAdd}
+                        color={editRecord ? "primary" : "success"}
+                        onClick={editRecord ? handleUpdate : handleAdd}
                         disabled={loading}
-                        sx={{ mt: 2 }}
+                        sx={{ mt: 2, mr: 2 }}
                     >
-                        {loading ? "Adding..." : "Add Entry"}
+                        {loading ? (editRecord ? "Updating..." : "Adding...") : (editRecord ? "Update Entry" : "Add Entry")}
                     </Button>
+                    {editRecord && (
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={handleCancelEdit}
+                            sx={{ mt: 2 }}
+                        >
+                            Cancel
+                        </Button>
+                    )}
                     {message && <Typography color="success.main" sx={{ mt: 2 }}>{message}</Typography>}
                     {error && <Typography color="error.main" sx={{ mt: 2 }}>{error}</Typography>}
                 </Paper>
+                {patients.length > 0 && records.length > 0 && (
+                    <TableContainer component={Paper} sx={{ maxHeight: 300, mt: 4, overflow: "auto" }}>
+                        <Table stickyHeader size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Patient</TableCell>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>Anamneza</TableCell>
+                                    <TableCell>Examination</TableCell>
+                                    <TableCell>Diagnosis</TableCell>
+                                    <TableCell>Therapy</TableCell>
+                                    <TableCell>Conclusion</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {mappedRecords.map((record, idx) => (
+                                    <TableRow key={record.id || record.Id || idx}>
+                                        <TableCell>{record.patientName}</TableCell>
+                                        <TableCell>{formatDate(record.data)}</TableCell>
+                                        <TableCell>{record.anamneza_Statusi}</TableCell>
+                                        <TableCell>{record.ekzaminimi}</TableCell>
+                                        <TableCell>{record.diagnoza}</TableCell>
+                                        <TableCell>{record.terapia}</TableCell>
+                                        <TableCell>{record.perfundimi}</TableCell>
+                                        <TableCell>
+                                            <IconButton
+                                                color="primary"
+                                                size="small"
+                                                onClick={() => handleEdit(record)}
+                                                sx={{ mr: 1 }}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                color="error"
+                                                size="small"
+                                                onClick={() => handleDelete(record.id)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
             </Box>
         </Box>
     );
