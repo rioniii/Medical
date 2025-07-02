@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
 import "./RoomManagement.css";
+import { TextField, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 const RoomManagement = () => {
     const [rooms, setRooms] = useState([]);
@@ -60,11 +61,14 @@ const RoomManagement = () => {
         try {
             const token = localStorage.getItem('token');
             const roomData = {
+                id: "",
                 nrDhomes: formData.nrDhomes,
                 lloji_Dhomes: formData.lloji_Dhomes,
                 kapaciteti: parseInt(formData.kapaciteti),
                 available: formData.available
             };
+
+            console.log(roomData);
 
             await axios.post("https://localhost:7107/api/Dhoma", roomData, {
                 headers: {
@@ -174,40 +178,27 @@ const RoomManagement = () => {
                         <form onSubmit={handleAddRoom} className="room-form">
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label>Room Number:</label>
-                                    <input
-                                        type="text"
-                                        value={formData.nrDhomes}
-                                        onChange={(e) => setFormData({...formData, nrDhomes: e.target.value})}
-                                        placeholder="Enter room number"
-                                        required
-                                    />
+                                    <TextField label="Room Number" value={formData.nrDhomes} onChange={(e) => setFormData({...formData, nrDhomes: e.target.value})} fullWidth />
                                 </div>
                                 <div className="form-group">
-                                    <label>Room Type:</label>
-                                    <select
-                                        value={formData.lloji_Dhomes}
-                                        onChange={(e) => setFormData({...formData, lloji_Dhomes: e.target.value})}
-                                        required
-                                    >
-                                        <option value="">Select room type</option>
-                                        <option value="Standard">Standard</option>
-                                        <option value="Deluxe">Deluxe</option>
-                                        <option value="VIP">VIP</option>
-                                        <option value="ICU">ICU</option>
-                                        <option value="Emergency">Emergency</option>
-                                    </select>
+                                    <FormControl fullWidth margin="normal">
+                                        <InputLabel>Room Type</InputLabel>
+                                        <Select
+                                            value={formData.lloji_Dhomes}
+                                            onChange={e => setFormData({ ...formData, lloji_Dhomes: e.target.value })}
+                                            label="Room Type"
+                                        >
+                                            <MenuItem value="">Select Type</MenuItem>
+                                            <MenuItem value="Single">Single</MenuItem>
+                                            <MenuItem value="Double">Double</MenuItem>
+                                            <MenuItem value="ICU">ICU</MenuItem>
+                                            <MenuItem value="Deluxe">Deluxe</MenuItem>
+                                            <MenuItem value="Suite">Suite</MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </div>
                                 <div className="form-group">
-                                    <label>Capacity:</label>
-                                    <input
-                                        type="number"
-                                        value={formData.kapaciteti}
-                                        onChange={(e) => setFormData({...formData, kapaciteti: e.target.value})}
-                                        placeholder="Number of patients"
-                                        min="1"
-                                        required
-                                    />
+                                    <TextField label="Capacity" value={formData.kapaciteti} onChange={(e) => setFormData({...formData, kapaciteti: e.target.value})} fullWidth />
                                 </div>
                                 <div className="form-group">
                                     <label>
@@ -262,33 +253,35 @@ const RoomManagement = () => {
                                                     <form onSubmit={handleEditRoom} className="edit-form">
                                                         <div className="form-row">
                                                             <div className="form-group">
-                                                                <input
-                                                                    type="text"
+                                                                <TextField
+                                                                    label="Room Number"
                                                                     value={formData.nrDhomes}
                                                                     onChange={(e) => setFormData({...formData, nrDhomes: e.target.value})}
-                                                                    required
+                                                                    fullWidth
                                                                 />
                                                             </div>
                                                             <div className="form-group">
-                                                                <select
-                                                                    value={formData.lloji_Dhomes}
-                                                                    onChange={(e) => setFormData({...formData, lloji_Dhomes: e.target.value})}
-                                                                    required
-                                                                >
-                                                                    <option value="Standard">Standard</option>
-                                                                    <option value="Deluxe">Deluxe</option>
-                                                                    <option value="VIP">VIP</option>
-                                                                    <option value="ICU">ICU</option>
-                                                                    <option value="Emergency">Emergency</option>
-                                                                </select>
+                                                                <FormControl fullWidth margin="normal">
+                                                                    <InputLabel>Room Type</InputLabel>
+                                                                    <Select
+                                                                        value={formData.lloji_Dhomes}
+                                                                        onChange={(e) => setFormData({ ...formData, lloji_Dhomes: e.target.value })}
+                                                                        label="Room Type"
+                                                                    >
+                                                                        <MenuItem value="Single">Single</MenuItem>
+                                                                        <MenuItem value="Double">Double</MenuItem>
+                                                                        <MenuItem value="ICU">ICU</MenuItem>
+                                                                        <MenuItem value="Deluxe">Deluxe</MenuItem>
+                                                                        <MenuItem value="Suite">Suite</MenuItem>
+                                                                    </Select>
+                                                                </FormControl>
                                                             </div>
                                                             <div className="form-group">
-                                                                <input
-                                                                    type="number"
+                                                                <TextField
+                                                                    label="Capacity"
                                                                     value={formData.kapaciteti}
                                                                     onChange={(e) => setFormData({...formData, kapaciteti: e.target.value})}
-                                                                    min="1"
-                                                                    required
+                                                                    fullWidth
                                                                 />
                                                             </div>
                                                             <div className="form-group">
