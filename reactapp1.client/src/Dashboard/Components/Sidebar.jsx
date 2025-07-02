@@ -23,10 +23,8 @@ const Sidebar = ({ userType }) => {
         ? [
             { path: "/AdminDashboard", icon: <FaHome />, label: "Dashboard" },
             { path: "/ManageUsers", icon: <FaUsers />, label: "Manage Users" },
-            { path: "/Announcements", icon: <FaBullhorn />, label: "Announcements" },
             { path: "/PaymentAdmin", icon: <FaMoneyCheckAlt />, label: "Payments" },
             { path: "/Doctors", icon: <FaClinicMedical />, label: "Doctors" },
-            { path: "/Settings", icon: <FaCog />, label: "Settings" },
         ]
         : [
             { path: "/Dashboard", icon: <FaHome />, label: "Dashboard" },

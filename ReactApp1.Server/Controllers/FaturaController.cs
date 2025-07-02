@@ -7,6 +7,7 @@ using ReactApp1.Server.DTOs;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace ReactApp1.Server.Controllers
 {
@@ -24,7 +25,7 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/Fatura
         [HttpGet]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<ActionResult<IEnumerable<Fatura>>> GetFaturas()
         {
             var faturas = await _context.Faturat
@@ -36,7 +37,7 @@ namespace ReactApp1.Server.Controllers
 
         // GET: api/Fatura/{id}
         [HttpGet("{id}")]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<ActionResult<Fatura>> GetFatura(string id)
         {
             var fatura = await _context.Faturat
@@ -53,9 +54,13 @@ namespace ReactApp1.Server.Controllers
 
         // POST: api/Fatura
         [HttpPost]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<ActionResult<Fatura>> PostFatura(FaturaDTO request)
         {
+            if (string.IsNullOrEmpty(request.Id))
+            {
+                request.Id = Guid.NewGuid().ToString();
+            }
             var fatura = new Fatura
             {
                 Id = request.Id,
@@ -65,16 +70,14 @@ namespace ReactApp1.Server.Controllers
                 Data = request.Data,
                 Paguar = request.Paguar ?? false
             };
-
             _context.Faturat.Add(fatura);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction(nameof(GetFatura), new { id = fatura.Id }, fatura);
         }
 
         // PUT: api/Fatura/{id}
         [HttpPut("{id}")]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<IActionResult> PutFatura(string id, FaturaDTO request)
         {
             if (id != request.Id)
@@ -117,7 +120,7 @@ namespace ReactApp1.Server.Controllers
 
         // DELETE: api/Fatura/{id}
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor,Administrator")]
         public async Task<IActionResult> DeleteFatura(string id)
         {
             var fatura = await _context.Faturat.FindAsync(id);

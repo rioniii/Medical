@@ -43,11 +43,13 @@ const Payments = () => {
         amount: "",
         date: moment().format("YYYY-MM-DD"),
         status: "Progress",
+        sherbimiId: "",
     });
     const [isEditMode, setIsEditMode] = useState(false);
     const [patients, setPatients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [services, setServices] = useState([]);
 
     // Get the localStorage key for payments based on the token
     const getPaymentsKey = () => {
@@ -70,7 +72,8 @@ const Payments = () => {
                 }
             }
         }
-        fetchPatients();
+        fetchServices();
+        fetchPayments(patients);
     }, []);
 
     // Save payments to localStorage whenever payments change
@@ -81,41 +84,52 @@ const Payments = () => {
         }
     }, [payments]);
 
-    // Fetch patients from the API (updated to fetch only patients)
-    const fetchPatients = async () => {
+    // Fetch services from the API
+    const fetchServices = async () => {
         try {
             const token = localStorage.getItem("token");
-            if (!token) {
-                console.error("Unauthorized: No token found.");
-                return;
-            }
+            if (!token) return;
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            const response = await axios.get("https://localhost:7107/api/Pacienti", config);
-            setPatients(response.data);
+            const response = await axios.get("https://localhost:7107/api/Sherbimi", config);
+            setServices(response.data);
         } catch (error) {
-            const errorMsg = "Error fetching patients: " + error.message;
-            console.error(errorMsg);
-            setError(errorMsg);
-            toast.error(errorMsg);
-        } finally {
-            setLoading(false);
+            toast.error("Error fetching services: " + error.message);
+        }
+    };
+
+    // Fetch payments from the backend
+    const fetchPayments = async (patientsList) => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const response = await axios.get("https://localhost:7107/api/Fatura", config);
+            const normalized = response.data.map(p => {
+                const patient = patientsList.find(pt => pt.id === (p.pacientId ?? p.patientId));
+                return {
+                    ...p,
+                    amount: p.shuma ?? p.amount,
+                    patientId: p.pacientId ?? p.patientId,
+                    patientName: patient
+                        ? `${patient.name ?? patient.emri ?? ""} ${patient.surname ?? patient.mbiemri ?? ""}`.trim()
+                        : "Unknown",
+                    date: p.data ?? p.date,
+                    status: p.paguar ? "Paid" : "Progress",
+                    id: p.id,
+                    sherbimiId: p.sherbimiId ?? p.sherbimiId,
+                };
+            });
+            setPayments(normalized);
+            setFilteredPayments(normalized);
+        } catch (error) {
+            toast.error("Error fetching payments: " + error.message);
         }
     };
 
     // Handle adding a new payment
-    const handleAddPayment = () => {
-        if (!paymentForm.patientId || !paymentForm.amount || !paymentForm.date) {
+    const handleAddPayment = async () => {
+        if (!paymentForm.patientId || !paymentForm.amount || !paymentForm.date || !paymentForm.sherbimiId) {
             toast.error("Please fill in all fields.");
-            return;
-        }
-
-        // Check if the patient already has a payment
-        const patientAlreadyHasPayment = payments.some(
-            (payment) => payment.patientId === paymentForm.patientId
-        );
-
-        if (patientAlreadyHasPayment) {
-            toast.warning("This patient already has a payment. Please edit the existing payment instead.");
             return;
         }
 
@@ -127,42 +141,49 @@ const Payments = () => {
             return;
         }
 
-        // Create a new payment object
-        const newPayment = {
-            id: Date.now().toString(),
-            patientId: paymentForm.patientId,
-            patientName: getPatientNameById(paymentForm.patientId),
-            amount: parseFloat(paymentForm.amount),
-            date: paymentForm.date,
-            status: paymentForm.status,
-        };
-
-        // Update payments state
-        const updatedPayments = [newPayment, ...payments];
-        setPayments(updatedPayments);
-        setFilteredPayments(updatedPayments);
-
-        // Close the dialog and reset the form
-        setOpenAddDialog(false);
-        resetForm();
-        toast.success("Payment added successfully!");
+        try {
+            const token = localStorage.getItem("token");
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const paymentPayload = {
+                PacientId: paymentForm.patientId,
+                SherbimiId: paymentForm.sherbimiId,
+                Shuma: paymentForm.amount,
+                Data: paymentForm.date,
+                // Paguar: paymentForm.status === "Paid"
+            };
+            const response = await axios.post("https://localhost:7107/api/Fatura", paymentPayload, config);
+            const newPayment = {
+                ...response.data,
+                amount: response.data.shuma ?? response.data.amount,
+                // ...map other fields if needed
+            };
+            setPayments([newPayment, ...payments]);
+            setFilteredPayments([newPayment, ...payments]);
+            // Close the dialog and reset the form
+            setOpenAddDialog(false);
+            resetForm();
+            toast.success("Payment added successfully!");
+        } catch (error) {
+            const errorMsg = "Error adding payment: " + error.message;
+            console.error(errorMsg);
+            setError(errorMsg);
+            toast.error(errorMsg);
+        }
     };
 
     // Handle editing an existing payment
-    const handleEditPayment = () => {
-        if (!paymentForm.patientName || !paymentForm.amount || !paymentForm.date) {
+    const handleEditPayment = async () => {
+        if (!paymentForm.patientName || !paymentForm.amount || !paymentForm.date || !paymentForm.sherbimiId) {
             toast.error("Please fill in all fields.");
             return;
         }
 
-        // Ensure amount is treated as a number
         const amount = parseFloat(paymentForm.amount);
         if (isNaN(amount)) {
             toast.error("Amount must be a valid number.");
             return;
         }
 
-        // Date validation
         const selectedDate = moment(paymentForm.date);
         const today = moment().startOf("day");
         if (selectedDate.isBefore(today)) {
@@ -170,29 +191,44 @@ const Payments = () => {
             return;
         }
 
-        // Update the payment in the list
-        const updatedPayments = payments.map((payment) =>
-            payment.id === paymentForm.id
-                ? { ...paymentForm, amount: amount } // Ensure amount is a number
-                : payment
-        );
+        try {
+            const token = localStorage.getItem("token");
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const paymentPayload = {
+                Id: paymentForm.id,
+                PacientId: paymentForm.patientId,
+                SherbimiId: paymentForm.sherbimiId,
+                Shuma: amount,
+                Data: paymentForm.date,
+                Paguar: paymentForm.status === "Paid"
+            };
+            await axios.put(`https://localhost:7107/api/Fatura/${paymentForm.id}`, paymentPayload, config);
 
-        setPayments(updatedPayments);
-        setFilteredPayments(updatedPayments);
+            await fetchPayments(patients);
 
-        // Close the dialog and reset the form
-        setOpenEditDialog(false);
-        resetForm();
-        toast.success("Payment updated successfully!");
+            setOpenEditDialog(false);
+            resetForm();
+            toast.success("Payment updated successfully!");
+        } catch (error) {
+            toast.error("Error updating payment: " + error.message);
+        }
     };
 
     // Handle deleting a payment
-    const handleDeletePayment = (id) => {
+    const handleDeletePayment = async (id) => {
         if (window.confirm("Are you sure you want to delete this payment?")) {
-            const updatedPayments = payments.filter((payment) => payment.id !== id);
-            setPayments(updatedPayments);
-            setFilteredPayments(updatedPayments);
-            toast.success("Payment deleted successfully!");
+            try {
+                const token = localStorage.getItem("token");
+                const config = { headers: { Authorization: `Bearer ${token}` } };
+                await axios.delete(`https://localhost:7107/api/Fatura/${id}`, config);
+
+                // Optionally, re-fetch payments from backend to ensure sync
+                await fetchPayments(patients);
+
+                toast.success("Payment deleted successfully!");
+            } catch (error) {
+                toast.error("Error deleting payment: " + error.message);
+            }
         }
     };
 
@@ -205,6 +241,7 @@ const Payments = () => {
             amount: "",
             date: moment().format("YYYY-MM-DD"),
             status: "Progress",
+            sherbimiId: "",
         });
     };
 
@@ -251,6 +288,24 @@ const Payments = () => {
 
         const interval = setInterval(checkToken, 5000);
         return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        const fetchAll = async () => {
+            await fetchServices();
+            // Fetch patients, then payments
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setLoading(false);
+                return;
+            }
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const response = await axios.get("https://localhost:7107/api/Pacienti", config);
+            setPatients(response.data);
+            await fetchPayments(response.data);
+            setLoading(false);
+        };
+        fetchAll();
     }, []);
 
     if (loading) {
@@ -411,7 +466,11 @@ const Payments = () => {
                                             <Typography color="red">Canceled</Typography>
                                         )}
                                     </TableCell>
-                                    <TableCell>${payment.amount.toFixed(2)}</TableCell>
+                                    <TableCell>
+                                        {payment.amount !== undefined
+                                            ? `$${Number(payment.amount).toFixed(2)}`
+                                            : "N/A"}
+                                    </TableCell>
                                     <TableCell>
                                         <IconButton
                                             onClick={() => {
@@ -477,12 +536,39 @@ const Payments = () => {
                             </FormControl>
                         )}
 
+                        {/* Sherbimi ID Field */}
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel>Service</InputLabel>
+                            <Select
+                                value={paymentForm.sherbimiId}
+                                onChange={(e) => {
+                                    const selectedService = services.find(
+                                        s => (s.id ?? s.Id) === e.target.value
+                                    );
+                                    setPaymentForm({
+                                        ...paymentForm,
+                                        sherbimiId: e.target.value,
+                                        amount: selectedService ? (selectedService.cmimi ?? selectedService.Cmimi) : ""
+                                    });
+                                }}
+                                fullWidth
+                                variant="outlined"
+                            >
+                                <MenuItem value="">Select Service</MenuItem>
+                                {services.map(service => (
+                                    <MenuItem key={service.id ?? service.Id} value={service.id ?? service.Id}>
+                                        {service.emri_Sherbimit ?? service.Emri_Sherbimit}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
                         {/* Amount Field */}
                         <TextField
                             label="Amount"
                             type="number"
                             value={paymentForm.amount}
-                            onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
+                            InputProps={{ readOnly: true }}
                             fullWidth
                             margin="normal"
                         />

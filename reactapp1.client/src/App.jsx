@@ -11,11 +11,11 @@ import AppointmentSchedule from './Dashboard/Components/AppointmentSchedule';
 import DashboardAdmin from './Dashboard/Components/DashboardAdmin';
 import ManageUsers from './Dashboard/Components/ManageUsers';
 import OurDoctors from './OurDoctors';
-import Announcements from './Dashboard/Components/Announcements';
 import PaymentAdmin from './Dashboard/Components/PaymentAdmin';
 import Doctors from './Dashboard/Components/Doctors';
 import Settings from './Dashboard/Components/Settings';
 import Room from './Dashboard/Components/Room';
+import RoomManagement from './Dashboard/Components/RoomManagement';
 import Payments from './Dashboard/Components/Payments';
 import Records from './Dashboard/Components/Records';
 import Services from './Dashboard/Components/Services';
@@ -141,14 +141,15 @@ class App extends Component {
                                 <ErrorBoundary><ManageUsers /></ErrorBoundary>
                             </ProtectedRoute>
                         } />
-                        <Route path="/Announcements" element={
-                            <ProtectedRoute roles={['Administrator']}>
-                                <ErrorBoundary><Announcements /></ErrorBoundary>
-                            </ProtectedRoute>
-                        } />
+                       
                         <Route path="/PaymentAdmin" element={
                             <ProtectedRoute roles={['Administrator']}>
                                 <ErrorBoundary><PaymentAdmin /></ErrorBoundary>
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/RoomManagement" element={
+                            <ProtectedRoute roles={['Administrator']}>
+                                <ErrorBoundary><RoomManagement /></ErrorBoundary>
                             </ProtectedRoute>
                         } />
                         <Route path="/Doctors" element={

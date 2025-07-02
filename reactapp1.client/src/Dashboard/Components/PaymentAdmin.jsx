@@ -15,7 +15,20 @@ const PaymentAdmin = () => {
     const fetchPayments = async () => {
         try {
             setLoading(true);
-            const response = await axios.get("https://localhost:7107/api/Fatura");
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                setError("Authentication required. Please log in again.");
+                return;
+            }
+
+            const response = await axios.get("https://localhost:7107/api/Fatura", {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
             if (Array.isArray(response.data)) {
                 setPayments(response.data);
             } else {
@@ -23,7 +36,12 @@ const PaymentAdmin = () => {
             }
             setError(null);
         } catch (err) {
-            setError("Failed to fetch payments. Please try again.");
+            console.error("Error fetching payments:", err);
+            if (err.response?.status === 401) {
+                setError("Authentication failed. Please log in again.");
+            } else {
+                setError("Failed to fetch payments. Please try again.");
+            }
         } finally {
             setLoading(false);
         }
